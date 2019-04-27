@@ -2,6 +2,8 @@
 #include "stdafx.h"
 
 #define MAX_PLAYER_INSTANCES 20 //MODIFICAR
+#define NAME_SHARED_MEMORY_GAME TEXT("dllSharedMemGame")
+
 
 typedef struct coords Coords;
 typedef struct ball Ball;
@@ -48,7 +50,7 @@ struct gameBoard
 struct player
 {
 	WORD wLifes;
-	TCHAR[MAX_LENGTH_NAME] tcUserName;
+	TCHAR tcUserName[MAX_LENGTH_NAME];
 	DWORD dwScore;
 	PlayerBlock myPlayerBlock;
 	HANDLE hFIFO; //OPCIONAL
@@ -57,7 +59,7 @@ struct player
 struct game
 {
 	GameBoard myGameBoard;
-	Player[MAX_PLAYER_INSTANCES] playesConnected;
+	Player playesConnected[MAX_PLAYER_INSTANCES];
 };
 
 enum typesOfBlocks
