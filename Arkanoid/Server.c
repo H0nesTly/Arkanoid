@@ -26,11 +26,11 @@ BOOL intitServerGameMem(LPVOID lpSharedMem, HANDLE hMapObj)
 	}
 
 	lpSharedMem = MapViewOfFile(
-		hMapObj, // qual o objeto a mapear
-		FILE_MAP_WRITE, //read/write 
-		0,				//HIGH bit
+		hMapObj,					// qual o objeto a mapear
+		FILE_MAP_WRITE,				//read/write 
+		0,			//HIGH bit
 		0,				//Low bit
-		0);				//inicio da mem
+		0);		//inicio da mem
 
 	if (lpSharedMem == NULL)
 	{
@@ -43,7 +43,7 @@ BOOL intitServerGameMem(LPVOID lpSharedMem, HANDLE hMapObj)
 	return TRUE;
 }
 
-BOOL intitServerMessage(LPVOID lpSharedMem, HANDLE hMapObj)
+BOOL intitServerMessageMem(LPVOID lpSharedMem, HANDLE hMapObj)
 {
 	BOOL fInit;
 
@@ -67,10 +67,9 @@ BOOL intitServerMessage(LPVOID lpSharedMem, HANDLE hMapObj)
 		return FALSE;
 	}
 
-
 	lpSharedMem = MapViewOfFile(
 		hMapObj,
-		FILE_MAP_WRITE,
+		FILE_MAP_WRITE, //write/read
 		0,
 		0,
 		0);

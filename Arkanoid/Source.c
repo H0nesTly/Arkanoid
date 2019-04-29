@@ -32,7 +32,7 @@ int _tmain(int argc, LPTSTR argv[])
 	}
 
 
-	if (intitServerMessage(hMapObjMessage, LpSharedMemMessage) == FALSE)
+	if (intitServerMessageMem(hMapObjMessage, LpSharedMemMessage) == FALSE)
 	{
 		_tprintf(TEXT("ERRO Instancia Servidor ja a correr"));
 		exit(EXIT_FAILURE);

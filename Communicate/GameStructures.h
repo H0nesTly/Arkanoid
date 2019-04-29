@@ -13,6 +13,7 @@ typedef struct gameBoard GameBoard;
 typedef struct game Game;
 
 typedef enum typesOfBlocks TypesOfBlock;
+typedef enum typeOfBonus TypeOfBonus;
 
 struct coords
 {
@@ -22,7 +23,8 @@ struct coords
 struct ball
 {
 	Coords ballPosition;
-	WORD radius;
+	TCHAR tcFigure;
+	WORD wRadius;
 	float fVelocity;
 };
 
@@ -30,7 +32,7 @@ struct playerBlock
 {
 	Coords playerBlockPosition;
 	WORD wWidth, wHeight;
-	//float fVelocity;
+	float fVelocity;
 };
 
 struct block
@@ -38,7 +40,18 @@ struct block
 	Coords blockPosition;
 	WORD wWidth, wHeight;
 	TypesOfBlock typeOfBlock;
+	TCHAR tcFigure;
+
 	WORD wNumberOfColisions;
+};
+
+struct bonus
+{
+	TypeOfBonus typeOfBonus;
+	Coords bonusCoords;
+	TCHAR tcFigure;
+	WORD wRadius;
+	float fVelocityDrop;
 };
 
 struct gameBoard
@@ -53,13 +66,13 @@ struct player
 	TCHAR tcUserName[MAX_LENGTH_NAME];
 	DWORD dwScore;
 	PlayerBlock myPlayerBlock;
-	HANDLE hFIFO; //OPCIONAL
+	HANDLE hFIFO; //OPCIONAL (Rever)
 };
 
 struct game
 {
 	GameBoard myGameBoard;
-	Player playesConnected[MAX_PLAYER_INSTANCES];
+	Player playersConnected[MAX_PLAYER_INSTANCES];
 };
 
 enum typesOfBlocks
@@ -67,4 +80,12 @@ enum typesOfBlocks
 	Normal,
 	Magic,
 	Rigid
+};
+
+enum typeOfBonus : char
+{
+	SpeedUp,
+	SlowDown,
+	ExtraHealth,
+	Triple
 };

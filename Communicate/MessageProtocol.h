@@ -10,7 +10,7 @@ typedef struct messageProtocolDatagram MessageProtocolDatagram;
 
 enum typeOfMessage
 {
-	KeyPressed, TopPlayers, QuitGame
+	Login ,KeyPressed, TopPlayers, QuitGame
 };
 
 

@@ -6,6 +6,6 @@
 
 BOOL intitServerGameMem(LPVOID , HANDLE );
 
-BOOL intitServerMessage(LPVOID , HANDLE );
+BOOL intitServerMessageMem(LPVOID , HANDLE );
 
 
