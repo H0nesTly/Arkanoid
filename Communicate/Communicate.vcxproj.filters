@@ -27,7 +27,7 @@
     <ClInclude Include="MessageProtocol.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Communications.h">
+    <ClInclude Include="SharedMemorySetup.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -38,7 +38,7 @@
     <ClCompile Include="dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Communicate.c">
+    <ClCompile Include="SharedMemorySetup.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
