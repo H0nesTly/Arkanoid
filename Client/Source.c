@@ -51,19 +51,5 @@ int _tmain(int argc, LPTSTR argv[])
 		exit(EXIT_SUCCESS);
 	}
 
-
-	if (initClientGameMem(hMapObjGame, lpSharedMemGame) == FALSE)
-	{
-		_tprintf(TEXT("Não existe Servidor "));
-		exit(EXIT_FAILURE);
-	}
-
-
-	if (initClientMessageMem(hMapObjMessage, LpSharedMemMessage) == FALSE)
-	{
-		_tprintf(TEXT("Não existe Servidor com Estrutura"));
-		exit(EXIT_FAILURE);
-	}
-
 	return 0;
 }

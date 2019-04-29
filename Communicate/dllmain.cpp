@@ -19,6 +19,15 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     switch (ul_reason_for_call)
     {
     case DLL_PROCESS_ATTACH:
+		//Inicializar memoria partilhada 
+		if (!initClientGameMem(lpSharedMemGame, hMapObjGame))
+			return FALSE;
+
+		if (!initClientMessageMem(lpSharedMemMensage, hMapObjMensage))
+			return FALSE;
+
+
+
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH:
     case DLL_PROCESS_DETACH:
