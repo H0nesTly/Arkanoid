@@ -9,9 +9,9 @@
 
 #include "ClientStructures.h"
 
-WORD getLoginMethod()
+int getLoginMethod()
 {
-	WORD wInput;
+	int Input;
 
 	_tprintf(TEXT("\nInsira Opção de comunicação:"));
 	_tprintf(TEXT("\n\t 1 - Memoria Partilhada"));
@@ -19,9 +19,9 @@ WORD getLoginMethod()
 	_tprintf(TEXT("\n\t 3 - Remoto"));
 	_tprintf(TEXT("\n\t 0 - Sair"));
 
-	_tscanf_s(TEXT(" %d"), &wInput);
+	_tscanf_s(TEXT(" %d"), &Input);
 
-	return wInput;
+	return Input;
 }
 
 int _tmain(int argc, LPTSTR argv[]) 
