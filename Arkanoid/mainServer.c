@@ -24,14 +24,16 @@ int _tmain(int argc, LPTSTR argv[])
 	#endif
 
 
-	if (intitServerGameMem(hMapObjGame, lpSharedMemGame) == FALSE)
+	if (intitServerGameMem(serverMappedMemory.hMapObjGame,
+		serverMappedMemory.lpSharedMemGame) == FALSE)
 	{
 		_tprintf(TEXT("ERRO Instancia Servidor ja a correr!"));
 		exit(EXIT_FAILURE);
 	}
 
 
-	if (intitServerMessageMem(hMapObjMessage, LpSharedMemMessage) == FALSE)
+	if (intitServerMessageMem(serverMappedMemory.hMapObjMessage,
+		serverMappedMemory.LpSharedMemMessage) == FALSE)
 	{
 		_tprintf(TEXT("ERRO Instancia Servidor ja a correr"));
 		exit(EXIT_FAILURE);

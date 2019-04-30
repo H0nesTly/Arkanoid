@@ -9,6 +9,8 @@ typedef struct coords Coords;
 typedef struct ball Ball;
 typedef struct playerBlock PlayerBlock;
 typedef struct player Player; 
+typedef struct block Block; 
+typedef struct player Player; 
 typedef struct gameBoard GameBoard;
 typedef struct game Game;
 
@@ -17,7 +19,7 @@ typedef enum typeOfBonus TypeOfBonus;
 
 struct coords
 {
-	WORD wX, wY;
+	WORD x, y;
 };
 
 struct ball

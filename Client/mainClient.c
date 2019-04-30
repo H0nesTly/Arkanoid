@@ -7,7 +7,7 @@
 #include <io.h>
 #include <stdio.h>
 
-#include "Client.h"
+#include "ClientStructures.h"
 
 WORD getLoginMethod()
 {

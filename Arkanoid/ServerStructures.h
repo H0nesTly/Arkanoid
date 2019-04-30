@@ -1,6 +1,7 @@
 #pragma once
 #include <windows.h>
 
+
 typedef struct gameServerConfiguration GameServerConfiguration;
 typedef struct lobby Lobby;
 typedef struct serverHandles ServerHandles;
