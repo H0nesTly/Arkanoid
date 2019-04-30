@@ -1,6 +1,6 @@
 #pragma once
-#include <windows.h>
+#include "stdafx.h"
 
-BOOL initClientGameMem(LPVOID , HANDLE );
+BOOL initClientGameMem(LPVOID, HANDLE);
 
-BOOL initClientMessageMem(LPVOID , HANDLE );
+BOOL initClientMessageMem(LPVOID, HANDLE);

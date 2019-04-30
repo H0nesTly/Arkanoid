@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "SharedMemorySetup.h"
+#include "GameStructures.h"
 
 
 BOOL initClientGameMem(LPVOID lpSharedMem, HANDLE hMapObj)

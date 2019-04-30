@@ -1,4 +1,5 @@
 #pragma once
+
 #include "stdafx.h"
 
 #define MAX_LENGTH_NAME 20
@@ -34,5 +35,3 @@ enum typeOfMessage
 {
 	LoginMessage ,KeyPressedMessage, TopPlayersMessage, QuitGameMessage
 };
-
-enum typeOf

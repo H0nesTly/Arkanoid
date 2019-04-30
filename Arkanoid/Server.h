@@ -1,5 +1,5 @@
 #pragma once
-#include <windows.h>
+#include "../Communicate/stdafx.h"
 #include "..\Communicate\GameStructures.h"
 #include "..\Communicate\MessageProtocol.h"
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "stdafx.h"
+#include "MessageProtocol.h"
 
 #define MAX_PLAYER_INSTANCES 20 //MODIFICAR
 #define NAME_SHARED_MEMORY_GAME TEXT("dllSharedMemGame")

@@ -32,16 +32,16 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="dllmain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SharedMemorySetup.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MessageProtocol.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="stdafx.cpp">
+    <ClCompile Include="stdafx.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

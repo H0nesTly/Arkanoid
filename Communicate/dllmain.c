@@ -1,6 +1,8 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 #include "stdafx.h"
 
+#include "SharedMemorySetup.h"
+
 //Ponteiro para objetos do jogo
 static LPVOID lpSharedMemGame = NULL;
 static HANDLE hMapObjGame = NULL;

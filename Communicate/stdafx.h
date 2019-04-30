@@ -14,7 +14,3 @@
 
 
 // reference additional headers your program requires here
-#include "MessageProtocol.h"
-#include "GameStructures.h"
-#include "SharedMemorySetup.h"
-#include "Communication.h"
