@@ -116,7 +116,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Source.c" />
+    <ClCompile Include="mainClient.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientStructures.h" />

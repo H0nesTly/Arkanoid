@@ -8,13 +8,12 @@
 #include <stdio.h>
 
 #include "Server.h"
+#include "ServerStructures.h"
 
 int _tmain(int argc, LPTSTR argv[])
 {
-	LPVOID lpSharedMemGame = NULL;
-	LPVOID	LpSharedMemMessage = NULL;
-	HANDLE hMapObjGame = NULL;
-	HANDLE	hMapObjMessage = NULL;
+
+	ServerHandles serverMappedMemory;
 
 
 	//UNICODE: Por defeito, a consola Windows não processa caracteres wide.

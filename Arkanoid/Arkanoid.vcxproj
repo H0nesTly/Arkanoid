@@ -117,7 +117,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Server.c" />
-    <ClCompile Include="Source.c" />
+    <ClCompile Include="mainServer.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Client\ServerStructures.h" />

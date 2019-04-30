@@ -3,9 +3,19 @@
 
 typedef struct gameServerConfiguration GameServerConfiguration;
 typedef struct lobby Lobby;
+typedef struct serverHandles ServerHandles;
 
 typedef enum stateOfGame StateOfGame;
 
+struct serverHandles
+{
+	LPVOID	lpSharedMemGame;
+	LPVOID	LpSharedMemMessage;
+	LPVOID	LpSharedMemMessageWriter;
+	HANDLE	hMapObjGame;
+	HANDLE	hMapObjMessage;
+	HANDLE	hMapObjMessageWriter;
+};
 
 struct gameServerConfiguration
 {

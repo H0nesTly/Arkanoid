@@ -52,7 +52,7 @@ BOOL intitServerMessageMem(LPVOID lpSharedMem, HANDLE hMapObj)
 		NULL,
 		PAGE_READWRITE,
 		0,
-		(sizeof(MessageProtocolDatagram) * MESSAGE_BUFFER_SIZE),
+		(sizeof(MessageProtocolDatagram) * MESSAGE_QUEUE_SIZE),
 		NAME_SHARED_MEMORY_MESSAGE);
 
 	if (hMapObj == NULL)
@@ -79,7 +79,7 @@ BOOL intitServerMessageMem(LPVOID lpSharedMem, HANDLE hMapObj)
 		return FALSE;
 	}
 
-	ZeroMemory(lpSharedMem, sizeof(MessageProtocolDatagram) * MESSAGE_BUFFER_SIZE);
+	ZeroMemory(lpSharedMem, sizeof(MessageProtocolDatagram) * MESSAGE_QUEUE_SIZE);
 
 	return TRUE;
 }
