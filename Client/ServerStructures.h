@@ -2,8 +2,9 @@
 #include <windows.h>
 
 typedef struct gameServerConfiguration GameServerConfiguration;
+typedef struct lobby Lobby;
 
-typedef enum gameStates GameStates;
+typedef enum stateOfGame StateOfGame;
 
 
 struct gameServerConfiguration
@@ -14,14 +15,23 @@ struct gameServerConfiguration
 	WORD wWidthPlayerBlock, wHeightPlayerBlock;
 };
 
+struct lobby
+{
+	TCHAR playersInLobby[MAX_PLAYER_INSTANCE];
+	WORD wPlayersInLobby;
+};
+
 struct gameServerGameInstance
 {
 	//jogadores a jogar/a ver
+	Lobby lobbyGame;
+	GameServerConfiguration GameConfiguration;
+	StateOfGame GameStates;
 };
 
-enum gameStates
+enum stateOfGame
 {
-	StartGame,
+	WaitForPlayers,
 	GameInProgress,
 	GameOver
 };

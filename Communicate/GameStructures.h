@@ -17,7 +17,7 @@ typedef enum typeOfBonus TypeOfBonus;
 
 struct coords
 {
-	UINT x, y;
+	WORD wX, wY;
 };
 
 struct ball
@@ -66,7 +66,7 @@ struct player
 	TCHAR tcUserName[MAX_LENGTH_NAME];
 	DWORD dwScore;
 	PlayerBlock myPlayerBlock;
-	HANDLE hFIFO; //OPCIONAL (Rever)
+	//HANDLE hFIFO; //OPCIONAL (Rever)
 };
 
 struct game
@@ -82,7 +82,7 @@ enum typesOfBlocks
 	Rigid
 };
 
-enum typeOfBonus : char
+enum typeOfBonus
 {
 	SpeedUp,
 	SlowDown,
