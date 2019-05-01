@@ -12,9 +12,12 @@
 
 int _tmain(int argc, LPTSTR argv[])
 {
+	UNREFERENCED_PARAMETER(argc);
+	UNREFERENCED_PARAMETER(argv);
 
 	ServerHandles serverMappedMemory;
 
+	ZeroMemory(&serverMappedMemory, sizeof(ServerHandles));
 
 	//UNICODE: Por defeito, a consola Windows não processa caracteres wide.
 	//A maneira mais fácil para ter esta funcionalidade é chamar _setmode:
@@ -32,7 +35,7 @@ int _tmain(int argc, LPTSTR argv[])
 	}
 
 
-	if (intitServerMessageMem(serverMappedMemory.hMapObjMessage,
+	if (intitServerMessageMemReader(serverMappedMemory.hMapObjMessage,
 		serverMappedMemory.LpSharedMemMessage) == FALSE)
 	{
 		_tprintf(TEXT("ERRO Instancia Servidor ja a correr"));

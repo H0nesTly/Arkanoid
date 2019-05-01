@@ -1,6 +1,6 @@
 #pragma once
-#include "../Communicate/stdafx.h"
-#include "../Communicate/GameStructures.h"
+#include "..\Communicate\stdafx.h"
+#include "..\Communicate\GameStructures.h"
 
 
 typedef struct serverHandles ServerHandles;
@@ -30,7 +30,7 @@ struct gameServerConfiguration
 
 struct lobby
 {
-	TCHAR playersInLobby[MAX_PLAYER_INSTANCE];
+	TCHAR playersInLobby[MAX_PLAYER_INSTANCES];
 	WORD wPlayersInLobby;
 };
 

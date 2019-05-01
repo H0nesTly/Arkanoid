@@ -2,7 +2,6 @@
 
 BOOL intitServerGameMem(LPVOID lpSharedMem, HANDLE hMapObj)
 {
-	BOOL fInit;
 	//Mapear sharedMem para o jogo
 	hMapObj = CreateFileMapping(
 		INVALID_HANDLE_VALUE, //usar paging file
@@ -17,10 +16,9 @@ BOOL intitServerGameMem(LPVOID lpSharedMem, HANDLE hMapObj)
 		return FALSE;
 	}
 
-	fInit = (GetLastError() != ERROR_ALREADY_EXISTS);
 
 	//ja existe uma instancia do servidor a correr
-	if (fInit)
+	if (GetLastError() == ERROR_ALREADY_EXISTS)
 	{
 		return FALSE;
 	}
@@ -43,14 +41,49 @@ BOOL intitServerGameMem(LPVOID lpSharedMem, HANDLE hMapObj)
 	return TRUE;
 }
 
-BOOL intitServerMessageMem(LPVOID lpSharedMem, HANDLE hMapObj)
+BOOL intitServerMessageMemWriter(LPVOID lpSharedMem, HANDLE hMapObj)
 {
-	BOOL fInit;
-
 	hMapObj = CreateFileMapping(
 		INVALID_HANDLE_VALUE,
 		NULL,
 		PAGE_READWRITE,
+		0,
+		(sizeof(MessageProtocolDatagram) * MESSAGE_QUEUE_READER_SIZE),
+		NAME_SHARED_MEMORY_MESSAGE_WRITER);
+
+	if (hMapObj == NULL)
+	{
+		return FALSE;
+	}
+
+	if (GetLastError() == ERROR_ALREADY_EXISTS)
+	{
+		return FALSE;
+	}
+
+	lpSharedMem = MapViewOfFile(
+		hMapObj,
+		FILE_MAP_WRITE, //write/read
+		0,
+		0,
+		0);
+
+	if (lpSharedMem == NULL)
+	{
+		return FALSE;
+	}
+
+	ZeroMemory(lpSharedMem, sizeof(MessageProtocolDatagram) * MESSAGE_QUEUE_READER_SIZE);
+
+	return TRUE;
+}
+
+BOOL intitServerMessageMemReader(LPVOID lpSharedMem, HANDLE hMapObj)
+{
+	hMapObj = CreateFileMapping(
+		INVALID_HANDLE_VALUE,
+		NULL,
+		PAGE_READONLY,
 		0,
 		(sizeof(MessageProtocolDatagram) * MESSAGE_QUEUE_SIZE),
 		NAME_SHARED_MEMORY_MESSAGE);
@@ -60,16 +93,14 @@ BOOL intitServerMessageMem(LPVOID lpSharedMem, HANDLE hMapObj)
 		return FALSE;
 	}
 
-	fInit = (GetLastError() != ERROR_ALREADY_EXISTS);
-
-	if (!fInit)
+	if (GetLastError() == ERROR_ALREADY_EXISTS)
 	{
 		return FALSE;
 	}
 
 	lpSharedMem = MapViewOfFile(
 		hMapObj,
-		FILE_MAP_WRITE, //write/read
+		FILE_MAP_READ, //write/read
 		0,
 		0,
 		0);

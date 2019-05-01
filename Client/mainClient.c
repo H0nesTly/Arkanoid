@@ -26,10 +26,12 @@ int getLoginMethod()
 
 int _tmain(int argc, LPTSTR argv[]) 
 {
-	LPVOID lpSharedMemGame = NULL;
-	LPVOID	LpSharedMemMessage = NULL;
-	HANDLE hMapObjGame = NULL;
-	HANDLE	hMapObjMessage = NULL;
+	UNREFERENCED_PARAMETER(argc);
+	UNREFERENCED_PARAMETER(argv);
+	//LPVOID lpSharedMemGame = NULL;
+	//LPVOID	LpSharedMemMessage = NULL;
+	//HANDLE hMapObjGame = NULL;
+	//HANDLE	hMapObjMessage = NULL;
 
 	//UNICODE: Por defeito, a consola Windows não processa caracteres wide.
 	//A maneira mais fácil para ter esta funcionalidade é chamar _setmode:

@@ -1,5 +1,5 @@
 #pragma once
-#include "../Communicate/stdafx.h"
+#include "..\Communicate\stdafx.h"
 #include "..\Communicate\GameStructures.h"
 #include "..\Communicate\MessageProtocol.h"
 
@@ -8,7 +8,7 @@ BOOL intitServerGameMem(LPVOID , HANDLE );
 
 /*Mapea a Memoria que ira armazenar o array de mensagens
 	Em que o produtor - server e Consumidor - cliente*/
-BOOL intitServerMessageMem(LPVOID , HANDLE );
+BOOL intitServerMessageMemWriter(LPVOID , HANDLE );
 
 /*Mapea a Memoria que ira armazenar o array de mensagens
 	Em que o produtor - server e Consumidor - cliente*/
