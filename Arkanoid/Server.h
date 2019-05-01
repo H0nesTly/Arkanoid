@@ -2,6 +2,7 @@
 #include "..\Communicate\stdafx.h"
 #include "..\Communicate\GameStructures.h"
 #include "..\Communicate\MessageProtocol.h"
+#include "ServerStructures.h"
 
 /*Mapea a Memoria que ira armazenar o jogo*/
 BOOL intitServerGameMem(LPVOID , HANDLE );
@@ -14,4 +15,5 @@ BOOL intitServerMessageMemWriter(LPVOID , HANDLE );
 	Em que o produtor - server e Consumidor - cliente*/
 BOOL intitServerMessageMemReader(LPVOID , HANDLE );
 
+void freeMappedMemory(ServerHandles* );
 

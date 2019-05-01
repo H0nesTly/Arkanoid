@@ -1,9 +1,12 @@
 #pragma once
+#include "ServerThreads.h"
 #include "..\Communicate\stdafx.h"
 #include "..\Communicate\GameStructures.h"
 
 
-typedef struct serverHandles ServerHandles;
+typedef struct serverHandles ServerHandlers;
+typedef struct serverThreadsHandlers ServerThreadsHandlers;
+typedef struct serverSharedMemoryHandlers ServerSharedMemoryHandlers;
 typedef struct gameServerConfiguration GameServerConfiguration;
 typedef struct lobby Lobby;
 typedef struct serverGameInstance ServerGameInstance;
@@ -11,6 +14,13 @@ typedef struct serverGameInstance ServerGameInstance;
 typedef enum stateOfGame StateOfGame;
 
 struct serverHandles
+{
+	ServerSharedMemoryHandlers sharedMemHandlers;
+	ServerThreadsHandlers threadHandlers;
+};
+
+
+struct serverSharedMemoryHandlers
 {
 	LPVOID	lpSharedMemGame;
 	LPVOID	LpSharedMemMessage;

@@ -21,12 +21,18 @@
     <ClCompile Include="mainServer.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ServerThreads.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Server.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ServerStructures.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerThreads.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

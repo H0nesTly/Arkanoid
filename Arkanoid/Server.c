@@ -114,3 +114,14 @@ BOOL intitServerMessageMemReader(LPVOID lpSharedMem, HANDLE hMapObj)
 
 	return TRUE;
 }
+
+VOID freeMappedMemory(ServerHandles* mapped)
+{
+	UnmapViewOfFile(mapped->lpSharedMemGame);
+	UnmapViewOfFile(mapped->LpSharedMemMessage);
+	UnmapViewOfFile(mapped->LpSharedMemMessageWriter);
+
+	CloseHandle(mapped->hMapObjGame);
+	CloseHandle(mapped->hMapObjMessage);
+	CloseHandle(mapped->hMapObjMessageWriter);
+}
