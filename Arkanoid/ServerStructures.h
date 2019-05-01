@@ -17,10 +17,8 @@ struct serverSharedMemoryHandlers
 {
 	LPVOID	lpSharedMemGame;
 	LPVOID	LpSharedMemMessage;
-	LPVOID	LpSharedMemMessageWriter;
 	HANDLE	hMapObjGame;
 	HANDLE	hMapObjMessage;
-	HANDLE	hMapObjMessageWriter;
 };
 
 struct serverHandles

@@ -24,8 +24,8 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 		if (!initClientGameMem(lpSharedMemGame, hMapObjGame))
 			return FALSE;
 
-		//if (!initClientMessageMem(lpSharedMemMensage, hMapObjMensage))
-		//	return FALSE;
+		if (!initClientMessageMem(lpSharedMemMensage, hMapObjMensage))
+			return FALSE;
 
 
 

@@ -45,27 +45,31 @@ int _tmain(int argc, LPTSTR argv[])
 		&handlers.threadHandlers.dwIdProducer //idThread
 	);
 
-	if (handlers.threadHandlers.hThreadProducer == NULL || 
+	if (handlers.threadHandlers.hThreadProducer == NULL ||
 		handlers.threadHandlers.hThreadConsumer == NULL)
 	{
 		exit(EXIT_FAILURE);
 	}
 
-	//	if (intitServerGameMem(handlers.sharedMemHandlers.hMapObjGame,
-	//		handlers.sharedMemHandlers.lpSharedMemGame) == FALSE)
-	//	{
-	//		_tprintf(TEXT("ERRO Instancia Servidor ja a correr!"));
-	//		exit(EXIT_FAILURE);
-	//	}
+	if (!intitServerGameMem(handlers.sharedMemHandlers.hMapObjGame,
+		handlers.sharedMemHandlers.lpSharedMemGame) == FALSE)
+	{
+		_tprintf(TEXT("ERRO Instancia Servidor ja a correr!"));
+		exit(EXIT_FAILURE);
+	}
+
+	if (!intitServerMessageMem(handlers.sharedMemHandlers.hMapObjMessage,
+		handlers.sharedMemHandlers.LpSharedMemMessage) == FALSE)
+	{
+		_tprintf(TEXT("ERRO Instancia Servidor ja a correr"));
+		exit(EXIT_FAILURE);
+	}
 
 
-	//if (intitServerMessageMemReader(serverMappedMemory.hMapObjMessage,
-	//	serverMappedMemory.LpSharedMemMessage) == FALSE)
-	//{
-	//	_tprintf(TEXT("ERRO Instancia Servidor ja a correr"));
-	//	exit(EXIT_FAILURE);
-	//}
+	WaitForSingleObject(handlers.threadHandlers.hThreadConsumer, INFINITE);
+	WaitForSingleObject(handlers.threadHandlers.hThreadProducer, INFINITE);
 
+	freeMappedMemory(&handlers.sharedMemHandlers);
 
 	return 0;
 }

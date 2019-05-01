@@ -41,15 +41,15 @@ BOOL intitServerGameMem(LPVOID lpSharedMem, HANDLE hMapObj)
 	return TRUE;
 }
 
-BOOL intitServerMessageMemWriter(LPVOID lpSharedMem, HANDLE hMapObj)
+BOOL intitServerMessageMem(LPVOID lpSharedMem, HANDLE hMapObj)
 {
 	hMapObj = CreateFileMapping(
 		INVALID_HANDLE_VALUE,
 		NULL,
 		PAGE_READWRITE,
 		0,
-		(sizeof(MessageProtocolDatagram) * MESSAGE_QUEUE_READER_SIZE),
-		NAME_SHARED_MEMORY_MESSAGE_WRITER);
+		sizeof(MessageQueue),
+		NAME_SHARED_MEMORY_MESSAGE);
 
 	if (hMapObj == NULL)
 	{
@@ -73,55 +73,17 @@ BOOL intitServerMessageMemWriter(LPVOID lpSharedMem, HANDLE hMapObj)
 		return FALSE;
 	}
 
-	ZeroMemory(lpSharedMem, sizeof(MessageProtocolDatagram) * MESSAGE_QUEUE_READER_SIZE);
+	ZeroMemory(lpSharedMem, sizeof(MessageQueue));
 
 	return TRUE;
 }
 
-BOOL intitServerMessageMemReader(LPVOID lpSharedMem, HANDLE hMapObj)
-{
-	hMapObj = CreateFileMapping(
-		INVALID_HANDLE_VALUE,
-		NULL,
-		PAGE_READONLY,
-		0,
-		(sizeof(MessageProtocolDatagram) * MESSAGE_QUEUE_SIZE),
-		NAME_SHARED_MEMORY_MESSAGE);
-
-	if (hMapObj == NULL)
-	{
-		return FALSE;
-	}
-
-	if (GetLastError() == ERROR_ALREADY_EXISTS)
-	{
-		return FALSE;
-	}
-
-	lpSharedMem = MapViewOfFile(
-		hMapObj,
-		FILE_MAP_READ, //write/read
-		0,
-		0,
-		0);
-
-	if (lpSharedMem == NULL)
-	{
-		return FALSE;
-	}
-
-	ZeroMemory(lpSharedMem, sizeof(MessageProtocolDatagram) * MESSAGE_QUEUE_SIZE);
-
-	return TRUE;
-}
 
 VOID freeMappedMemory(ServerSharedMemoryHandlers* mapped)
 {
 	UnmapViewOfFile(mapped->lpSharedMemGame);
 	UnmapViewOfFile(mapped->LpSharedMemMessage);
-	UnmapViewOfFile(mapped->LpSharedMemMessageWriter);
 
 	CloseHandle(mapped->hMapObjGame);
 	CloseHandle(mapped->hMapObjMessage);
-	CloseHandle(mapped->hMapObjMessageWriter);
 }
