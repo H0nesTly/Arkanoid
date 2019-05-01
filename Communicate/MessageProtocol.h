@@ -7,7 +7,8 @@
 #define MESSAGE_QUEUE_READER_SIZE (MESSAGE_QUEUE_SIZE / 2)
 
 
-#define NAME_EVENT_OBJECT_
+#define NAME_EVENT_OBJECT_SERVER_READ TEXT("readEvent")
+#define NAME_EVENT_OBJECT_SERVER_WRITE TEXT("writeEvent")
 #define NAME_SHARED_MEMORY_MESSAGE TEXT("dllSharedMemMessage") //NOME da Mem Mapeada 
 
 typedef struct messageProtocolDatagram MessageProtocolDatagram;

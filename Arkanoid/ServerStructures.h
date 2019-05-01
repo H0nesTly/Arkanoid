@@ -1,10 +1,12 @@
 #pragma once
 #include "ServerThreads.h"
+#include "ServerSyncObj.h"
 #include "..\Communicate\stdafx.h"
 #include "..\Communicate\GameStructures.h"
 
 typedef struct serverHandles ServerHandlers;
 typedef struct serverThreadsHandlers ServerThreadsHandlers;
+typedef struct serverSyncObjects ServerSyncObjects;
 typedef struct serverSharedMemoryHandlers ServerSharedMemoryHandlers;
 typedef struct gameServerConfiguration GameServerConfiguration;
 typedef struct lobby Lobby;
@@ -25,6 +27,7 @@ struct serverHandles
 {
 	ServerSharedMemoryHandlers sharedMemHandlers;
 	ServerThreadsHandlers threadHandlers;
+	ServerSyncObjects serverSyncObj;
 };
 
 struct gameServerConfiguration

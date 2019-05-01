@@ -2,14 +2,17 @@
 /*			ATUALMENTE NESTE TEMPLATE ESTÁ ATIVO A
 		OPÇOA UNICODE LOGO ESTA A CORRER COM UTF-16*/
 #include <windows.h>
+#include <windows.h>
 #include <tchar.h>
 #include <fcntl.h>
 #include <io.h>
 #include <stdio.h>
 
+
 #include "Server.h"
 #include "ServerStructures.h"
 #include "ServerThreads.h"
+#include "ServerSyncObj.h"
 
 int _tmain(int argc, LPTSTR argv[])
 {
@@ -52,23 +55,29 @@ int _tmain(int argc, LPTSTR argv[])
 	}
 
 	if (!intitServerGameMem(handlers.sharedMemHandlers.hMapObjGame,
-		handlers.sharedMemHandlers.lpSharedMemGame) == FALSE)
+		handlers.sharedMemHandlers.lpSharedMemGame))
 	{
 		_tprintf(TEXT("ERRO Instancia Servidor ja a correr!"));
 		exit(EXIT_FAILURE);
 	}
 
 	if (!intitServerMessageMem(handlers.sharedMemHandlers.hMapObjMessage,
-		handlers.sharedMemHandlers.LpSharedMemMessage) == FALSE)
+		handlers.sharedMemHandlers.LpSharedMemMessage) )
 	{
 		_tprintf(TEXT("ERRO Instancia Servidor ja a correr"));
 		exit(EXIT_FAILURE);
 	}
 
+	if(!initSyncObject(handlers.serverSyncObj))
+	{
+		_tprintf(TEXT("ERRO Criar objetos de sincronização"));
+		exit(EXIT_FAILURE);
+	}
 
 	WaitForSingleObject(handlers.threadHandlers.hThreadConsumer, INFINITE);
 	WaitForSingleObject(handlers.threadHandlers.hThreadProducer, INFINITE);
 
+	freeSyncObject(handlers.serverSyncObj);
 	freeMappedMemory(&handlers.sharedMemHandlers);
 
 	return 0;

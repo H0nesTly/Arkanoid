@@ -118,11 +118,13 @@
   <ItemGroup>
     <ClCompile Include="Server.c" />
     <ClCompile Include="mainServer.c" />
+    <ClCompile Include="ServerSyncObj.c" />
     <ClCompile Include="ServerThreads.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Server.h" />
     <ClInclude Include="ServerStructures.h" />
+    <ClInclude Include="ServerSyncObj.h" />
     <ClInclude Include="ServerThreads.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
