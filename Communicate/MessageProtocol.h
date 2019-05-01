@@ -4,9 +4,10 @@
 
 #define MAX_LENGTH_NAME 20
 #define MESSAGE_QUEUE_SIZE 20
-#define MESSAGE_QUEUE_SERVER_READER_SIZE (MESSAGE_QUEUE_SIZE / 2)
+#define MESSAGE_QUEUE_READER_SIZE (MESSAGE_QUEUE_SIZE / 2)
 
-#define NAME_SHARED_MEMORY_MESSAGE TEXT("dllSharedMemMessage")
+#define NAME_SHARED_MEMORY_MESSAGE TEXT("dllSharedMemMessage") //NOME da Mem Mapeada 
+#define NAME_SHARED_MEMORY_MESSAGE_WRITER TEXT("dllSharedMemMessageWriter")
 #define NAME_SERVER_USERNAME TEXT("serverUN")
 
 typedef struct messageProtocolDatagram MessageProtocolDatagram;

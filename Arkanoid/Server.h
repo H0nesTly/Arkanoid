@@ -12,6 +12,6 @@ BOOL intitServerMessageMem(LPVOID , HANDLE );
 
 /*Mapea a Memoria que ira armazenar o array de mensagens
 	Em que o produtor - server e Consumidor - cliente*/
-BOOL intitServerMessageMem(LPVOID , HANDLE );
+BOOL intitServerMessageMemReader(LPVOID , HANDLE );
 
 
