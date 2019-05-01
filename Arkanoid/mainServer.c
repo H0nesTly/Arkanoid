@@ -51,20 +51,20 @@ int _tmain(int argc, LPTSTR argv[])
 		exit(EXIT_FAILURE);
 	}
 
-		if (intitServerGameMem(handlers.sharedMemHandlers.hMapObjGame,
-			handlers.sharedMemHandlers.lpSharedMemGame) == FALSE)
-		{
-			_tprintf(TEXT("ERRO Instancia Servidor ja a correr!"));
-			exit(EXIT_FAILURE);
-		}
+	//	if (intitServerGameMem(handlers.sharedMemHandlers.hMapObjGame,
+	//		handlers.sharedMemHandlers.lpSharedMemGame) == FALSE)
+	//	{
+	//		_tprintf(TEXT("ERRO Instancia Servidor ja a correr!"));
+	//		exit(EXIT_FAILURE);
+	//	}
 
 
-	if (intitServerMessageMemReader(serverMappedMemory.hMapObjMessage,
-		serverMappedMemory.LpSharedMemMessage) == FALSE)
-	{
-		_tprintf(TEXT("ERRO Instancia Servidor ja a correr"));
-		exit(EXIT_FAILURE);
-	}
+	//if (intitServerMessageMemReader(serverMappedMemory.hMapObjMessage,
+	//	serverMappedMemory.LpSharedMemMessage) == FALSE)
+	//{
+	//	_tprintf(TEXT("ERRO Instancia Servidor ja a correr"));
+	//	exit(EXIT_FAILURE);
+	//}
 
 
 	return 0;

@@ -3,7 +3,6 @@
 #include "..\Communicate\stdafx.h"
 #include "..\Communicate\GameStructures.h"
 
-
 typedef struct serverHandles ServerHandlers;
 typedef struct serverThreadsHandlers ServerThreadsHandlers;
 typedef struct serverSharedMemoryHandlers ServerSharedMemoryHandlers;
@@ -12,12 +11,6 @@ typedef struct lobby Lobby;
 typedef struct serverGameInstance ServerGameInstance;
 
 typedef enum stateOfGame StateOfGame;
-
-struct serverHandles
-{
-	ServerSharedMemoryHandlers sharedMemHandlers;
-	ServerThreadsHandlers threadHandlers;
-};
 
 
 struct serverSharedMemoryHandlers
@@ -28,6 +21,12 @@ struct serverSharedMemoryHandlers
 	HANDLE	hMapObjGame;
 	HANDLE	hMapObjMessage;
 	HANDLE	hMapObjMessageWriter;
+};
+
+struct serverHandles
+{
+	ServerSharedMemoryHandlers sharedMemHandlers;
+	ServerThreadsHandlers threadHandlers;
 };
 
 struct gameServerConfiguration

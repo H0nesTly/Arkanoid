@@ -15,5 +15,5 @@ BOOL intitServerMessageMemWriter(LPVOID , HANDLE );
 	Em que o produtor - server e Consumidor - cliente*/
 BOOL intitServerMessageMemReader(LPVOID , HANDLE );
 
-void freeMappedMemory(ServerHandles* );
+void freeMappedMemory(ServerSharedMemoryHandlers* );
 
