@@ -4,12 +4,12 @@
 #include "SharedMemorySetup.h"
 
 //Ponteiro para objetos do jogo
-static LPVOID lpSharedMemGame = NULL;
-static HANDLE hMapObjGame = NULL;
+LPVOID lpgSharedMemGame = NULL;
+HANDLE hgMapObjGame = NULL;
 
 //Ponteiro para objetos das mensagens
-static LPVOID lpSharedMemMensage = NULL;
-static HANDLE hMapObjMensage = NULL;
+PVOID lpgSharedMemMessage = NULL;
+HANDLE hgMapObjMessage = NULL;
 
 
 BOOL APIENTRY DllMain( HMODULE hModule,

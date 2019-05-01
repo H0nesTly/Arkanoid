@@ -3,10 +3,16 @@
 #include "GameStructures.h"
 #include "MessageProtocol.h"
 
+extern LPVOID lpgSharedMemGame;
+extern HANDLE hgMapObjGame;
 
-BOOL initClientGameMem(LPVOID lpSharedMem, HANDLE hMapObj)
+//Ponteiro para objetos das mensagens
+extern PVOID lpgSharedMemMessage;
+extern HANDLE hgMapObjMessage;
+
+BOOL initClientGameMem()
 {
-	hMapObj = CreateFileMapping(
+	hgMapObjGame = CreateFileMapping(
 		INVALID_HANDLE_VALUE,
 		NULL,
 		PAGE_READONLY,
@@ -15,7 +21,7 @@ BOOL initClientGameMem(LPVOID lpSharedMem, HANDLE hMapObj)
 		NAME_SHARED_MEMORY_GAME
 	);
 
-	if (hMapObj == NULL)
+	if (hgMapObjGame == NULL)
 	{
 		return FALSE;
 	}
@@ -25,14 +31,14 @@ BOOL initClientGameMem(LPVOID lpSharedMem, HANDLE hMapObj)
 		return FALSE;
 	}
 
-	lpSharedMem = MapViewOfFile(
-		hMapObj,
+	lpgSharedMemGame = MapViewOfFile(
+		hgMapObjGame,
 		FILE_MAP_READ,
 		0,
 		0,
 		0);
 
-	if (lpSharedMem != NULL)
+	if (lpgSharedMemGame != NULL)
 	{
 		return FALSE;
 	}
@@ -40,9 +46,9 @@ BOOL initClientGameMem(LPVOID lpSharedMem, HANDLE hMapObj)
 	return TRUE;
 }
 
-BOOL initClientMessageMem(LPVOID lpSharedMem, HANDLE hMapObj)
+BOOL initClientMessageMem()
 {
-	hMapObj = CreateFileMapping(
+	hgMapObjMessage = CreateFileMapping(
 		INVALID_HANDLE_VALUE,
 		NULL,
 		PAGE_READONLY,
@@ -51,7 +57,7 @@ BOOL initClientMessageMem(LPVOID lpSharedMem, HANDLE hMapObj)
 		NAME_SHARED_MEMORY_MESSAGE
 	);
 
-	if (hMapObj == NULL)
+	if (hgMapObjMessage == NULL)
 	{
 		return FALSE;
 	}
@@ -61,17 +67,26 @@ BOOL initClientMessageMem(LPVOID lpSharedMem, HANDLE hMapObj)
 		return FALSE;
 	}
 
-	lpSharedMem = MapViewOfFile(
-		hMapObj,
+	lpgSharedMemMessage = MapViewOfFile(
+		hgMapObjMessage,
 		FILE_MAP_READ,
 		0,
 		0,
 		0);
 
-	if (lpSharedMem != NULL)
+	if (lpgSharedMemMessage != NULL)
 	{
 		return FALSE;
 	}
 
 	return TRUE;
+}
+
+VOID freeMappedMemory()
+{
+	UnmapViewOfFile(lpgSharedMemGame);
+	UnmapViewOfFile(lpgSharedMemMessage);
+
+	CloseHandle(hgMapObjGame);
+	CloseHandle(hgMapObjMessage);
 }

@@ -13,5 +13,4 @@ BOOL intitServerMessageMem(LPVOID , HANDLE );
 
 void freeMappedMemory(ServerSharedMemoryHandlers* );
 
-void createEvents();
 

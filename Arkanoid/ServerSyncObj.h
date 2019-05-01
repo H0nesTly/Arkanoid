@@ -2,14 +2,6 @@
 #include "..\Communicate\stdafx.h"
 #include "..\Communicate\MessageProtocol.h"
 
-typedef struct serverSyncObjects ServerSyncObjects;
+BOOL initSyncObject();
 
-struct serverSyncObjects
-{
-	HANDLE hWriteObject;
-	HANDLE hReadObject;
-};
-
-BOOL initSyncObject(ServerSyncObjects);
-
-void freeSyncObject(ServerSyncObjects);
+void freeSyncObject();

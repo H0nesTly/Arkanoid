@@ -68,7 +68,7 @@ int _tmain(int argc, LPTSTR argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	if(!initSyncObject(handlers.serverSyncObj))
+	if(!initSyncObject())
 	{
 		_tprintf(TEXT("ERRO Criar objetos de sincronização"));
 		exit(EXIT_FAILURE);
@@ -77,7 +77,7 @@ int _tmain(int argc, LPTSTR argv[])
 	WaitForSingleObject(handlers.threadHandlers.hThreadConsumer, INFINITE);
 	WaitForSingleObject(handlers.threadHandlers.hThreadProducer, INFINITE);
 
-	freeSyncObject(handlers.serverSyncObj);
+	freeSyncObject();
 	freeMappedMemory(&handlers.sharedMemHandlers);
 
 	return 0;

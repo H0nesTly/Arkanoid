@@ -1,24 +1,28 @@
 #include "ServerSyncObj.h"
 
-BOOL initSyncObject(ServerSyncObjects sSyncObj)
+HANDLE hgWriteObject = NULL;
+HANDLE hgReadObject = NULL;
+
+
+BOOL initSyncObject()
 {
-	sSyncObj.hReadObject = CreateEvent(
+	hgReadObject = CreateEvent(
 		NULL,
 		TRUE,
 		FALSE, 
 		NAME_EVENT_OBJECT_SERVER_READ);
 
-	sSyncObj.hWriteObject = CreateEvent(
+	hgWriteObject = CreateEvent(
 		NULL,
 		TRUE,
 		FALSE, 
 		NAME_EVENT_OBJECT_SERVER_WRITE);
 
-	return sSyncObj.hReadObject == NULL || sSyncObj.hWriteObject == NULL ? FALSE : TRUE;
+	return hgReadObject == NULL || hgWriteObject == NULL ? FALSE : TRUE;
 }
 
-void freeSyncObject(ServerSyncObjects sSyncObj)
+void freeSyncObject()
 {
-	CloseHandle(sSyncObj.hReadObject);
-	CloseHandle(sSyncObj.hWriteObject);
+	CloseHandle(hgReadObject);
+	CloseHandle(hgWriteObject);
 }

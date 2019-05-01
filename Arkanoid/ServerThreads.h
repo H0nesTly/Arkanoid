@@ -1,6 +1,10 @@
 #pragma once
 #include "..\Communicate\stdafx.h"
 
+extern HANDLE hgReadObject;
+extern HANDLE hgWriteObject;
+
+
 typedef struct serverThreadsHandlers ServerThreadsHandlers;
 
 struct serverThreadsHandlers
