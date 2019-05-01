@@ -26,7 +26,7 @@
     <ClInclude Include="Server.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Client\ServerStructures.h">
+    <ClInclude Include="ServerStructures.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
