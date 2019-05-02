@@ -1,5 +1,6 @@
 #pragma once
 #include "..\Communicate\stdafx.h"
+#include "..\Communicate\MessageProtocol.h"
 
 extern HANDLE hgReadObject;
 extern HANDLE hgWriteObject;

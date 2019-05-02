@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "SharedMemorySetup.h"
+#include "DllSetup.h"
 #include "GameStructures.h"
 #include "MessageProtocol.h"
 
@@ -9,6 +9,9 @@ extern HANDLE hgMapObjGame;
 //Ponteiro para objetos das mensagens
 extern PVOID lpgSharedMemMessage;
 extern HANDLE hgMapObjMessage;
+
+extern HANDLE hgWriteObject;
+extern HANDLE hgReadObject;
 
 BOOL initClientGameMem()
 {
@@ -89,4 +92,27 @@ VOID freeMappedMemory()
 
 	CloseHandle(hgMapObjGame);
 	CloseHandle(hgMapObjMessage);
+}
+
+BOOL initSyncObjects()
+{
+	hgReadObject = CreateEvent(
+		NULL,
+		TRUE,
+		FALSE,
+		NAME_EVENT_OBJECT_SERVER_READ);
+
+	hgWriteObject = CreateEvent(
+		NULL,
+		TRUE,
+		FALSE,
+		NAME_EVENT_OBJECT_SERVER_WRITE);
+
+	return hgReadObject == NULL || hgWriteObject == NULL ? FALSE : TRUE;
+}
+
+VOID freeSyncObjects()
+{
+	CloseHandle(hgWriteObject);
+	CloseHandle(hgReadObject);
 }

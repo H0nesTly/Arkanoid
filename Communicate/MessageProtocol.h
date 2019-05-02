@@ -1,5 +1,4 @@
 #pragma once
-
 #include "stdafx.h"
 
 #define MAX_LENGTH_NAME 20
@@ -51,3 +50,27 @@ enum typeOfMessage
 {
 	LoginMessage ,KeyPressedMessage, TopPlayersMessage, QuitGameMessage
 };
+
+
+#ifdef COMMUNICATE_EXPORTS
+#define DLL_API __declspec(dllexport)
+#else
+#define DLL_API __declspec(dllimport)
+#endif
+
+#ifdef __cplusplus    // If used by C++ code, 
+extern "C" {          // we need to export the C interface
+	#endif
+
+	/*Enviamos mensagem ao servidor*/
+	DLL_API VOID __cdecl Login(LPVOID  lpSharedMem, PTCHAR username);
+
+	DLL_API VOID __cdecl ReceiveBroadcast();
+
+	DLL_API VOID __cdecl SendMessageDll();
+
+	DLL_API VOID __cdecl ReceiveMessage();
+
+	#ifdef __cplusplus
+}
+#endif

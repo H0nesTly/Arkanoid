@@ -8,6 +8,7 @@
 #include <io.h>
 #include <stdio.h>
 
+#include "..\Communicate\MessageProtocol.h"
 #include "ClientStructures.h"
 
 int getLoginMethod()

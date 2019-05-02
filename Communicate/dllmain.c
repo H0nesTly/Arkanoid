@@ -1,15 +1,19 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 #include "stdafx.h"
 
-#include "SharedMemorySetup.h"
+#include "DllSetup.h"
 
 //Ponteiro para objetos do jogo
 LPVOID lpgSharedMemGame = NULL;
 HANDLE hgMapObjGame = NULL;
 
 //Ponteiro para objetos das mensagens
-PVOID lpgSharedMemMessage = NULL;
+LPVOID lpgSharedMemMessage = NULL;
 HANDLE hgMapObjMessage = NULL;
+
+//HANDLE PARA os eventos
+HANDLE hgWriteObject = NULL;
+HANDLE hgReadObject = NULL;
 
 
 BOOL APIENTRY DllMain( HMODULE hModule,
@@ -21,17 +25,20 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     {
     case DLL_PROCESS_ATTACH:
 		//Inicializar memoria partilhada 
-		if (!initClientGameMem(lpSharedMemGame, hMapObjGame))
+		if (!initClientGameMem())
 			return FALSE;
 
-		if (!initClientMessageMem(lpSharedMemMensage, hMapObjMensage))
+		if (!initClientMessageMem())
 			return FALSE;
-
+		if (!initSyncObjects())
+			return FALSE;
 
 
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH:
     case DLL_PROCESS_DETACH:
+		freeMappedMemory();
+		freeSyncObjects();
         break;
     }
     return TRUE;

@@ -10,16 +10,20 @@ DWORD WINAPI ProducerMessageThread(PVOID arg)
 
 DWORD WINAPI ConsumerMessageThread(PVOID arg)
 {
-	UNREFERENCED_PARAMETER(arg);
+	MessageQueue* queue = (MessageQueue*)arg;
+	DWORD dwWaitEvent;
+
+	dwWaitEvent = WaitForSingleObject(hgReadObject, INFINITE);
+
 	while (1)
 	{
-		switch (WaitForSingleObject(hgReadObject, INFINITE))
+		switch (dwWaitEvent)
 		{
 		case WAIT_OBJECT_0: 
-			_tprintf(TEXT("QUEREM ESCREVER \N"));
+			_tprintf_s(TEXT("%s"), queue->queueOfMessageClientServer->tcData);
 			break;
 		default:
-			_tprintf(TEXT("Erro \N"));
+			_tprintf(TEXT("Erro \n"));
 			break;
 		}
 	}

@@ -24,17 +24,11 @@
     <ClInclude Include="MessageProtocol.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SharedMemorySetup.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Communication.h">
+    <ClInclude Include="DllSetup.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="SharedMemorySetup.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="MessageProtocol.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -43,6 +37,9 @@
     </ClCompile>
     <ClCompile Include="stdafx.c">
       <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DllSetup.c">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

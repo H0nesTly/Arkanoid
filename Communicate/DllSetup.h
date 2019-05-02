@@ -8,3 +8,7 @@ BOOL initClientGameMem();
 BOOL initClientMessageMem();
 
 VOID freeMappedMemory();
+
+BOOL initSyncObjects();
+
+VOID freeSyncObjects();
