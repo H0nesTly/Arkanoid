@@ -1,9 +1,9 @@
 #include "Server.h"
 
-BOOL intitServerGameMem(LPVOID lpSharedMem, HANDLE hMapObj)
+BOOL intitServerGameMem(HANDLE* hMapObj, LPVOID* lpSharedMem )
 {
 	//Mapear sharedMem para o jogo
-	hMapObj = CreateFileMapping(
+	*hMapObj = CreateFileMapping(
 		INVALID_HANDLE_VALUE, //usar paging file
 		NULL,
 		PAGE_READWRITE,
@@ -11,7 +11,7 @@ BOOL intitServerGameMem(LPVOID lpSharedMem, HANDLE hMapObj)
 		sizeof(Game),
 		NAME_SHARED_MEMORY_GAME);
 
-	if (hMapObj == NULL)
+	if (*hMapObj == NULL)
 	{
 		return FALSE;
 	}
@@ -23,27 +23,27 @@ BOOL intitServerGameMem(LPVOID lpSharedMem, HANDLE hMapObj)
 		return FALSE;
 	}
 
-	lpSharedMem = MapViewOfFile(
-		hMapObj,					// qual o objeto a mapear
+	*lpSharedMem = MapViewOfFile(
+		*hMapObj,					// qual o objeto a mapear
 		FILE_MAP_WRITE,				//read/write 
 		0,			//HIGH bit
 		0,				//Low bit
 		0);		//inicio da mem
 
-	if (lpSharedMem == NULL)
+	if (*lpSharedMem == NULL)
 	{
 		return FALSE;
 	}
 
 	//Limpar memoria
-	ZeroMemory(lpSharedMem, sizeof(Game));
+	ZeroMemory(*lpSharedMem, sizeof(Game));
 
 	return TRUE;
 }
 
-BOOL intitServerMessageMem(LPVOID lpSharedMem, HANDLE hMapObj)
+BOOL intitServerMessageMem(HANDLE* hMapObj, LPVOID* lpSharedMem)
 {
-	hMapObj = CreateFileMapping(
+	*hMapObj = CreateFileMapping(
 		INVALID_HANDLE_VALUE,
 		NULL,
 		PAGE_READWRITE,
@@ -51,7 +51,7 @@ BOOL intitServerMessageMem(LPVOID lpSharedMem, HANDLE hMapObj)
 		sizeof(MessageQueue),
 		NAME_SHARED_MEMORY_MESSAGE);
 
-	if (hMapObj == NULL)
+	if (*hMapObj == NULL)
 	{
 		return FALSE;
 	}
@@ -61,19 +61,19 @@ BOOL intitServerMessageMem(LPVOID lpSharedMem, HANDLE hMapObj)
 		return FALSE;
 	}
 
-	lpSharedMem = MapViewOfFile(
-		hMapObj,
-		FILE_MAP_WRITE, //write/read
+	*lpSharedMem = MapViewOfFile(
+		*hMapObj,
+		FILE_MAP_ALL_ACCESS, //write/read
 		0,
 		0,
 		0);
 
-	if (lpSharedMem == NULL)
+	if (*lpSharedMem == NULL)
 	{
 		return FALSE;
 	}
 
-	ZeroMemory(lpSharedMem, sizeof(MessageQueue));
+	ZeroMemory(*lpSharedMem, sizeof(MessageQueue));
 
 	return TRUE;
 }

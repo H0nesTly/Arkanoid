@@ -8,8 +8,11 @@
 #include <io.h>
 #include <stdio.h>
 
-#include "..\Communicate\MessageProtocol.h"
 #include "ClientStructures.h"
+#include "..\Communicate\MessageProtocol.h"
+
+LPVOID lpgSharedMemGame = NULL;
+HANDLE hgMapObjGame = NULL;
 
 int getLoginMethod()
 {
@@ -45,6 +48,7 @@ int _tmain(int argc, LPTSTR argv[])
 	switch (getLoginMethod())
 	{
 	case 1:
+		Login(lpgSharedMemGame, TEXT("Teste"));
 		break;
 	case 2:
 		break;
@@ -54,6 +58,8 @@ int _tmain(int argc, LPTSTR argv[])
 	default:
 		exit(EXIT_SUCCESS);
 	}
+
+	_gettc(stdin);
 
 	return 0;
 }

@@ -24,21 +24,23 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     switch (ul_reason_for_call)
     {
     case DLL_PROCESS_ATTACH:
+
 		//Inicializar memoria partilhada 
-		if (!initClientGameMem())
+		if (!initClientGameMem(&hgMapObjGame, &lpgSharedMemGame))
 			return FALSE;
 
-		if (!initClientMessageMem())
-			return FALSE;
-		if (!initSyncObjects())
+		if (!initClientMessageMem(&hgMapObjMessage, &lpgSharedMemMessage))
 			return FALSE;
 
+		if (!initSyncObjects(&hgReadObject, &hgWriteObject))
+			return FALSE;
 
+		break;
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH:
     case DLL_PROCESS_DETACH:
-		freeMappedMemory();
-		freeSyncObjects();
+		freeMappedMemory(hgMapObjGame,lpgSharedMemGame, hgMapObjMessage, lpgSharedMemMessage);
+		freeSyncObjects(hgReadObject, hgWriteObject);
         break;
     }
     return TRUE;

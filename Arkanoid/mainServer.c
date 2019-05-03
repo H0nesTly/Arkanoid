@@ -30,11 +30,33 @@ int _tmain(int argc, LPTSTR argv[])
 	_setmode(_fileno(stdout), _O_WTEXT);
 	#endif
 
+
+	if (!intitServerGameMem(&handlers.sharedMemHandlers.hMapObjGame,
+		&handlers.sharedMemHandlers.lpSharedMemGame))
+	{
+		_tprintf(TEXT("ERRO Instancia Servidor ja a correr!"));
+		exit(EXIT_FAILURE);
+	}
+
+	if (!intitServerMessageMem(&handlers.sharedMemHandlers.hMapObjMessage,
+		&handlers.sharedMemHandlers.LpSharedMemMessage) )
+	{
+		_tprintf(TEXT("ERRO Instancia Servidor ja a correr"));
+		exit(EXIT_FAILURE);
+	}
+
+	if(!initSyncObject())
+	{
+		_tprintf(TEXT("ERRO Criar objetos de sincronização"));
+		exit(EXIT_FAILURE);
+	}
+
+
 	handlers.threadHandlers.hThreadConsumer = CreateThread(
 		NULL,
 		0,
 		ConsumerMessageThread,	//nome da funçao
-		NULL,					//Argumento a ser passado
+		(PVOID) handlers.sharedMemHandlers.LpSharedMemMessage,					//Argumento a ser passado
 		0,						//Flags de criaçao
 		&handlers.threadHandlers.dwIdConsumer //idThread
 	);
@@ -54,25 +76,6 @@ int _tmain(int argc, LPTSTR argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	if (!intitServerGameMem(handlers.sharedMemHandlers.hMapObjGame,
-		handlers.sharedMemHandlers.lpSharedMemGame))
-	{
-		_tprintf(TEXT("ERRO Instancia Servidor ja a correr!"));
-		exit(EXIT_FAILURE);
-	}
-
-	if (!intitServerMessageMem(handlers.sharedMemHandlers.hMapObjMessage,
-		handlers.sharedMemHandlers.LpSharedMemMessage) )
-	{
-		_tprintf(TEXT("ERRO Instancia Servidor ja a correr"));
-		exit(EXIT_FAILURE);
-	}
-
-	if(!initSyncObject())
-	{
-		_tprintf(TEXT("ERRO Criar objetos de sincronização"));
-		exit(EXIT_FAILURE);
-	}
 
 	WaitForSingleObject(handlers.threadHandlers.hThreadConsumer, INFINITE);
 	WaitForSingleObject(handlers.threadHandlers.hThreadProducer, INFINITE);

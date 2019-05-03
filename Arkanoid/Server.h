@@ -6,10 +6,10 @@
 
 
 /*Mapea a Memoria que ira armazenar o jogo*/
-BOOL intitServerGameMem(LPVOID , HANDLE );
+BOOL intitServerGameMem(HANDLE*, LPVOID*);
 
 /*Mapea a Memoria que ira armazenar o array de mensagens*/
-BOOL intitServerMessageMem(LPVOID , HANDLE );
+BOOL intitServerMessageMem(HANDLE*, LPVOID*);
 
 void freeMappedMemory(ServerSharedMemoryHandlers* );
 

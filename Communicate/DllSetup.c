@@ -3,19 +3,9 @@
 #include "GameStructures.h"
 #include "MessageProtocol.h"
 
-extern LPVOID lpgSharedMemGame;
-extern HANDLE hgMapObjGame;
-
-//Ponteiro para objetos das mensagens
-extern PVOID lpgSharedMemMessage;
-extern HANDLE hgMapObjMessage;
-
-extern HANDLE hgWriteObject;
-extern HANDLE hgReadObject;
-
-BOOL initClientGameMem()
+BOOL initClientGameMem(HANDLE* hMapObj, LPVOID* lpSharedMem)
 {
-	hgMapObjGame = CreateFileMapping(
+	*hMapObj = CreateFileMapping(
 		INVALID_HANDLE_VALUE,
 		NULL,
 		PAGE_READONLY,
@@ -24,24 +14,63 @@ BOOL initClientGameMem()
 		NAME_SHARED_MEMORY_GAME
 	);
 
-	if (hgMapObjGame == NULL)
+	if (*hMapObj == NULL)
+	{
+		return FALSE;
+	}
+
+	
+
+	if (GetLastError() != ERROR_ALREADY_EXISTS) // A dll foi chamada antes do servidor ERRO!!!!
+	{
+		_tprintf(TEXT("Mapear memoria do Jogo %d \n"), GetLastError());
+		return FALSE;
+	}
+	
+	*lpSharedMem = MapViewOfFile(
+		*hMapObj,
+		FILE_MAP_READ,
+		0,
+		0,
+		0);
+
+	if (*lpSharedMem == NULL)
+	{
+		return FALSE;
+	}
+	return TRUE;
+}
+
+BOOL initClientMessageMem(HANDLE* hMapObj, LPVOID* lpSharedMem)
+{
+	*hMapObj = CreateFileMapping(
+		INVALID_HANDLE_VALUE,
+		NULL,
+		PAGE_READWRITE,
+		0,
+		sizeof(MessageQueue),
+		NAME_SHARED_MEMORY_MESSAGE
+	);
+
+	if (*hMapObj == NULL)
 	{
 		return FALSE;
 	}
 
 	if (GetLastError() != ERROR_ALREADY_EXISTS) // A dll foi chamada antes do servidor ERRO!!!!
 	{
+		_tprintf(TEXT("Mapear memoria das Mensagens %d \n"), GetLastError());
 		return FALSE;
 	}
 
-	lpgSharedMemGame = MapViewOfFile(
-		hgMapObjGame,
-		FILE_MAP_READ,
+	*lpSharedMem = MapViewOfFile(
+		*hMapObj,
+		FILE_MAP_ALL_ACCESS,
 		0,
 		0,
 		0);
 
-	if (lpgSharedMemGame != NULL)
+	if (*lpSharedMem == NULL)
 	{
 		return FALSE;
 	}
@@ -49,70 +78,47 @@ BOOL initClientGameMem()
 	return TRUE;
 }
 
-BOOL initClientMessageMem()
+VOID freeMappedMemory(HANDLE hMapObjGame, LPVOID lpSharedGame, HANDLE hMapObjMessage, LPVOID lpSharedMessage)
 {
-	hgMapObjMessage = CreateFileMapping(
-		INVALID_HANDLE_VALUE,
-		NULL,
-		PAGE_READONLY,
-		0,
-		sizeof(MessageQueue),
-		NAME_SHARED_MEMORY_MESSAGE
-	);
+	UnmapViewOfFile(lpSharedGame);
+	UnmapViewOfFile(lpSharedMessage);
 
-	if (hgMapObjMessage == NULL)
-	{
-		return FALSE;
-	}
-
-	if (GetLastError() == ERROR_ALREADY_EXISTS) // A dll foi chamada antes do servidor ERRO!!!!
-	{
-		return FALSE;
-	}
-
-	lpgSharedMemMessage = MapViewOfFile(
-		hgMapObjMessage,
-		FILE_MAP_READ,
-		0,
-		0,
-		0);
-
-	if (lpgSharedMemMessage != NULL)
-	{
-		return FALSE;
-	}
-
-	return TRUE;
+	CloseHandle(hMapObjGame);
+	CloseHandle(hMapObjMessage);
 }
 
-VOID freeMappedMemory()
+BOOL initSyncObjects(HANDLE* hRObj, HANDLE* hWObj)
 {
-	UnmapViewOfFile(lpgSharedMemGame);
-	UnmapViewOfFile(lpgSharedMemMessage);
-
-	CloseHandle(hgMapObjGame);
-	CloseHandle(hgMapObjMessage);
-}
-
-BOOL initSyncObjects()
-{
-	hgReadObject = CreateEvent(
-		NULL,
-		TRUE,
-		FALSE,
+	*hRObj = CreateEvent(
+		NULL,		//security attributes
+		TRUE,		//manual reset
+		FALSE,		//inital states as nonsignaled
 		NAME_EVENT_OBJECT_SERVER_READ);
+	
+	if (GetLastError() != ERROR_ALREADY_EXISTS)
+	{
+		return FALSE;
+	}
 
-	hgWriteObject = CreateEvent(
-		NULL,
-		TRUE,
-		FALSE,
+	*hWObj = CreateEvent(
+		NULL,		//security attributes
+		TRUE,		//manual reset
+		FALSE,		//inital states as nonsignaled
 		NAME_EVENT_OBJECT_SERVER_WRITE);
 
-	return hgReadObject == NULL || hgWriteObject == NULL ? FALSE : TRUE;
+
+	if (GetLastError() != ERROR_ALREADY_EXISTS)
+	{
+		return FALSE;
+	}
+
+	_tprintf(TEXT("Criou eventos \n"));
+
+	return *hRObj == NULL || *hWObj == NULL ? FALSE : TRUE;
 }
 
-VOID freeSyncObjects()
+VOID freeSyncObjects(HANDLE hWObj, HANDLE hRObj)
 {
-	CloseHandle(hgWriteObject);
-	CloseHandle(hgReadObject);
+	CloseHandle(hWObj);
+	CloseHandle(hRObj);
 }

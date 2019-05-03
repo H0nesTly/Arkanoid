@@ -2,13 +2,13 @@
 #include "stdafx.h"
 
 /*Cria handle para ler os dados da memoria mapeada*/
-BOOL initClientGameMem();
+BOOL initClientGameMem(HANDLE*, LPVOID*);
 
 /*Cria handle p da memoria mapeada*/
-BOOL initClientMessageMem();
+BOOL initClientMessageMem(HANDLE*, LPVOID*);
 
-VOID freeMappedMemory();
+VOID freeMappedMemory(HANDLE, LPVOID, HANDLE, LPVOID);
 
-BOOL initSyncObjects();
+BOOL initSyncObjects(HANDLE*, HANDLE*);
 
-VOID freeSyncObjects();
+VOID freeSyncObjects(HANDLE, HANDLE);
