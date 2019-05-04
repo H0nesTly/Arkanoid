@@ -31,8 +31,16 @@ struct serverHandles
 
 struct gameServerConfiguration
 {
+	int niveis;
+	int speedUps;
+	int slowDowns;
+	int duracao;
+	float probSpeedUp;
+	float probSlowDowns;
+	int vidasIniciais;
+	int tejolosIniciais;
 	float fVelocityBall;
-	float fBonusProbabilities[3];
+	float fBonusProbabilities;
 	WORD wWidthGameBoard, wHeightGameBoard;	
 	WORD wWidthPlayerBlock, wHeightPlayerBlock;
 };

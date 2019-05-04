@@ -12,6 +12,7 @@ typedef struct playerBlock PlayerBlock;
 typedef struct block Block; 
 typedef struct bonus BonusBlock;
 typedef struct player Player; 
+typedef struct scorePlayer ScorePlayer;
 typedef struct gameBoard GameBoard;
 typedef struct game Game;
 
@@ -63,6 +64,12 @@ struct gameBoard
 	WORD wWidth, wHeight;
 };
 
+struct scorePlayer
+{
+	TCHAR jogador[MAX_LENGTH_NAME];
+	float pontuacao;
+};
+
 struct player
 {
 	WORD wLifes;
@@ -92,3 +99,4 @@ enum typeOfBonus
 	ExtraHealth,
 	Triple
 };
+
