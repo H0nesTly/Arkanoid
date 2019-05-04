@@ -12,4 +12,4 @@ BOOL intitServerMessageMem(HANDLE*, LPVOID*);
 
 void freeMappedMemory(ServerSharedMemoryHandlers* );
 
-
+BOOL verifyUserName(PTCHAR);

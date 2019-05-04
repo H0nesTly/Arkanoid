@@ -23,7 +23,7 @@ int getLoginMethod()
 	_tprintf(TEXT("\n\t 2 - Pipe"));
 	_tprintf(TEXT("\n\t 3 - Remoto"));
 	_tprintf(TEXT("\n\t 0 - Sair"));
-
+	_tprintf(TEXT("\n\t > "));
 	_tscanf_s(TEXT(" %d"), &Input);
 
 	return Input;

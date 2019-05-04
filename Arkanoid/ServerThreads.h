@@ -16,6 +16,6 @@ struct serverThreadsHandlers
 	DWORD dwIdConsumer;
 };
 
-DWORD WINAPI ProducerMessageThread(PVOID);
+DWORD WINAPI ProducerMessageThread(LPVOID);
 
-DWORD WINAPI ConsumerMessageThread(PVOID);
+DWORD WINAPI ConsumerMessageThread(LPVOID);

@@ -6,12 +6,13 @@
 #include "ServerSyncObj.h"
 #include "ServerThreads.h"
 
+typedef struct server Server;
+typedef struct serverGameInstance ServerGameInstance;
+typedef struct serverSharedMemoryHandlers ServerSharedMemoryHandlers;
 typedef struct serverHandles ServerHandlers;
 typedef struct serverThreadsHandlers ServerThreadsHandlers;
-typedef struct serverSharedMemoryHandlers ServerSharedMemoryHandlers;
 typedef struct gameServerConfiguration GameServerConfiguration;
 typedef struct lobby Lobby;
-typedef struct serverGameInstance ServerGameInstance;
 
 typedef enum stateOfGame StateOfGame;
 
@@ -44,13 +45,20 @@ struct lobby
 	WORD wPlayersInLobby;
 };
 
-struct gameServerGameInstance
+struct serverGameInstance
 {
 	//jogadores a jogar/a ver
 	Lobby lobbyGame;
 	GameServerConfiguration GameConfiguration;
 	StateOfGame GameStates;
 };
+
+struct server
+{
+	ServerHandlers serverHandlers;
+	ServerGameInstance gameInstance;
+};
+
 
 enum stateOfGame
 {

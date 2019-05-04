@@ -88,3 +88,8 @@ VOID freeMappedMemory(ServerSharedMemoryHandlers* mapped)
 	CloseHandle(mapped->hMapObjGame);
 	CloseHandle(mapped->hMapObjMessage);
 }
+
+BOOL verifyUserName(PTCHAR userName)
+{
+	return 0;
+}
