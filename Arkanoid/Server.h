@@ -13,6 +13,17 @@ BOOL intitServerMessageMem(HANDLE*, LPVOID*);
 
 void freeMappedMemory(ServerSharedMemoryHandlers* );
 
+
+BOOL leituraFicheiroConfig(TCHAR *nomeFicheiro, GameServerConfiguration *serverConfig);
+
+BOOL setTopTenRegestry(ScorePlayer scoreTopTen[]);
+
+BOOL getTopTenRegistry(ScorePlayer scoreTopTen[]);
+
+VOID setScoreTopTen(ScorePlayer newScore, ScorePlayer scoreTopTen[]);
+
+BOOL verifyUserName(PTCHAR);
+
 /*@return - true se não existir username ja no servidor*/
 BOOL checkUserNameInLobby(PTCHAR, const ServerGameInstance *);
 
