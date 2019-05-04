@@ -29,10 +29,20 @@ int getLoginMethod()
 	return Input;
 }
 
+void getUserName(ClientStructure* dest)
+{
+	_tprintf(TEXT("\n Insira username(ate 19) :"));
+	_tscanf_s( TEXT("%19s") , dest->tcUserName , (unsigned)_countof(dest->tcUserName));
+}
+
 int _tmain(int argc, LPTSTR argv[]) 
 {
 	UNREFERENCED_PARAMETER(argc);
 	UNREFERENCED_PARAMETER(argv);
+	ClientStructure ClientInfo;
+
+	ZeroMemory(&ClientInfo, sizeof(ClientStructure));
+
 	//LPVOID lpSharedMemGame = NULL;
 	//LPVOID	LpSharedMemMessage = NULL;
 	//HANDLE hMapObjGame = NULL;
@@ -45,10 +55,11 @@ int _tmain(int argc, LPTSTR argv[])
 	_setmode(_fileno(stdout), _O_WTEXT);
 	#endif
 
+	getUserName(&ClientInfo);
 	switch (getLoginMethod())
 	{
 	case 1:
-		Login(lpgSharedMemGame, TEXT("Teste"));
+		Login(lpgSharedMemGame, ClientInfo.tcUserName);
 		break;
 	case 2:
 		break;

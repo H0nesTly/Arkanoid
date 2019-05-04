@@ -22,13 +22,18 @@ DWORD WINAPI ConsumerMessageThread(PVOID arg)
 		switch (dwWaitEvent)
 		{
 		case WAIT_OBJECT_0: 
-			//_tprintf_s(TEXT("\n %s | %s"), queue->queueOfMessageClientServer[0].tcData, queue->queueOfMessageClientServer[0].tcSender);
-			_tprintf_s(TEXT("\n %d"), queue->wLastUnReadMessageIndex);
+			_tprintf_s(TEXT("\n Recebi De: %s Tipo : %d \n Para: %s\n A inFormaçao: %s"),
+				queue->queueOfMessageClientServer[0].messagePD.tcSender,
+				queue->queueOfMessageClientServer[0].request,
+				queue->queueOfMessageClientServer[0].messagePD.tcDestination,
+				queue->queueOfMessageClientServer[0].messagePD.tcData);
 			break;
 		default:
 			_tprintf(TEXT("Erro \n"));
 			break;
 		}
+
+		ResetEvent(hgWriteObject);
 	}
 	return 0;	
 }

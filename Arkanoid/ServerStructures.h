@@ -1,8 +1,9 @@
 #pragma once
-#include "ServerThreads.h"
-#include "ServerSyncObj.h"
 #include "..\Communicate\stdafx.h"
 #include "..\Communicate\GameStructures.h"
+#include "Server.h"
+#include "ServerThreads.h"
+#include "ServerSyncObj.h"
 #include "ServerThreads.h"
 
 typedef struct serverHandles ServerHandlers;

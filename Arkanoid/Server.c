@@ -1,5 +1,6 @@
 #include "Server.h"
 
+
 BOOL intitServerGameMem(HANDLE* hMapObj, LPVOID* lpSharedMem )
 {
 	//Mapear sharedMem para o jogo
