@@ -14,6 +14,8 @@ typedef struct serverThreadsHandlers ServerThreadsHandlers;
 typedef struct gameServerConfiguration GameServerConfiguration;
 typedef struct lobby Lobby;
 
+typedef struct playerInfo PlayerInfo;
+
 typedef enum stateOfGame StateOfGame;
 
 
@@ -41,7 +43,7 @@ struct gameServerConfiguration
 
 struct lobby
 {
-	TCHAR playersInLobby[MAX_PLAYER_INSTANCES];
+	PlayerInfo playersInLobby[MAX_PLAYER_INSTANCES];
 	WORD wPlayersInLobby;
 };
 
@@ -62,7 +64,7 @@ struct server
 
 enum stateOfGame
 {
-	WaitForPlayers,
+	WaitingForPlayers,
 	GameInProgress,
 	GameOver
 };

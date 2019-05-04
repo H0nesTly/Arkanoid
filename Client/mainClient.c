@@ -11,8 +11,9 @@
 #include "ClientStructures.h"
 #include "..\Communicate\MessageProtocol.h"
 
-LPVOID lpgSharedMemGame = NULL;
-HANDLE hgMapObjGame = NULL;
+LPVOID lpgcSharedMemGame = NULL;
+LPVOID lpgcSharedMemMessage = NULL;
+
 
 int getLoginMethod()
 {
@@ -59,7 +60,7 @@ int _tmain(int argc, LPTSTR argv[])
 	switch (getLoginMethod())
 	{
 	case 1:
-		Login(lpgSharedMemGame, ClientInfo.tcUserName);
+		Login(ClientInfo.tcUserName);
 		break;
 	case 2:
 		break;
@@ -70,7 +71,8 @@ int _tmain(int argc, LPTSTR argv[])
 		exit(EXIT_SUCCESS);
 	}
 
-	_gettc(stdin);
+	ReceiveMessage(ClientInfo.tcUserName);
 
+	system("PAUSE");
 	return 0;
 }

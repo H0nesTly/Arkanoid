@@ -14,6 +14,7 @@ typedef struct bonus BonusBlock;
 typedef struct player Player; 
 typedef struct gameBoard GameBoard;
 typedef struct game Game;
+typedef struct playerInfo PlayerInfo;
 
 typedef enum typesOfBlocks TypesOfBlock;
 typedef enum typeOfBonus TypeOfBonus;
@@ -63,13 +64,17 @@ struct gameBoard
 	WORD wWidth, wHeight;
 };
 
+struct playerInfo
+{
+	TCHAR tcUserName[MAX_LENGTH_NAME];
+};
+
 struct player
 {
 	WORD wLifes;
-	TCHAR tcUserName[MAX_LENGTH_NAME];
+	PlayerInfo playerInfo;
 	DWORD dwScore;
 	PlayerBlock myPlayerBlock;
-	//HANDLE hFIFO; //OPCIONAL (Rever)
 };
 
 struct game

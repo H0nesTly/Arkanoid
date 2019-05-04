@@ -79,7 +79,6 @@ BOOL intitServerMessageMem(HANDLE* hMapObj, LPVOID* lpSharedMem)
 	return TRUE;
 }
 
-
 VOID freeMappedMemory(ServerSharedMemoryHandlers* mapped)
 {
 	UnmapViewOfFile(mapped->lpSharedMemGame);
@@ -89,7 +88,34 @@ VOID freeMappedMemory(ServerSharedMemoryHandlers* mapped)
 	CloseHandle(mapped->hMapObjMessage);
 }
 
-BOOL verifyUserName(PTCHAR userName)
+static BOOL checkUserNameInLobby(PTCHAR userName, const ServerGameInstance* gameArg)
 {
-	return 0;
+	//Vamos ver se nome no lobby
+	if (gameArg->GameStates == WaitingForPlayers)
+	{
+		for (size_t i = 0; i < gameArg->lobbyGame.wPlayersInLobby; i++)
+		{
+			if (_tcscmp(gameArg->lobbyGame.playersInLobby[i].tcUserName, userName) == 0)
+			{
+				return FALSE;
+			}
+		}
+
+	}
+	return TRUE;
+}
+
+//TODO: VER A MEMORIA PARTILHADA SE ALGUM PLAYER EM JOGO
+BOOL addUserNameToLobby(PTCHAR userName, ServerGameInstance* gameLobby)
+{
+	if (checkUserNameInLobby(userName, gameLobby))
+	{
+		_tcscpy_s(gameLobby->lobbyGame.playersInLobby[gameLobby->lobbyGame.wPlayersInLobby++].tcUserName,	//destino
+			_countof(gameLobby->lobbyGame.playersInLobby[gameLobby->lobbyGame.wPlayersInLobby].tcUserName),	//tamanho que o destino suporta
+			userName		//Origem
+		);
+
+		return TRUE;
+	}
+	return FALSE;
 }

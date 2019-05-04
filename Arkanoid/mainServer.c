@@ -65,7 +65,7 @@ int _tmain(int argc, LPTSTR argv[])
 		NULL,
 		0,
 		ProducerMessageThread,	//nome da funçao
-		NULL,					//Argumento a ser passado
+		(LPVOID)&serverInstance,					//Argumento a ser passado
 		0,						//Flags de criaçao(CREATE_SUSPENDED) -> so começar quando existir algum cliente ligado
 		&serverInstance.serverHandlers.threadHandlers.dwIdProducer //idThread
 	);
