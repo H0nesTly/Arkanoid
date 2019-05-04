@@ -88,7 +88,7 @@ VOID freeMappedMemory(ServerSharedMemoryHandlers* mapped)
 	CloseHandle(mapped->hMapObjMessage);
 }
 
-static BOOL checkUserNameInLobby(PTCHAR userName, const ServerGameInstance* gameArg)
+BOOL leituraFicheiroConfig(TCHAR *nomeFicheiro, GameServerConfiguration *serverConfig)
 {
 	TCHAR buffer[256];
 	TCHAR* word = NULL;
@@ -269,6 +269,25 @@ BOOL getTopTenRegistry(ScorePlayer scoreTopTen[]) {
 	RegCloseKey(chave);
 	return TRUE;
 
+}
+
+
+static BOOL checkUserNameInLobby(PTCHAR userName, const ServerGameInstance* gameArg)
+{
+	return 0;
+	//Vamos ver se nome no lobby
+	if (gameArg->GameStates == WaitingForPlayers)
+	{
+		for (size_t i = 0; i < gameArg->lobbyGame.wPlayersInLobby; i++)
+		{
+			if (_tcscmp(gameArg->lobbyGame.playersInLobby[i].tcUserName, userName) == 0)
+			{
+				return FALSE;
+			}
+		}
+
+	}
+	return TRUE;
 }
 
 BOOL verifyUserName(PTCHAR userName)
