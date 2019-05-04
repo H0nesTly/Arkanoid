@@ -4,6 +4,7 @@
 #include <io.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 BOOL intitServerGameMem(LPVOID lpSharedMem, HANDLE hMapObj)
 {
@@ -202,8 +203,9 @@ BOOL leituraFicheiroConfig(TCHAR *nomeFicheiro, GameServerConfiguration *serverC
 BOOL setTopTenRegestry(ScorePlayer scoreTopTen[]) {
 	HKEY chave;  //handle da chave(não é objeto do nucleo )
 	DWORD queAconteceu;
-	TCHAR jogador[20];
 	TCHAR jogadores[250];
+
+	ZeroMemory(jogadores, sizeof(jogadores));
 	int i, j, k;
 
 	if (scoreTopTen == NULL) {
@@ -212,8 +214,8 @@ BOOL setTopTenRegestry(ScorePlayer scoreTopTen[]) {
 
 	/********************Problema aqui!!!!!!***********************/
 	for (i = 0; i < 10; i++) {
-		_tcscpy(jogador, scoreTopTen[i].jogador);
-		_tcscat(jogadores, jogador);
+		_tcscat_s(jogadores, _countof(jogadores), scoreTopTen[i].jogador);
+		_tcscat_s(jogadores, _countof(jogadores), TEXT(","));
 
 	}
 	/*************************************************************/
