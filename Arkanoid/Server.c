@@ -88,6 +88,74 @@ VOID freeMappedMemory(ServerSharedMemoryHandlers* mapped)
 	CloseHandle(mapped->hMapObjMessage);
 }
 
+BOOL leituraFicheiroConfig(TCHAR *nomeFicheiro, GameServerConfiguration *serverConfig)
+{
+	TCHAR buffer[256];
+	TCHAR* word = NULL;
+
+	HANDLE file = _tfopen(nomeFicheiro, "r");
+	if (file == NULL) {
+		_tprintf(TEXT("Ficheiro não existente \n"));
+		return FALSE;
+	}
+
+	while (_fgetts(buffer, 255, file) != NULL) {
+		if (_tcsstr(buffer, TEXT("niveis")) != NULL) {
+			word = _tcstok(buffer, TEXT(": "));
+			word = _tcstok(NULL, TEXT(": "));
+			serverConfig->niveis = _tstoi(word);
+		}
+		if (_tcsstr(buffer, TEXT("speedups")) != NULL) {
+			word = _tcstok(buffer, TEXT(": "));
+			word = _tcstok(NULL, TEXT(": "));
+			serverConfig->speedUps = _tstoi(word);
+		}
+		if (_tcsstr(buffer, TEXT("slowdowns")) != NULL) {
+			word = _tcstok(buffer, TEXT(": "));
+			word = _tcstok(NULL, TEXT(": "));
+			serverConfig->slowDowns = _tstoi(word);
+		}
+		if (_tcsstr(buffer, TEXT("vidasiniciais")) != NULL) {
+			word = _tcstok(buffer, TEXT(": "));
+			word = _tcstok(NULL, TEXT(": "));
+			serverConfig->vidasIniciais = _tstoi(word);
+		}
+		if (_tcsstr(buffer, TEXT("tijolosiniciais")) != NULL) {
+			word = _tcstok(buffer, TEXT(": "));
+			word = _tcstok(NULL, TEXT(": "));
+			serverConfig->tejolosIniciais = _tstoi(word);
+		}
+		if (_tcsstr(buffer, TEXT("probabilidadespeedup")) != NULL) {
+			word = _tcstok(buffer, TEXT(": "));
+			word = _tcstok(NULL, TEXT(": "));
+			serverConfig->probSpeedUp = _tstof(word);
+		}
+		if (_tcsstr(buffer, TEXT("probabilidadeslowdown")) != NULL) {
+			word = _tcstok(buffer, TEXT(": "));
+			word = _tcstok(NULL, TEXT(": "));
+			serverConfig->probSlowDowns = _tstof(word);
+		}
+		if (_tcsstr(buffer, TEXT("probabilidadebonus")) != NULL) {
+			word = _tcstok(buffer, TEXT(": "));
+			word = _tcstok(NULL, TEXT(": "));
+			serverConfig->fBonusProbabilities = _tstoi(word);
+		}
+		if (_tcsstr(buffer, TEXT("duracao")) != NULL) {
+			word = _tcstok(buffer, TEXT(": "));
+			word = _tcstok(NULL, TEXT(": "));
+			serverConfig->duracao = _tstoi(word);
+		}
+		if (_tcsstr(buffer, TEXT("velocidadebola")) != NULL) {
+			word = _tcstok(buffer, TEXT(": "));
+			word = _tcstok(NULL, TEXT(": "));
+			serverConfig->fVelocityBall = _tstof(word);
+		}
+
+	}
+
+	return TRUE;
+}
+
 static BOOL checkUserNameInLobby(PTCHAR userName, const ServerGameInstance* gameArg)
 {
 	//Vamos ver se nome no lobby
