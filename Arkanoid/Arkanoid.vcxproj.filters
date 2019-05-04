@@ -24,6 +24,9 @@
     <ClCompile Include="ServerThreads.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ServerSyncObj.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Server.h">
@@ -33,6 +36,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ServerThreads.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerSyncObj.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

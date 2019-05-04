@@ -1,14 +1,18 @@
 #pragma once
-#include "ServerThreads.h"
 #include "..\Communicate\stdafx.h"
 #include "..\Communicate\GameStructures.h"
+#include "Server.h"
+#include "ServerThreads.h"
+#include "ServerSyncObj.h"
+#include "ServerThreads.h"
 
+typedef struct server Server;
+typedef struct serverGameInstance ServerGameInstance;
+typedef struct serverSharedMemoryHandlers ServerSharedMemoryHandlers;
 typedef struct serverHandles ServerHandlers;
 typedef struct serverThreadsHandlers ServerThreadsHandlers;
-typedef struct serverSharedMemoryHandlers ServerSharedMemoryHandlers;
 typedef struct gameServerConfiguration GameServerConfiguration;
 typedef struct lobby Lobby;
-typedef struct serverGameInstance ServerGameInstance;
 
 typedef enum stateOfGame StateOfGame;
 
@@ -17,10 +21,8 @@ struct serverSharedMemoryHandlers
 {
 	LPVOID	lpSharedMemGame;
 	LPVOID	LpSharedMemMessage;
-	LPVOID	LpSharedMemMessageWriter;
 	HANDLE	hMapObjGame;
 	HANDLE	hMapObjMessage;
-	HANDLE	hMapObjMessageWriter;
 };
 
 struct serverHandles
@@ -43,13 +45,20 @@ struct lobby
 	WORD wPlayersInLobby;
 };
 
-struct gameServerGameInstance
+struct serverGameInstance
 {
 	//jogadores a jogar/a ver
 	Lobby lobbyGame;
 	GameServerConfiguration GameConfiguration;
 	StateOfGame GameStates;
 };
+
+struct server
+{
+	ServerHandlers serverHandlers;
+	ServerGameInstance gameInstance;
+};
+
 
 enum stateOfGame
 {

@@ -1,19 +1,15 @@
 #pragma once
+#include "ServerStructures.h"
 #include "..\Communicate\stdafx.h"
 #include "..\Communicate\GameStructures.h"
 #include "..\Communicate\MessageProtocol.h"
-#include "ServerStructures.h"
 
 /*Mapea a Memoria que ira armazenar o jogo*/
-BOOL intitServerGameMem(LPVOID , HANDLE );
+BOOL intitServerGameMem(HANDLE*, LPVOID*);
 
-/*Mapea a Memoria que ira armazenar o array de mensagens
-	Em que o produtor - server e Consumidor - cliente*/
-BOOL intitServerMessageMemWriter(LPVOID , HANDLE );
-
-/*Mapea a Memoria que ira armazenar o array de mensagens
-	Em que o produtor - server e Consumidor - cliente*/
-BOOL intitServerMessageMemReader(LPVOID , HANDLE );
+/*Mapea a Memoria que ira armazenar o array de mensagens*/
+BOOL intitServerMessageMem(HANDLE*, LPVOID*);
 
 void freeMappedMemory(ServerSharedMemoryHandlers* );
 
+BOOL verifyUserName(PTCHAR);
