@@ -3,8 +3,8 @@
 #include "MessageProtocol.h"
 
 #define MAX_PLAYER_INSTANCES 20
-#define NAME_SHARED_MEMORY_GAME TEXT("dllSharedMemGame")
 
+#define NAME_SHARED_MEMORY_GAME TEXT("dllSharedMemGame")
 
 typedef struct coords Coords;
 typedef struct ball Ball;

@@ -2,12 +2,17 @@
 /*			ATUALMENTE NESTE TEMPLATE ESTÁ ATIVO A 
 		OPÇOA UNICODE LOGO ESTA A CORRER COM UTF-16*/	
 #include <windows.h>
+#include <windows.h>
 #include <tchar.h>
 #include <fcntl.h>
 #include <io.h>
 #include <stdio.h>
 
 #include "ClientStructures.h"
+#include "..\Communicate\MessageProtocol.h"
+
+LPVOID lpgSharedMemGame = NULL;
+HANDLE hgMapObjGame = NULL;
 
 int getLoginMethod()
 {
@@ -18,16 +23,26 @@ int getLoginMethod()
 	_tprintf(TEXT("\n\t 2 - Pipe"));
 	_tprintf(TEXT("\n\t 3 - Remoto"));
 	_tprintf(TEXT("\n\t 0 - Sair"));
-
+	_tprintf(TEXT("\n\t > "));
 	_tscanf_s(TEXT(" %d"), &Input);
 
 	return Input;
+}
+
+void getUserName(ClientStructure* dest)
+{
+	_tprintf(TEXT("\n Insira username(ate 19) :"));
+	_tscanf_s( TEXT("%19s") , dest->tcUserName , (unsigned)_countof(dest->tcUserName));
 }
 
 int _tmain(int argc, LPTSTR argv[]) 
 {
 	UNREFERENCED_PARAMETER(argc);
 	UNREFERENCED_PARAMETER(argv);
+	ClientStructure ClientInfo;
+
+	ZeroMemory(&ClientInfo, sizeof(ClientStructure));
+
 	//LPVOID lpSharedMemGame = NULL;
 	//LPVOID	LpSharedMemMessage = NULL;
 	//HANDLE hMapObjGame = NULL;
@@ -40,9 +55,11 @@ int _tmain(int argc, LPTSTR argv[])
 	_setmode(_fileno(stdout), _O_WTEXT);
 	#endif
 
+	getUserName(&ClientInfo);
 	switch (getLoginMethod())
 	{
 	case 1:
+		Login(lpgSharedMemGame, ClientInfo.tcUserName);
 		break;
 	case 2:
 		break;
@@ -52,6 +69,8 @@ int _tmain(int argc, LPTSTR argv[])
 	default:
 		exit(EXIT_SUCCESS);
 	}
+
+	_gettc(stdin);
 
 	return 0;
 }

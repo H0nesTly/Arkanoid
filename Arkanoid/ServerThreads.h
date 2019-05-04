@@ -1,5 +1,10 @@
 #pragma once
 #include "..\Communicate\stdafx.h"
+#include "..\Communicate\MessageProtocol.h"
+
+extern HANDLE hgReadObject;
+extern HANDLE hgWriteObject;
+
 
 typedef struct serverThreadsHandlers ServerThreadsHandlers;
 
@@ -11,6 +16,6 @@ struct serverThreadsHandlers
 	DWORD dwIdConsumer;
 };
 
-DWORD WINAPI ProducerMessageThread(PVOID);
+DWORD WINAPI ProducerMessageThread(LPVOID);
 
-DWORD WINAPI ConsumerMessageThread(PVOID);
+DWORD WINAPI ConsumerMessageThread(LPVOID);
