@@ -1,7 +1,7 @@
 #include "Server.h"
+#pragma warning(disable : 4996)
 
-
-BOOL intitServerGameMem(HANDLE* hMapObj, LPVOID* lpSharedMem )
+BOOL intitServerGameMem(HANDLE* hMapObj, LPVOID* lpSharedMem)
 {
 	//Mapear sharedMem para o jogo
 	*hMapObj = CreateFileMapping(
@@ -93,7 +93,7 @@ BOOL leituraFicheiroConfig(TCHAR *nomeFicheiro, GameServerConfiguration *serverC
 	TCHAR buffer[256];
 	TCHAR* word = NULL;
 
-	HANDLE file = _tfopen(nomeFicheiro, "r");
+	HANDLE file = _tfopen(nomeFicheiro, TEXT("r"));
 	if (file == NULL) {
 		_tprintf(TEXT("Ficheiro não existente \n"));
 		return FALSE;
@@ -152,7 +152,7 @@ BOOL leituraFicheiroConfig(TCHAR *nomeFicheiro, GameServerConfiguration *serverC
 		}
 
 	}
-	
+
 	return TRUE;
 }
 
@@ -162,7 +162,7 @@ BOOL setTopTenRegestry(ScorePlayer scoreTopTen[]) {
 	TCHAR jogadores[250];
 
 	ZeroMemory(jogadores, sizeof(jogadores));
-	int i, j, k;
+	int i;
 
 	if (scoreTopTen == NULL) {
 		return FALSE;
@@ -196,15 +196,15 @@ BOOL setTopTenRegestry(ScorePlayer scoreTopTen[]) {
 }
 
 VOID setScoreTopTen(ScorePlayer newScore, ScorePlayer scoreTopTen[]) {
-	int i=0, j;
+	int i = 0, j;
 
 	while (newScore.pontuacao < scoreTopTen[i].pontuacao && i < 10) {
 		i++;
 	}
 
 	for (j = 9; j > i; j--) {
-		_tcscpy(scoreTopTen[j].jogador, scoreTopTen[j-1].jogador);
-		scoreTopTen[j].pontuacao = scoreTopTen[j-1].pontuacao;
+		_tcscpy(scoreTopTen[j].jogador, scoreTopTen[j - 1].jogador);
+		scoreTopTen[j].pontuacao = scoreTopTen[j - 1].pontuacao;
 	}
 	if (i <= 9) {
 		_tcscpy(scoreTopTen[i].jogador, newScore.jogador);
@@ -229,14 +229,14 @@ BOOL getTopTenRegistry(ScorePlayer scoreTopTen[]) {
 	else {  //chave criada ou aberta
 		//Se a chave foi criada, inicializar os valores    
 		if (infoState == REG_OPENED_EXISTING_KEY) {
-		
+
 			tamanho = 100 * sizeof(TCHAR);
 			RegQueryValueEx(chave, TEXT("Jogador"), NULL, NULL, (LPBYTE)jogadores, &tamanho);
 			RegQueryValueEx(chave, TEXT("Pontuacao"), NULL, NULL, (LPBYTE)scores, &tamanho);
-			
-			
+
+
 			jogador = _tcstok(jogadores, TEXT(","));
-			
+
 			// Note: strtok is deprecated; consider using strtok_s instead
 			for (i = 0; i < 10; i++)
 			{
@@ -265,7 +265,7 @@ BOOL getTopTenRegistry(ScorePlayer scoreTopTen[]) {
 			}
 		}
 	}
-	
+
 	RegCloseKey(chave);
 	return TRUE;
 
@@ -285,12 +285,12 @@ static BOOL checkUserNameInLobby(PTCHAR userName, const ServerGameInstance* game
 				return FALSE;
 			}
 		}
-
 	}
 	return TRUE;
 }
 
-BOOL verifyUserName(PTCHAR userName)
+//TODO: VER A MEMORIA PARTILHADA SE ALGUM PLAYER EM JOGO
+BOOL addUserNameToLobby(PTCHAR userName, ServerGameInstance* gameLobby)
 {
 	if (checkUserNameInLobby(userName, gameLobby))
 	{

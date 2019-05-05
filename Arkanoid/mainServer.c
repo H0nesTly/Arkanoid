@@ -96,7 +96,8 @@ int _tmain(int argc, LPTSTR argv[])
 		_tprintf(TEXT("jogador: %s, Pontuação: %.2f\n"), scoreTopTen[i].jogador, scoreTopTen[i].pontuacao);
 	}
 	ScorePlayer novoScore;
-	_tcscpy(novoScore.jogador, TEXT("Luis"));
+
+	_tcscpy_s(novoScore.jogador,_countof(novoScore.jogador) ,TEXT("Luis"));
 	novoScore.pontuacao = 21;
 	setScoreTopTen(novoScore, scoreTopTen);
 	_tprintf(TEXT("Apos novo score\n\n"));

@@ -18,9 +18,15 @@
     <ClInclude Include="ClientStructures.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ClientThreads.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="mainClient.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientThreads.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -132,10 +132,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ClientThreads.c" />
     <ClCompile Include="mainClient.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientStructures.h" />
+    <ClInclude Include="ClientThreads.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Communicate\Communicate.vcxproj">
