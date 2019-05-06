@@ -37,7 +37,7 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 	DWORD dwWaitEvent;
 	ZeroMemory(&lastSender, sizeof(PlayerInfo));
 
-	/*while (1)
+	while (1)
 	{
 		_tprintf_s(TEXT("\nA espera ..."));
 		dwWaitEvent = WaitForSingleObject(hgWriteObject, INFINITE);
@@ -90,10 +90,6 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 
 	}
 	return 0;	
-
-	}*/
-	return 0;
-
 }
 
 DWORD WINAPI BallThread(LPVOID lpArg)
@@ -102,7 +98,7 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 
 	while (1)
 	{
-		Sleep(100000); //Remover apenas para exemplo
+		Sleep(1000); //Remover apenas para exemplo
 		moveBall(&game->ball);
 	}
 
