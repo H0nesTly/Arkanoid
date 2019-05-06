@@ -1,5 +1,6 @@
 #include "ServerThreads.h"
 #include "Server.h"
+#include "GameLogic.h"
 
 static PlayerInfo lastSender; //FIX temporario
 
@@ -40,7 +41,9 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 	{
 		_tprintf_s(TEXT("\nA espera ..."));
 		dwWaitEvent = WaitForSingleObject(hgWriteObject, INFINITE);
-
+		_tprintf_s(TEXT("\n Jogador : %s| Concectou-se %d"),
+			serverObj->gameInstance.lobbyGame.playersInLobby[0].tcUserName,
+			serverObj->gameInstance.lobbyGame.wPlayersInLobby);
 		switch (dwWaitEvent)
 		{
 		case WAIT_OBJECT_0:
@@ -55,6 +58,7 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 						_countof(lastSender.tcUserName),
 						queue->queueOfMessageClientServer[queue->wFirstUnReadMessageIndex].messagePD.tcSender);
 
+					//FIX: Inserir 1 jogador a mais?
 					for (size_t i = 0; i < serverObj->gameInstance.lobbyGame.wPlayersInLobby; i++)
 					{
 						_tprintf_s(TEXT("\n Jogador : %s| Concectou-se %d"),
@@ -85,4 +89,24 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 		ResetEvent(hgWriteObject);
 	}
 	return 0;
+}
+
+DWORD WINAPI BallThread(LPVOID lpArg)
+{
+	Game* game = (Game*)lpArg;
+
+	while (1)
+	{
+		Sleep(100000); //Remover apenas para exemplo
+		moveBall(&game->ball);
+	}
+
+	return 0;
+}
+
+VOID freeThreads(ServerThreadsHandlers handlers) 
+{
+	CloseHandle(handlers.hThreadConsumer);
+	CloseHandle(handlers.hThreadProducer);
+	CloseHandle(handlers.hThreadBall);
 }

@@ -117,12 +117,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GameLogic.c" />
     <ClCompile Include="Server.c" />
     <ClCompile Include="mainServer.c" />
     <ClCompile Include="ServerSyncObj.c" />
     <ClCompile Include="ServerThreads.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GameLogic.h" />
     <ClInclude Include="Server.h" />
     <ClInclude Include="ServerStructures.h" />
     <ClInclude Include="ServerSyncObj.h" />

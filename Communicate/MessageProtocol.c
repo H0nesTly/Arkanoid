@@ -1,7 +1,9 @@
 #include "stdafx.h"
 #include "MessageProtocol.h"
+#include "GameStructures.h"
 
 extern LPVOID lpgSharedMemMessage;
+extern LPVOID lpgSharedMemGame;
 
 extern HANDLE hgWriteObject;
 extern HANDLE hgReadObject;
@@ -35,7 +37,10 @@ VOID __cdecl Login(PTCHAR username)
 
 }
 
-VOID __cdecl ReceiveBroadcast(){}
+VOID __cdecl ReceiveBroadcast()
+{
+	Game* game = (Game*)lpgSharedMemGame;
+}
 
 VOID __cdecl SendMessageDll(){}
 

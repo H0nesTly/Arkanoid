@@ -86,6 +86,7 @@ struct game
 {
 	GameBoard myGameBoard;
 	Player playersConnected[MAX_PLAYER_INSTANCES];
+	Ball ball;
 };
 
 enum typesOfBlocks

@@ -34,7 +34,6 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 
 		if (!initSyncObjects(&hgReadObject, &hgWriteObject))
 			return FALSE;
-
 		break;
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH:

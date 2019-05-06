@@ -274,7 +274,6 @@ BOOL getTopTenRegistry(ScorePlayer scoreTopTen[]) {
 
 static BOOL checkUserNameInLobby(PTCHAR userName, const ServerGameInstance* gameArg)
 {
-	return 0;
 	//Vamos ver se nome no lobby
 	if (gameArg->GameStates == WaitingForPlayers)
 	{
