@@ -39,12 +39,12 @@ struct gameServerConfiguration
 	int speedUps;
 	int slowDowns;
 	int duracao;
-	float probSpeedUp;
-	float probSlowDowns;
+	double probSpeedUp;
+	double probSlowDowns;
 	int vidasIniciais;
 	int tejolosIniciais;
-	float fVelocityBall;
-	float fBonusProbabilities;
+	double fVelocityBall;
+	double fBonusProbabilities;
 	WORD wWidthGameBoard, wHeightGameBoard;	
 	WORD wWidthPlayerBlock, wHeightPlayerBlock;
 };

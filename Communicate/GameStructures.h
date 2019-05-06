@@ -67,7 +67,7 @@ struct gameBoard
 struct scorePlayer
 {
 	TCHAR jogador[MAX_LENGTH_NAME];
-	float pontuacao;
+	double pontuacao;
 };
 struct playerInfo
 {

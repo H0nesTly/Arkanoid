@@ -104,13 +104,72 @@ int _tmain(int argc, LPTSTR argv[])
 	//}
 	//ScorePlayer novoScore;
 
-	//_tcscpy_s(novoScore.jogador,_countof(novoScore.jogador) ,TEXT("Luis"));
-	//novoScore.pontuacao = 21;
-	//setScoreTopTen(novoScore, scoreTopTen);
-	//_tprintf(TEXT("Apos novo score\n\n"));
-	//for (i = 0; i < 10; i++) {
-	//	_tprintf(TEXT("jogador: %s, Pontuação: %.2f\n"), scoreTopTen[i].jogador, scoreTopTen[i].pontuacao);
-	//}
+
+	
+	leituraFicheiroConfig(TEXT("config.txt"), &serverConfig);
+
+	getTopTenRegistry(scoreTopTen);
+	
+	int opcao, i;
+	ScorePlayer novoScore;
+
+	ZeroMemory(&novoScore, sizeof(novoScore));
+
+	do {
+		_tprintf(TEXT("Meu para debug\n\n"));
+		_tprintf(TEXT("1- ver configurações lidas do ficheiro.\n"));
+		_tprintf(TEXT("2- Mostrar Pontuações lidas no registry.\n"));
+		_tprintf(TEXT("3- Inserir nova pontuação.\n"));
+		_tprintf(TEXT("4- Sair (guarda novas pontuações no registry).\n"));
+		_tscanf_s(TEXT("%d"), &opcao, 1);
+
+		switch (opcao) {
+		case 1:
+			_tprintf(TEXT("\nConfiguração\n"));
+			_tprintf(TEXT("Niveis: %d\n"), serverConfig.niveis);
+			_tprintf(TEXT("SpeedUps: %d\n"), serverConfig.speedUps);
+			_tprintf(TEXT("SlowDowns: %d\n"), serverConfig.slowDowns);
+			_tprintf(TEXT("Vidas Iniciais: %d\n"), serverConfig.vidasIniciais);
+			_tprintf(TEXT("Tijolos Iniciais: %d\n"), serverConfig.tejolosIniciais);
+			_tprintf(TEXT("prob speedup: %f\n"), serverConfig.probSpeedUp);
+			_tprintf(TEXT("prob slowdown: %f\n"), serverConfig.probSlowDowns);
+			_tprintf(TEXT("prob bonus: %f\n"), serverConfig.fBonusProbabilities);
+			_tprintf(TEXT("duracao: %d\n"), serverConfig.duracao);
+			_tprintf(TEXT("velocidade bola: %f\n\n"), serverConfig.fVelocityBall);
+			break;
+		case 2:
+			_tprintf(TEXT("\nPontuação\n"));
+			for (i = 0; i < 10; i++) {
+				_tprintf(TEXT("jogador: %s, Pontuação: %.2f\n"), scoreTopTen[i].jogador, scoreTopTen[i].pontuacao);
+			}
+			break;
+		case 3:
+			_tprintf(TEXT("\nNova pontuação\n"));
+			_tprintf(TEXT("Nome Jogador: "));
+			_tscanf(TEXT("%s"), novoScore.jogador);
+			_tprintf(TEXT("Pontuação: "));
+			_tscanf(TEXT("%lf"), &novoScore.pontuacao);
+			setScoreTopTen(novoScore, scoreTopTen);
+			_tprintf(TEXT("\n"));
+			break;
+		case 4:
+			setTopTenRegistry(scoreTopTen);
+			break;
+		default:
+			break;
+		}
+
+	} while (opcao != 4);
+	
+
+
+	_tcscpy_s(novoScore.jogador,_countof(novoScore.jogador) ,TEXT("Luis"));
+	novoScore.pontuacao = 21;
+	setScoreTopTen(novoScore, scoreTopTen);
+	_tprintf(TEXT("Apos novo score\n\n"));
+	for (i = 0; i < 10; i++) {
+		_tprintf(TEXT("jogador: %s, Pontuação: %.2f\n"), scoreTopTen[i].jogador, scoreTopTen[i].pontuacao);
+	}
 
 	//setTopTenRegestry(scoreTopTen);
 
@@ -130,6 +189,7 @@ int _tmain(int argc, LPTSTR argv[])
 	freeSyncObject();
 	freeMappedMemory(&serverInstance.serverHandlers.sharedMemHandlers);
 	freeThreads(serverInstance.serverHandlers.threadHandlers);
+
 
 
 	_gettchar();
