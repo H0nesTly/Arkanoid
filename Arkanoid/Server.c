@@ -102,6 +102,8 @@ BOOL leituraFicheiroConfig(TCHAR *nomeFicheiro, GameServerConfiguration *serverC
 	TCHAR buffer[256];
 	TCHAR* word = NULL;
 
+	ZeroMemory(&buffer, sizeof(buffer));
+
 	HANDLE file = _tfopen(nomeFicheiro, "r");
 	if (file == NULL) {
 		_tprintf(TEXT("Ficheiro não existente \n"));
@@ -165,43 +167,70 @@ BOOL leituraFicheiroConfig(TCHAR *nomeFicheiro, GameServerConfiguration *serverC
 	return TRUE;
 }
 
-BOOL setTopTenRegestry(ScorePlayer scoreTopTen[]) {
+BOOL setTopTenRegistry(ScorePlayer scoreTopTen[]) {
 	HKEY chave;  //handle da chave(não é objeto do nucleo )
-	DWORD queAconteceu;
-	TCHAR jogadores[250];
-
+	DWORD infoState;
+	TCHAR jogadores[100];
+	TCHAR jogador[250];
+	TCHAR pontuacoes[100];
+	TCHAR pontuacao[250];
+	DWORD versao, tamanho, valores[100] = { 2,5,25,100 };
+	int n_preenchidos = 4;
+	int i;
 	ZeroMemory(jogadores, sizeof(jogadores));
-	int i, j, k;
-
+	ZeroMemory(jogador, sizeof(jogador));
+	ZeroMemory(pontuacoes, sizeof(pontuacoes));
+	ZeroMemory(pontuacao, sizeof(pontuacao));
+	
 	if (scoreTopTen == NULL) {
 		return FALSE;
 	}
 
-	/********************Problema aqui!!!!!!***********************/
 	for (i = 0; i < 10; i++) {
+		
+		if(strlen(scoreTopTen[i].jogador) == 0)
+			break;
+		
+
+		
+		//_stprintf(jogador, TEXT("%s"), scoreTopTen[i].jogador);
+		//_tcscat_s(jogadores, _countof(jogadores), TEXT("Joao\0"));
 		_tcscat_s(jogadores, _countof(jogadores), scoreTopTen[i].jogador);
-		_tcscat_s(jogadores, _countof(jogadores), TEXT(","));
+		
 
-	}
-	/*************************************************************/
+		_stprintf(pontuacao, TEXT("%.2f"), scoreTopTen[i].pontuacao);
+		_tcscat_s(pontuacoes, _countof(pontuacoes), pontuacao);
 
-	//Criar/abrir uma chave em HKEY_CURRENT_USER\Software\MinhaAplicacao  
-	if (RegCreateKeyEx(HKEY_CURRENT_USER, TEXT("Software\\Arkanoid"), 0, NULL,
-		REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &chave, &queAconteceu) != ERROR_SUCCESS) {
-		_tprintf(TEXT("Erro ao criar/abrir chave (%d)\n"), GetLastError());
-		return FALSE;
-	}
-	else {  //chave criada ou aberta
-		//Se a chave foi criada, inicializar os valores    
-		if (queAconteceu == REG_CREATED_NEW_KEY || queAconteceu == REG_OPENED_EXISTING_KEY) {
-			_tprintf(TEXT("Chave: HKEY_CURRENT_USER\\Software\\Arkanoid criada\n"));
-			//Criar valor "Autor" = "Meu nome"  
-			RegSetValueEx(chave, TEXT("Jogador"), 0, REG_SZ, (LPBYTE)TEXT("João Santos,Diogo Pires,Francisco,Miguel,Rita,Maria,Mariana,Sandra,Filipe,Gonçalo"), _tcslen(TEXT("João Santos,Diogo Pires,Francisco,Miguel,Rita,Maria,Mariana,Sandra,Filipe,Gonçalo")) * sizeof(TCHAR));
-			RegSetValueEx(chave, TEXT("Pontuacao"), 0, REG_SZ, (LPBYTE)TEXT("20,20,19,18,17,17,15,13,13,5"), _tcslen(TEXT("20,20,19,18,17,17,15,13,13,5")) * sizeof(TCHAR));
+		if (i < 9) {
+			_tcscat_s(jogadores, _countof(jogadores), TEXT(";"));
+			_tcscat_s(pontuacoes, _countof(pontuacoes), TEXT(";"));
 		}
 	}
-	return TRUE;
-	RegCloseKey(chave);
+	if (strlen(jogadores) > 0) {
+//		_stprintf(jogador, TEXT("%s"), jogadores);
+
+
+		//Criar/abrir uma chave em HKEY_CURRENT_USER\Software\MinhaAplicacao  
+		if (RegCreateKeyEx(HKEY_CURRENT_USER, TEXT("Software\\Arkanoid"), 0, NULL,
+			REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &chave, &infoState) != ERROR_SUCCESS) {
+			_tprintf(TEXT("Erro ao criar/abrir chave (%d)\n"), GetLastError());
+			return FALSE;
+		}
+		else {  //chave criada ou aberta
+			//Se a chave foi criada, inicializar os valores    
+			if (infoState == REG_CREATED_NEW_KEY || infoState == REG_OPENED_EXISTING_KEY) {
+				_tprintf(TEXT("Chave: HKEY_CURRENT_USER\\Software\\Arkanoid criada\n"));
+				//Criar valor "Autor" = "Meu nome"  
+
+				
+				RegSetValueEx(chave, TEXT("Jogador"), 0, REG_SZ, (LPBYTE)jogadores, sizeof(jogadores));
+				RegSetValueEx(chave, TEXT("Pontuacao"), 0, REG_SZ, (LPBYTE)pontuacoes, sizeof(pontuacoes));
+			}
+		}
+		return TRUE;
+		RegCloseKey(chave);
+	}
+	return FALSE;
 }
 
 VOID setScoreTopTen(ScorePlayer newScore, ScorePlayer scoreTopTen[]) {
@@ -229,6 +258,10 @@ BOOL getTopTenRegistry(ScorePlayer scoreTopTen[]) {
 	TCHAR* jogador;
 	TCHAR* score;
 	int i = 0;
+
+	ZeroMemory(jogadores, sizeof(jogadores));
+	ZeroMemory(scores, sizeof(scores));
+
 	//Criar/abrir uma chave em HKEY_CURRENT_USER\Software\MinhaAplicacao  
 	if (RegCreateKeyEx(HKEY_CURRENT_USER, TEXT("Software\\Arkanoid"), 0, NULL,
 		REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &chave, &infoState) != ERROR_SUCCESS) {
@@ -244,33 +277,33 @@ BOOL getTopTenRegistry(ScorePlayer scoreTopTen[]) {
 			RegQueryValueEx(chave, TEXT("Pontuacao"), NULL, NULL, (LPBYTE)scores, &tamanho);
 			
 			
-			jogador = _tcstok(jogadores, TEXT(","));
+			jogador = _tcstok(jogadores, TEXT(";"));
 			
 			// Note: strtok is deprecated; consider using strtok_s instead
 			for (i = 0; i < 10; i++)
 			{
 				if (jogador == NULL)
-					_tcscpy(scoreTopTen[i].jogador, TEXT(""));
+					break;
 				else
 					_tcscpy(scoreTopTen[i].jogador, jogador);
 
 
 				// Get next token:
-				jogador = _tcstok(NULL, TEXT(",")); // C4996
+				jogador = _tcstok(NULL, TEXT(";")); // C4996
 			}
 
-			score = _tcstok(scores, TEXT(","));
+			score = _tcstok(scores, TEXT(";"));
 
 			// Note: strtok is deprecated; consider using strtok_s instead
 			for (i = 0; i < 10; i++)
 			{
 				if (score == NULL)
-					scoreTopTen[i].pontuacao = 0;
+					break;
 				else
 					scoreTopTen[i].pontuacao = _tstof(score);
 
 				// Get next token:
-				score = _tcstok(NULL, TEXT(",")); // C4996
+				score = _tcstok(NULL, TEXT(";")); // C4996
 			}
 		}
 	}

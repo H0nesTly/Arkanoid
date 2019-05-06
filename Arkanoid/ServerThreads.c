@@ -16,7 +16,7 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 	DWORD dwWaitEvent;
 
 
-	while (1)
+	/*while (1)
 	{
 		_tprintf_s(TEXT("\nA espera ..."));
 		dwWaitEvent = WaitForSingleObject(hgWriteObject, INFINITE);
@@ -36,6 +36,6 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 		}
 
 		ResetEvent(hgWriteObject);
-	}
+	}*/
 	return 0;	
 }

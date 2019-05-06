@@ -15,7 +15,7 @@ void freeMappedMemory(ServerSharedMemoryHandlers* );
 
 BOOL leituraFicheiroConfig(TCHAR *nomeFicheiro, GameServerConfiguration *serverConfig);
 
-BOOL setTopTenRegestry(ScorePlayer scoreTopTen[]);
+BOOL setTopTenRegistry(ScorePlayer scoreTopTen[]);
 
 BOOL getTopTenRegistry(ScorePlayer scoreTopTen[]);
 
