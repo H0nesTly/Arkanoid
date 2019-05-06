@@ -1,13 +1,7 @@
 #include "Server.h"
-#include <tchar.h>
-#include <fcntl.h>
-#include <io.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#pragma warning(disable : 4996)
 
-
-BOOL intitServerGameMem(HANDLE* hMapObj, LPVOID* lpSharedMem )
+BOOL intitServerGameMem(HANDLE* hMapObj, LPVOID* lpSharedMem)
 {
 	//Mapear sharedMem para o jogo
 	*hMapObj = CreateFileMapping(
@@ -85,7 +79,6 @@ BOOL intitServerMessageMem(HANDLE* hMapObj, LPVOID* lpSharedMem)
 	return TRUE;
 }
 
-
 VOID freeMappedMemory(ServerSharedMemoryHandlers* mapped)
 {
 	UnmapViewOfFile(mapped->lpSharedMemGame);
@@ -93,8 +86,6 @@ VOID freeMappedMemory(ServerSharedMemoryHandlers* mapped)
 
 	CloseHandle(mapped->hMapObjGame);
 	CloseHandle(mapped->hMapObjMessage);
-
-
 }
 
 BOOL leituraFicheiroConfig(TCHAR *nomeFicheiro, GameServerConfiguration *serverConfig)
@@ -102,9 +93,13 @@ BOOL leituraFicheiroConfig(TCHAR *nomeFicheiro, GameServerConfiguration *serverC
 	TCHAR buffer[256];
 	TCHAR* word = NULL;
 
+
 	ZeroMemory(&buffer, sizeof(buffer));
 
 	HANDLE file = _tfopen(nomeFicheiro, "r");
+
+	HANDLE file = _tfopen(nomeFicheiro, TEXT("r"));
+
 	if (file == NULL) {
 		_tprintf(TEXT("Ficheiro não existente \n"));
 		return FALSE;
@@ -163,7 +158,7 @@ BOOL leituraFicheiroConfig(TCHAR *nomeFicheiro, GameServerConfiguration *serverC
 		}
 
 	}
-	
+
 	return TRUE;
 }
 
@@ -178,10 +173,14 @@ BOOL setTopTenRegistry(ScorePlayer scoreTopTen[]) {
 	int n_preenchidos = 4;
 	int i;
 	ZeroMemory(jogadores, sizeof(jogadores));
+
 	ZeroMemory(jogador, sizeof(jogador));
 	ZeroMemory(pontuacoes, sizeof(pontuacoes));
 	ZeroMemory(pontuacao, sizeof(pontuacao));
 	
+
+	int i;
+
 	if (scoreTopTen == NULL) {
 		return FALSE;
 	}
@@ -234,15 +233,15 @@ BOOL setTopTenRegistry(ScorePlayer scoreTopTen[]) {
 }
 
 VOID setScoreTopTen(ScorePlayer newScore, ScorePlayer scoreTopTen[]) {
-	int i=0, j;
+	int i = 0, j;
 
 	while (newScore.pontuacao < scoreTopTen[i].pontuacao && i < 10) {
 		i++;
 	}
 
 	for (j = 9; j > i; j--) {
-		_tcscpy(scoreTopTen[j].jogador, scoreTopTen[j-1].jogador);
-		scoreTopTen[j].pontuacao = scoreTopTen[j-1].pontuacao;
+		_tcscpy(scoreTopTen[j].jogador, scoreTopTen[j - 1].jogador);
+		scoreTopTen[j].pontuacao = scoreTopTen[j - 1].pontuacao;
 	}
 	if (i <= 9) {
 		_tcscpy(scoreTopTen[i].jogador, newScore.jogador);
@@ -271,14 +270,21 @@ BOOL getTopTenRegistry(ScorePlayer scoreTopTen[]) {
 	else {  //chave criada ou aberta
 		//Se a chave foi criada, inicializar os valores    
 		if (infoState == REG_OPENED_EXISTING_KEY) {
-		
+
 			tamanho = 100 * sizeof(TCHAR);
 			RegQueryValueEx(chave, TEXT("Jogador"), NULL, NULL, (LPBYTE)jogadores, &tamanho);
 			RegQueryValueEx(chave, TEXT("Pontuacao"), NULL, NULL, (LPBYTE)scores, &tamanho);
+
 			
 			
 			jogador = _tcstok(jogadores, TEXT(";"));
 			
+
+
+
+			jogador = _tcstok(jogadores, TEXT(","));
+
+
 			// Note: strtok is deprecated; consider using strtok_s instead
 			for (i = 0; i < 10; i++)
 			{
@@ -307,14 +313,41 @@ BOOL getTopTenRegistry(ScorePlayer scoreTopTen[]) {
 			}
 		}
 	}
-	
+
 	RegCloseKey(chave);
 	return TRUE;
 
 }
 
-BOOL verifyUserName(PTCHAR userName)
+
+static BOOL checkUserNameInLobby(PTCHAR userName, const ServerGameInstance* gameArg)
 {
 	return 0;
+	//Vamos ver se nome no lobby
+	if (gameArg->GameStates == WaitingForPlayers)
+	{
+		for (size_t i = 0; i < gameArg->lobbyGame.wPlayersInLobby; i++)
+		{
+			if (_tcscmp(gameArg->lobbyGame.playersInLobby[i].tcUserName, userName) == 0)
+			{
+				return FALSE;
+			}
+		}
+	}
+	return TRUE;
+}
 
+//TODO: VER A MEMORIA PARTILHADA SE ALGUM PLAYER EM JOGO
+BOOL addUserNameToLobby(PTCHAR userName, ServerGameInstance* gameLobby)
+{
+	if (checkUserNameInLobby(userName, gameLobby))
+	{
+		_tcscpy_s(gameLobby->lobbyGame.playersInLobby[gameLobby->lobbyGame.wPlayersInLobby++].tcUserName,	//destino
+			_countof(gameLobby->lobbyGame.playersInLobby[gameLobby->lobbyGame.wPlayersInLobby].tcUserName),	//tamanho que o destino suporta
+			userName		//Origem
+		);
+
+		return TRUE;
+	}
+	return FALSE;
 }

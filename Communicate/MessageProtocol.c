@@ -6,12 +6,9 @@ extern LPVOID lpgSharedMemMessage;
 extern HANDLE hgWriteObject;
 extern HANDLE hgReadObject;
 
-VOID __cdecl Login(LPVOID  lpSharedMem, PTCHAR username)
+VOID __cdecl Login(PTCHAR username)
 {
-
-	lpSharedMem = lpgSharedMemMessage;
-
-	MessageQueue* queue = (MessageQueue*)lpSharedMem;
+	MessageQueue* queue = (MessageQueue*)lpgSharedMemMessage;
 
 	//MUTEX ou sincronização quando se escreve no buffer		
 	_tcscpy_s(queue->queueOfMessageClientServer[0].messagePD.tcSender,
@@ -42,4 +39,27 @@ VOID __cdecl ReceiveBroadcast(){}
 
 VOID __cdecl SendMessageDll(){}
 
-VOID __cdecl ReceiveMessage(){}
+VOID __cdecl ReceiveMessage(const PTCHAR UserName)
+{
+	MessageQueue* queue = (MessageQueue*)lpgSharedMemMessage;
+
+	WaitForSingleObject(hgReadObject, INFINITE);
+
+	if (_tcscmp(UserName, queue->queueOfMessageServerClient[queue->wFirstUnReadMessageIndexSC].messagePD.tcDestination) == 0 ||
+		queue->queueOfMessageServerClient[queue->wFirstUnReadMessageIndexSC].messagePD.tcDestination[0] == '*')
+	{
+		switch (queue->queueOfMessageServerClient[queue->wFirstUnReadMessageIndexSC].response)
+		{
+		case ResponseLoginSuccess:
+			_tprintf(TEXT("Login Bem Sucedido\n"));
+			break;
+			case ResponseLoginFail:
+				_tprintf(TEXT("Login MAL Sucedido\n"));
+				break;
+		default:
+			break;
+		}
+	}
+
+	ResetEvent(hgReadObject);
+}

@@ -67,7 +67,7 @@ int _tmain(int argc, LPTSTR argv[])
 		NULL,
 		0,
 		ProducerMessageThread,	//nome da funçao
-		NULL,					//Argumento a ser passado
+		(LPVOID)&serverInstance,					//Argumento a ser passado
 		0,						//Flags de criaçao(CREATE_SUSPENDED) -> so começar quando existir algum cliente ligado
 		&serverInstance.serverHandlers.threadHandlers.dwIdProducer //idThread
 	);
@@ -96,6 +96,7 @@ int _tmain(int argc, LPTSTR argv[])
 	
 	int opcao, i;
 	ScorePlayer novoScore;
+
 	ZeroMemory(&novoScore, sizeof(novoScore));
 
 	do {
@@ -144,6 +145,33 @@ int _tmain(int argc, LPTSTR argv[])
 
 	} while (opcao != 4);
 	
+
+
+	_tcscpy_s(novoScore.jogador,_countof(novoScore.jogador) ,TEXT("Luis"));
+	novoScore.pontuacao = 21;
+	setScoreTopTen(novoScore, scoreTopTen);
+	_tprintf(TEXT("Apos novo score\n\n"));
+	for (i = 0; i < 10; i++) {
+		_tprintf(TEXT("jogador: %s, Pontuação: %.2f\n"), scoreTopTen[i].jogador, scoreTopTen[i].pontuacao);
+	}
+
+	setTopTenRegestry(scoreTopTen);
+
+
+	/*_tprintf(TEXT("Niveis: %d\n"), serverConfig.niveis);
+	_tprintf(TEXT("SpeedUps: %d\n"), serverConfig.speedUps);
+	_tprintf(TEXT("SlowDowns: %d\n"), serverConfig.slowDowns);
+	_tprintf(TEXT("Vidas Iniciais: %d\n"), serverConfig.vidasIniciais);
+	_tprintf(TEXT("Tijolos Iniciais: %d\n"), serverConfig.tejolosIniciais);
+	_tprintf(TEXT("prob speedup: %f\n"), serverConfig.probSpeedUp);
+	_tprintf(TEXT("prob slowdown: %f\n"), serverConfig.probSlowDowns);
+	_tprintf(TEXT("prob bonus: %f\n"), serverConfig.fBonusProbabilities);
+	_tprintf(TEXT("duracao: %d\n"), serverConfig.duracao);
+	_tprintf(TEXT("velocidade bola: %f\n"), serverConfig.fVelocityBall);*/
+
+
+
+
 
 	_gettchar();
 	return 0;

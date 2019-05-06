@@ -1,5 +1,6 @@
 #pragma once
 #include "ServerStructures.h"
+
 #include "..\Communicate\stdafx.h"
 #include "..\Communicate\GameStructures.h"
 #include "..\Communicate\MessageProtocol.h"
@@ -23,3 +24,7 @@ VOID setScoreTopTen(ScorePlayer newScore, ScorePlayer scoreTopTen[]);
 
 BOOL verifyUserName(PTCHAR);
 
+/*@return - true se não existir username ja no servidor*/
+BOOL checkUserNameInLobby(PTCHAR, const ServerGameInstance *);
+
+BOOL addUserNameToLobby(PTCHAR, ServerGameInstance*);

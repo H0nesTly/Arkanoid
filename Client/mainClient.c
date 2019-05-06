@@ -9,10 +9,12 @@
 #include <stdio.h>
 
 #include "ClientStructures.h"
+#include "ClientThreads.h"
 #include "..\Communicate\MessageProtocol.h"
 
-LPVOID lpgSharedMemGame = NULL;
-HANDLE hgMapObjGame = NULL;
+LPVOID lpgcSharedMemGame = NULL;
+LPVOID lpgcSharedMemMessage = NULL;
+
 
 int getLoginMethod()
 {
@@ -41,6 +43,9 @@ int _tmain(int argc, LPTSTR argv[])
 	UNREFERENCED_PARAMETER(argv);
 	ClientStructure ClientInfo;
 
+	HANDLE hThreads[2];
+	DWORD dwThreadsIds[2];
+
 	ZeroMemory(&ClientInfo, sizeof(ClientStructure));
 
 	//LPVOID lpSharedMemGame = NULL;
@@ -59,7 +64,7 @@ int _tmain(int argc, LPTSTR argv[])
 	switch (getLoginMethod())
 	{
 	case 1:
-		Login(lpgSharedMemGame, ClientInfo.tcUserName);
+		Login(ClientInfo.tcUserName);
 		break;
 	case 2:
 		break;
@@ -70,7 +75,27 @@ int _tmain(int argc, LPTSTR argv[])
 		exit(EXIT_SUCCESS);
 	}
 
-	_gettc(stdin);
+	hThreads[0] = CreateThread(	
+		NULL,
+		0,
+		readInputThread,
+		NULL,
+		0,
+		&dwThreadsIds[0]
+	);
 
+	hThreads[1] = CreateThread(
+		NULL,
+		0,
+		readMessageThread,
+		NULL,
+		0,
+		&dwThreadsIds[1]
+	);
+
+	WaitForMultipleObjects( 2, hThreads, TRUE ,INFINITE);
+
+		freeThreads(hThreads);
+	system("PAUSE");
 	return 0;
 }

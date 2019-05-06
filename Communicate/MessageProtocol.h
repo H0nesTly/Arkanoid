@@ -91,13 +91,13 @@ extern "C" {          // we need to export the C interface
 	#endif
 
 	/*Enviamos mensagem ao servidor*/
-	DLL_API VOID __cdecl Login(LPVOID  lpSharedMem, PTCHAR username);
+	DLL_API VOID __cdecl Login(PTCHAR);
 
 	DLL_API VOID __cdecl ReceiveBroadcast();
 
 	DLL_API VOID __cdecl SendMessageDll();
 
-	DLL_API VOID __cdecl ReceiveMessage();
+	DLL_API VOID __cdecl ReceiveMessage(const PTCHAR);
 
 	#ifdef __cplusplus
 }
