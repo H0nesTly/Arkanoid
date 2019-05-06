@@ -1,13 +1,8 @@
 /*Template de c em que suporta multi-byte e unicode*/
 /*			ATUALMENTE NESTE TEMPLATE ESTÁ ATIVO A
 		OPÇOA UNICODE LOGO ESTA A CORRER COM UTF-16*/
-#include <windows.h>
-#include <windows.h>
-#include <tchar.h>
-#include <fcntl.h>
-#include <io.h>
-#include <stdio.h>
-
+#include "..\Communicate\stdafx.h"
+#pragma warning(disable : 4996)//REMOVE
 
 #include "Server.h"
 #include "ServerStructures.h"

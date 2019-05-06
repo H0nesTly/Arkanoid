@@ -96,8 +96,6 @@ BOOL leituraFicheiroConfig(TCHAR *nomeFicheiro, GameServerConfiguration *serverC
 
 	ZeroMemory(&buffer, sizeof(buffer));
 
-	HANDLE file = _tfopen(nomeFicheiro, "r");
-
 	HANDLE file = _tfopen(nomeFicheiro, TEXT("r"));
 
 	if (file == NULL) {
@@ -178,8 +176,6 @@ BOOL setTopTenRegistry(ScorePlayer scoreTopTen[]) {
 	ZeroMemory(pontuacoes, sizeof(pontuacoes));
 	ZeroMemory(pontuacao, sizeof(pontuacao));
 	
-
-	int i;
 
 	if (scoreTopTen == NULL) {
 		return FALSE;
