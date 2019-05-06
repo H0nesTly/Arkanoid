@@ -13,7 +13,6 @@ BOOL intitServerMessageMem(HANDLE*, LPVOID*);
 
 void freeMappedMemory(ServerSharedMemoryHandlers* );
 
-
 BOOL leituraFicheiroConfig(TCHAR *nomeFicheiro, GameServerConfiguration *serverConfig);
 
 BOOL setTopTenRegistry(ScorePlayer scoreTopTen[]);

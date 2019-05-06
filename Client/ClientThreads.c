@@ -1,3 +1,4 @@
+#include "..\Communicate\stdafx.h"
 #include "ClientThreads.h"
 
 DWORD WINAPI readMessageThread(LPVOID lpArg)
@@ -15,6 +16,19 @@ DWORD WINAPI readMessageThread(LPVOID lpArg)
 DWORD WINAPI readInputThread(LPVOID lpArg)
 {
 	UNREFERENCED_PARAMETER(lpArg);
+
+	return 0;
+}
+
+DWORD WINAPI readGameDataThread(LPVOID lpArg)
+{
+	UNREFERENCED_PARAMETER(lpArg);
+
+	while (1)
+	{
+		ReceiveBroadcast();
+		Sleep(2000);
+	}
 
 	return 0;
 }

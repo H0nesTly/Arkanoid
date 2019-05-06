@@ -15,7 +15,6 @@
 LPVOID lpgcSharedMemGame = NULL;
 LPVOID lpgcSharedMemMessage = NULL;
 
-
 int getLoginMethod()
 {
 	int Input;
@@ -43,15 +42,10 @@ int _tmain(int argc, LPTSTR argv[])
 	UNREFERENCED_PARAMETER(argv);
 	ClientStructure ClientInfo;
 
-	HANDLE hThreads[2];
-	DWORD dwThreadsIds[2];
+	HANDLE hThreads[NUMBER_OF_CLIENT_THREADS];
+	DWORD dwThreadsIds[NUMBER_OF_CLIENT_THREADS];
 
 	ZeroMemory(&ClientInfo, sizeof(ClientStructure));
-
-	//LPVOID lpSharedMemGame = NULL;
-	//LPVOID	LpSharedMemMessage = NULL;
-	//HANDLE hMapObjGame = NULL;
-	//HANDLE	hMapObjMessage = NULL;
 
 	//UNICODE: Por defeito, a consola Windows não processa caracteres wide.
 	//A maneira mais fácil para ter esta funcionalidade é chamar _setmode:
@@ -91,11 +85,21 @@ int _tmain(int argc, LPTSTR argv[])
 		NULL,
 		0,
 		&dwThreadsIds[1]
+	);	
+	
+	hThreads[2] = CreateThread(
+		NULL,
+		0,
+		readGameDataThread,
+		NULL,
+		0,
+		&dwThreadsIds[2]
 	);
 
-	WaitForMultipleObjects( 2, hThreads, TRUE ,INFINITE);
+	WaitForMultipleObjects(NUMBER_OF_CLIENT_THREADS, hThreads, TRUE ,INFINITE);
 
-		freeThreads(hThreads);
+
+	freeThreads(hThreads);
 	system("PAUSE");
 	return 0;
 }

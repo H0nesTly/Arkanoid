@@ -40,6 +40,8 @@ VOID __cdecl Login(PTCHAR username)
 VOID __cdecl ReceiveBroadcast()
 {
 	Game* game = (Game*)lpgSharedMemGame;
+
+	_tprintf(TEXT("Posicaçao da bola %d\n"), game->ball.ballPosition.x);
 }
 
 VOID __cdecl SendMessageDll(){}

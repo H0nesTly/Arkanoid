@@ -100,6 +100,7 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 	{
 		Sleep(1000); //Remover apenas para exemplo
 		moveBall(&game->ball);
+		_tprintf(TEXT("Bola x-%d \n"), game->ball.ballPosition.x);
 	}
 
 	return 0;
