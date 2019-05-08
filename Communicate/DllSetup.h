@@ -1,6 +1,8 @@
 #pragma once
 #include "stdafx.h"
 
+extern HANDLE hgSemaphoreWriteToServer;
+
 /*Cria handle para ler os dados da memoria mapeada*/
 BOOL initClientGameMem(HANDLE*, LPVOID*);
 

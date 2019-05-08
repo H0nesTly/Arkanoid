@@ -7,6 +7,7 @@
 
 
 #define NAME_EVENT_OBJECT_SERVER_READ TEXT("readEvent")
+#define NAME_SEMAPHORE_OBJECT_SERVER_READ TEXT("readSemaphore")
 #define NAME_EVENT_OBJECT_SERVER_WRITE TEXT("writeEvent")
 #define NAME_SHARED_MEMORY_MESSAGE TEXT("dllSharedMemMessage") //NOME da Mem Mapeada 
 
@@ -20,6 +21,12 @@ typedef struct messageQueue MessageQueue;
 
 typedef enum responseOfMessage TypeOfResponseMessage;
 typedef enum requestOfMessage TypeOfRequestMessage;
+
+extern LPVOID lpgSharedMemMessage;
+extern LPVOID lpgSharedMemGame;
+
+extern HANDLE hgReadObject;
+extern HANDLE hgSemaphoreWriteToServer;
 
 //Estrutura da memoria partilhada "Zona de Mensagens"
 struct messageProtocolDatagram

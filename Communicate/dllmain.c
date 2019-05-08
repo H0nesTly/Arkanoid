@@ -11,9 +11,12 @@ HANDLE hgMapObjGame = NULL;
 LPVOID lpgSharedMemMessage = NULL;
 HANDLE hgMapObjMessage = NULL;
 
-//HANDLE PARA os eventos
+//HANDLE PARA sincronizaçao
 HANDLE hgWriteObject = NULL;
 HANDLE hgReadObject = NULL;
+
+//Semaforo para notificar que existe uma nova mensagem para o servidor ler
+HANDLE hgSemaphoreWriteToServer = NULL;
 
 
 BOOL APIENTRY DllMain( HMODULE hModule,
@@ -32,7 +35,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 		if (!initClientMessageMem(&hgMapObjMessage, &lpgSharedMemMessage))
 			return FALSE;
 
-		if (!initSyncObjects(&hgReadObject, &hgWriteObject))
+		if (!initSyncObjects(&hgReadObject, &hgSemaphoreWriteToServer))
 			return FALSE;
 		break;
     case DLL_THREAD_ATTACH:
@@ -41,7 +44,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 		break;
     case DLL_PROCESS_DETACH:
 		freeMappedMemory(hgMapObjGame,lpgSharedMemGame, hgMapObjMessage, lpgSharedMemMessage);
-		freeSyncObjects(hgReadObject, hgWriteObject);
+		freeSyncObjects(hgReadObject, &hgSemaphoreWriteToServer);
         break;
     }
     return TRUE;

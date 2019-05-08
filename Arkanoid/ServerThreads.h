@@ -5,6 +5,7 @@
 extern HANDLE hgReadObject;
 extern HANDLE hgWriteObject;
 extern HANDLE hgSyncRWObject;
+extern HANDLE hgSyncSemaphoreRead;
 
 typedef struct serverThreadsHandlers ServerThreadsHandlers;
 

@@ -2,12 +2,6 @@
 #include "MessageProtocol.h"
 #include "GameStructures.h"
 
-extern LPVOID lpgSharedMemMessage;
-extern LPVOID lpgSharedMemGame;
-
-extern HANDLE hgWriteObject;
-extern HANDLE hgReadObject;
-
 VOID __cdecl Login(PTCHAR username)
 {
 	MessageQueue* queue = (MessageQueue*)lpgSharedMemMessage;
@@ -21,17 +15,19 @@ VOID __cdecl Login(PTCHAR username)
 		(sizeof(TCHAR) * MAX_LENGTH_NAME),
 		NAME_SERVER);
 
-	queue->queueOfMessageClientServer[0].request= LoginMessage;
+	queue->queueOfMessageClientServer[0].request = LoginMessage;
 
 	_tcscpy_s(queue->queueOfMessageClientServer[0].messagePD.tcData,
 		sizeof(TCHAR) * MAX_LENGTH_NAME,
-			TEXT("Quero me conectar"));
+		TEXT("Quero me conectar"));
 
 	//queue->wLastUnReadMessageIndex++;
 
-	if (!SetEvent(hgWriteObject))
+	if (!ReleaseSemaphore(hgSemaphoreWriteToServer,
+		1,
+		NULL))
 	{
-		_tprintf(TEXT("Set event erro (%d)\n"), GetLastError());
+		_tprintf(TEXT("Release do semaforo (%d)\n"), GetLastError());
 		return;
 	}
 
@@ -44,7 +40,7 @@ VOID __cdecl ReceiveBroadcast()
 	_tprintf(TEXT("Posicaçao da bola %d\n"), game->ball.ballPosition.x);
 }
 
-VOID __cdecl SendMessageDll(){}
+VOID __cdecl SendMessageDll() {}
 
 VOID __cdecl ReceiveMessage(const PTCHAR UserName)
 {
@@ -60,13 +56,12 @@ VOID __cdecl ReceiveMessage(const PTCHAR UserName)
 		case ResponseLoginSuccess:
 			_tprintf(TEXT("Login Bem Sucedido\n"));
 			break;
-			case ResponseLoginFail:
-				_tprintf(TEXT("Login MAL Sucedido\n"));
-				break;
+		case ResponseLoginFail:
+			_tprintf(TEXT("Login MAL Sucedido\n"));
+			break;
 		default:
 			break;
 		}
 	}
-
 	ResetEvent(hgReadObject);
 }

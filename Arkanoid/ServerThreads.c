@@ -40,10 +40,8 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 	while (1)
 	{
 		_tprintf_s(TEXT("\nA espera ..."));
-		dwWaitEvent = WaitForSingleObject(hgWriteObject, INFINITE);
-		_tprintf_s(TEXT("\n Jogador : %s| Concectou-se %d"),
-			serverObj->gameInstance.lobbyGame.playersInLobby[0].tcUserName,
-			serverObj->gameInstance.lobbyGame.wPlayersInLobby);
+		dwWaitEvent = WaitForSingleObject(hgSyncSemaphoreRead, INFINITE);
+		_tprintf_s(TEXT("\n Semaforo valaor %d|\n"), dwWaitEvent);
 		switch (dwWaitEvent)
 		{
 		case WAIT_OBJECT_0:

@@ -116,7 +116,7 @@ int _tmain(int argc, LPTSTR argv[])
 		_tprintf(TEXT("2- Mostrar Pontuações lidas no registry.\n"));
 		_tprintf(TEXT("3- Inserir nova pontuação.\n"));
 		_tprintf(TEXT("4- Sair (guarda novas pontuações no registry).\n"));
-		_tscanf_s(TEXT("%d"), &opcao, 1);
+		_tscanf_s(TEXT(" %d"), &opcao);
 
 		switch (opcao) {
 		case 1:

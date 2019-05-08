@@ -32,7 +32,7 @@ int getLoginMethod()
 
 void getUserName(ClientStructure* dest)
 {
-	_tprintf(TEXT("\n Insira username(ate 19) :"));
+	_tprintf(TEXT("\n Insira username(ate 20) :"));
 	_tscanf_s( TEXT("%19s") , dest->tcUserName , (unsigned)_countof(dest->tcUserName));
 }
 

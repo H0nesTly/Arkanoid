@@ -167,7 +167,7 @@ BOOL setTopTenRegistry(ScorePlayer scoreTopTen[]) {
 	TCHAR jogador[250];
 	TCHAR pontuacoes[100];
 	TCHAR pontuacao[250];
-	DWORD versao, tamanho, valores[100] = { 2,5,25,100 };
+	DWORD valores[100] = { 2,5,25,100 };
 	int n_preenchidos = 4;
 	int i;
 	ZeroMemory(jogadores, sizeof(jogadores));
@@ -183,7 +183,7 @@ BOOL setTopTenRegistry(ScorePlayer scoreTopTen[]) {
 
 	for (i = 0; i < 10; i++) {
 		
-		if(strlen(scoreTopTen[i].jogador) == 0)
+		if(_tcsclen(scoreTopTen[i].jogador) == 0)
 			break;
 		
 
@@ -201,7 +201,7 @@ BOOL setTopTenRegistry(ScorePlayer scoreTopTen[]) {
 			_tcscat_s(pontuacoes, _countof(pontuacoes), TEXT(";"));
 		}
 	}
-	if (strlen(jogadores) > 0) {
+	if (_tcslen(jogadores) > 0) {
 //		_stprintf(jogador, TEXT("%s"), jogadores);
 
 

@@ -3,10 +3,18 @@
 HANDLE hgWriteObject = NULL;
 HANDLE hgReadObject = NULL;
 HANDLE hgSyncRWObject = NULL;
+HANDLE hgSyncSemaphoreRead = NULL;
 
 
 BOOL initSyncObject()
 {
+	//Semaforo usado para detetar novas escritas de mensagens
+	hgSyncSemaphoreRead = CreateSemaphore(
+		NULL,		//security attributes
+		0,		//conta inicial
+		MESSAGE_QUEUE_SIZE,		//conta maxima
+		NAME_SEMAPHORE_OBJECT_SERVER_READ);
+
 	hgReadObject = CreateEvent(
 		NULL,		//security attributes
 		TRUE,		//manual reset
@@ -26,11 +34,12 @@ BOOL initSyncObject()
 		NULL);
 	
 
-	return hgReadObject == NULL || hgWriteObject == NULL || hgSyncRWObject == NULL ? FALSE : TRUE;
+	return hgReadObject == NULL || hgWriteObject == NULL || hgSyncRWObject == NULL || hgSyncSemaphoreRead == NULL? FALSE : TRUE;
 }
 
 void freeSyncObject()
 {
+	CloseHandle(hgSyncSemaphoreRead);
 	CloseHandle(hgReadObject);
 	CloseHandle(hgWriteObject);
 	CloseHandle(hgSyncRWObject);

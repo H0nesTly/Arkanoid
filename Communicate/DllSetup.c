@@ -87,7 +87,7 @@ VOID freeMappedMemory(HANDLE hMapObjGame, LPVOID lpSharedGame, HANDLE hMapObjMes
 	CloseHandle(hMapObjMessage);
 }
 
-BOOL initSyncObjects(HANDLE* hRObj, HANDLE* hWObj)
+BOOL initSyncObjects(HANDLE* hRObj, HANDLE* hwSemaphore)
 {
 	*hRObj = CreateEvent(
 		NULL,		//security attributes
@@ -100,21 +100,15 @@ BOOL initSyncObjects(HANDLE* hRObj, HANDLE* hWObj)
 		return FALSE;
 	}
 
-	*hWObj = CreateEvent(
-		NULL,		//security attributes
-		TRUE,		//manual reset
-		FALSE,		//inital states as nonsignaled
-		NAME_EVENT_OBJECT_SERVER_WRITE);
+	*hwSemaphore = OpenSemaphore(
+		SEMAPHORE_ALL_ACCESS,		//security attributes
+		TRUE,		//Herança do handler
+		NAME_SEMAPHORE_OBJECT_SERVER_READ);
 
-
-	if (GetLastError() != ERROR_ALREADY_EXISTS)
-	{
-		return FALSE;
-	}
 
 	_tprintf(TEXT("Criou eventos \n"));
 
-	return *hRObj == NULL || *hWObj == NULL ? FALSE : TRUE;
+	return *hRObj == NULL || *hwSemaphore == NULL ? FALSE : TRUE;
 }
 
 VOID freeSyncObjects(HANDLE hWObj, HANDLE hRObj)
