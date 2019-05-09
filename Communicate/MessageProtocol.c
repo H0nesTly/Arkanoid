@@ -21,6 +21,7 @@ VOID __cdecl Login(PTCHAR username)
 		sizeof(TCHAR) * MAX_LENGTH_NAME,
 		TEXT("Quero me conectar"));
 
+
 	//queue->wLastUnReadMessageIndex++;
 
 	if (!ReleaseSemaphore(hgSemaphoreWriteToServer,

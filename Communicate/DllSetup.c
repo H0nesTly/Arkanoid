@@ -18,7 +18,6 @@ BOOL initClientGameMem(HANDLE* hMapObj, LPVOID* lpSharedMem)
 	{
 		return FALSE;
 	}
-
 	
 
 	if (GetLastError() != ERROR_ALREADY_EXISTS) // A dll foi chamada antes do servidor ERRO!!!!
@@ -105,14 +104,19 @@ BOOL initSyncObjects(HANDLE* hRObj, HANDLE* hwSemaphore)
 		TRUE,		//Herança do handler
 		NAME_SEMAPHORE_OBJECT_SERVER_READ);
 
+	hgMutexWriteNewMessage = OpenMutex(
+		MUTEX_ALL_ACCESS, 
+		TRUE, 
+		NAME_MUTEX_OBJECT_CLIENT_WRITE_MESSAGE);
 
 	_tprintf(TEXT("Criou eventos \n"));
 
-	return *hRObj == NULL || *hwSemaphore == NULL ? FALSE : TRUE;
+	return *hRObj == NULL || *hwSemaphore == NULL || hgMutexWriteNewMessage == NULL ? FALSE : TRUE;
 }
 
 VOID freeSyncObjects(HANDLE hWObj, HANDLE hRObj)
 {
+	CloseHandle(hgMutexWriteNewMessage);
 	CloseHandle(hWObj);
 	CloseHandle(hRObj);
 }

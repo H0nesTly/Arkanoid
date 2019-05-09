@@ -18,6 +18,9 @@ HANDLE hgReadObject = NULL;
 //Semaforo para notificar que existe uma nova mensagem para o servidor ler
 HANDLE hgSemaphoreWriteToServer = NULL;
 
+//Mutex's para a escrita de novas mensagens
+HANDLE hgMutexWriteNewMessage = NULL;
+
 
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,

@@ -11,7 +11,7 @@ BOOL initSyncObject()
 	//Semaforo usado para detetar novas escritas de mensagens
 	hgSyncSemaphoreRead = CreateSemaphore(
 		NULL,		//security attributes
-		0,		//conta inicial
+		0,			//conta inicial
 		MESSAGE_QUEUE_SIZE,		//conta maxima
 		NAME_SEMAPHORE_OBJECT_SERVER_READ);
 

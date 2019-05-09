@@ -4,6 +4,7 @@
 
 static PlayerInfo lastSender; //FIX temporario
 
+//retirar thread produtora
 DWORD WINAPI ProducerMessageThread(LPVOID lpArg)
 {
 	Server* serverObj = (Server*)lpArg;
@@ -46,15 +47,15 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 		{
 		case WAIT_OBJECT_0:
 
-			switch (queue->queueOfMessageClientServer[queue->wFirstUnReadMessageIndex].request)
+			switch (queue->queueOfMessageClientServer[queue->wLastReadMessageIndex].request)
 			{
 			case LoginMessage:
 
-				if (addUserNameToLobby(queue->queueOfMessageClientServer[queue->wFirstUnReadMessageIndex].messagePD.tcSender, &serverObj->gameInstance))
+				if (addUserNameToLobby(queue->queueOfMessageClientServer[queue->wLastReadMessageIndex].messagePD.tcSender, &serverObj->gameInstance))
 				{
 					_tcscpy_s(lastSender.tcUserName,
 						_countof(lastSender.tcUserName),
-						queue->queueOfMessageClientServer[queue->wFirstUnReadMessageIndex].messagePD.tcSender);
+						queue->queueOfMessageClientServer[queue->wLastReadMessageIndex].messagePD.tcSender);
 
 					//FIX: Inserir 1 jogador a mais?
 					for (size_t i = 0; i < serverObj->gameInstance.lobbyGame.wPlayersInLobby; i++)
@@ -64,7 +65,6 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 							serverObj->gameInstance.lobbyGame.wPlayersInLobby);
 					}
 					//VAMOS NOTIFICAR A thread Produtora
-					//VER COMO CRITICAL SECTION FUNCIONA!!!
 					if (!SetEvent(hgSyncRWObject))
 					{
 						_tprintf_s(TEXT("\n Erro set evento"));
@@ -83,9 +83,6 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 			_tprintf(TEXT("Erro \n"));
 			break;
 		}
-
-		ResetEvent(hgWriteObject);
-
 	}
 	return 0;	
 }

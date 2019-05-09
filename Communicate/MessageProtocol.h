@@ -9,6 +9,7 @@
 #define NAME_EVENT_OBJECT_SERVER_READ TEXT("readEvent")
 #define NAME_SEMAPHORE_OBJECT_SERVER_READ TEXT("readSemaphore")
 #define NAME_EVENT_OBJECT_SERVER_WRITE TEXT("writeEvent")
+#define NAME_MUTEX_OBJECT_CLIENT_WRITE_MESSAGE("writeMessageMutex")
 #define NAME_SHARED_MEMORY_MESSAGE TEXT("dllSharedMemMessage") //NOME da Mem Mapeada 
 
 #define NAME_SERVER TEXT("Server")
@@ -51,17 +52,22 @@ struct messageProtocolDatagramRequest
 	MessageProtocolDatagram messagePD;
 };
 
+// LastReadMessage
+//	  v 
+// [ |#|#|#| ] -> queueOfMessageClientServer
+//        ^
+//		  LastUnReadMessage	
 struct messageQueue
 {
 	//VARIAVEIS DE INDEX da primeira queue
-	WORD wFirstUnReadMessageIndex;
-	WORD wLastUnReadMessageIndex;
+	WORD wLastUnReadMessageIndex;	//Está variável é usada no Cliente para saber onde colocar a mensagem 
+	WORD wLastReadMessageIndex;		//Está variável é usada no lado do Servidor para saber que mensagens ainda não leu
 
 	MessageProtocolDatagramRequest queueOfMessageClientServer[MESSAGE_QUEUE_SIZE];			//Cliente- produtor | Servidor - consumidor
 
 	//VARIAVEIS DE INDEX da segunda queue
 	WORD wFirstUnReadMessageIndexSC;
-	WORD wLastUnReadMessageIndexSC;
+	WORD wLastReadMessageIndexSC;
 	MessageProtocolDatagramResponse queueOfMessageServerClient[MESSAGE_QUEUE_READER_SIZE];	//Servidor - Produtor | Cliente - consumidor
 };
 
