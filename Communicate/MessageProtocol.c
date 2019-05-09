@@ -5,30 +5,46 @@
 VOID __cdecl Login(PTCHAR username)
 {
 	MessageQueue* queue = (MessageQueue*)lpgSharedMemMessage;
+	DWORD dwWaitMutex;
+	WORD wNextIndexMessage;
 
-	//MUTEX ou sincronização quando se escreve no buffer		
-	_tcscpy_s(queue->queueOfMessageClientServer[0].messagePD.tcSender,
-		(sizeof(TCHAR) * MAX_LENGTH_NAME),
-		username);
+	dwWaitMutex = WaitForSingleObject(hgMutexWriteNewMessage, INFINITE);
+	//CRITICAL SECTION
+	
+	wNextIndexMessage = (queue->wLastUnReadMessageIndex + 1) % MESSAGE_QUEUE_SIZE;
 
-	_tcscpy_s(queue->queueOfMessageClientServer[0].messagePD.tcDestination,
-		(sizeof(TCHAR) * MAX_LENGTH_NAME),
-		NAME_SERVER);
+	//TODO :Se BUFFER ESTIVER CHEIO O QUE FAZER? TENTAR EM X ms apos tentativa??
+	/*Lista de mensagens está cheia*/
+	if (wNextIndexMessage == queue->wLastReadMessageIndex) 
+	{
+		//QUE FAXEMOS? COM A LISTA CHEIA?
+	}
+	else
+	{
+		//Escrevemos mensagem
+		queue->wLastUnReadMessageIndex = wNextIndexMessage;
 
-	queue->queueOfMessageClientServer[0].request = LoginMessage;
+		_tcscpy_s(queue->queueOfMessageClientServer[wNextIndexMessage].messagePD.tcSender,
+			_countof(queue->queueOfMessageClientServer[0].messagePD.tcSender),
+			username);
 
-	_tcscpy_s(queue->queueOfMessageClientServer[0].messagePD.tcData,
-		sizeof(TCHAR) * MAX_LENGTH_NAME,
-		TEXT("Quero me conectar"));
+		_tcscpy_s(queue->queueOfMessageClientServer[wNextIndexMessage].messagePD.tcDestination,
+			_countof(queue->queueOfMessageClientServer[0].messagePD.tcDestination),
+			NAME_SERVER);
 
+		queue->queueOfMessageClientServer[wNextIndexMessage].request = LoginMessage;
 
+		_tcscpy_s(queue->queueOfMessageClientServer[wNextIndexMessage].messagePD.tcData,
+			_countof(queue->queueOfMessageClientServer[wNextIndexMessage].messagePD.tcData),
+			TEXT("Quero me conectar"));
+	}
+
+	//END CRITICAL SECTION	
 	//queue->wLastUnReadMessageIndex++;
 
-	if (!ReleaseSemaphore(hgSemaphoreWriteToServer,
-		1,
-		NULL))
+	if (!ReleaseSemaphore(hgSemaphoreWriteToServer, 1, NULL) || !ReleaseMutex(hgMutexWriteNewMessage))
 	{
-		_tprintf(TEXT("Release do semaforo (%d)\n"), GetLastError());
+		_tprintf(TEXT("Release do mutex ou semafor FALHOU:(%d)\n"), GetLastError());
 		return;
 	}
 
@@ -48,11 +64,12 @@ VOID __cdecl ReceiveMessage(const PTCHAR UserName)
 	MessageQueue* queue = (MessageQueue*)lpgSharedMemMessage;
 
 	WaitForSingleObject(hgReadObject, INFINITE);
+	//Critical section
 
-	if (_tcscmp(UserName, queue->queueOfMessageServerClient[queue->wFirstUnReadMessageIndexSC].messagePD.tcDestination) == 0 ||
-		queue->queueOfMessageServerClient[queue->wFirstUnReadMessageIndexSC].messagePD.tcDestination[0] == '*')
+	if (_tcscmp(UserName, queue->queueOfMessageServerClient[queue->wLastUnReadMessageIndexSC].messagePD.tcDestination) == 0 ||
+		queue->queueOfMessageServerClient[queue->wLastUnReadMessageIndexSC].messagePD.tcDestination[0] == '*')
 	{
-		switch (queue->queueOfMessageServerClient[queue->wFirstUnReadMessageIndexSC].response)
+		switch (queue->queueOfMessageServerClient[queue->wLastUnReadMessageIndexSC].response)
 		{
 		case ResponseLoginSuccess:
 			_tprintf(TEXT("Login Bem Sucedido\n"));

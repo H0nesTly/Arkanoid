@@ -29,6 +29,8 @@ extern LPVOID lpgSharedMemGame;
 extern HANDLE hgReadObject;
 extern HANDLE hgSemaphoreWriteToServer;
 
+extern HANDLE hgMutexWriteNewMessage;
+
 //Estrutura da memoria partilhada "Zona de Mensagens"
 struct messageProtocolDatagram
 {
@@ -66,8 +68,8 @@ struct messageQueue
 	MessageProtocolDatagramRequest queueOfMessageClientServer[MESSAGE_QUEUE_SIZE];			//Cliente- produtor | Servidor - consumidor
 
 	//VARIAVEIS DE INDEX da segunda queue
-	WORD wFirstUnReadMessageIndexSC;
-	WORD wLastReadMessageIndexSC;
+	WORD wLastUnReadMessageIndexSC; //Está variável é usada no lado do Cliente para saber que mensagens ainda não leu
+	WORD wLastReadMessageIndexSC;	//Está variável é usada no Servidor para saber onde colocar a mensagem 
 	MessageProtocolDatagramResponse queueOfMessageServerClient[MESSAGE_QUEUE_READER_SIZE];	//Servidor - Produtor | Cliente - consumidor
 };
 
