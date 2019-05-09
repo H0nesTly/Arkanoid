@@ -9,7 +9,7 @@
 #define NAME_EVENT_OBJECT_SERVER_READ TEXT("readEvent")
 #define NAME_SEMAPHORE_OBJECT_SERVER_READ TEXT("readSemaphore")
 #define NAME_EVENT_OBJECT_SERVER_WRITE TEXT("writeEvent")
-#define NAME_MUTEX_OBJECT_CLIENT_WRITE_MESSAGE("writeMessageMutex")
+#define NAME_MUTEX_OBJECT_CLIENT_WRITE_MESSAGE TEXT("writeMessageMutex")
 #define NAME_SHARED_MEMORY_MESSAGE TEXT("dllSharedMemMessage") //NOME da Mem Mapeada 
 
 #define NAME_SERVER TEXT("Server")
