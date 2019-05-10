@@ -89,6 +89,9 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 							NAME_SERVER, 
 							queue->queueOfMessageClientServer[queue->wLastReadMessageIndex].messagePD.tcSender);
 					}
+
+					//Apagar a mensagem indica que foi lida
+					ZeroMemory(queue->queueOfMessageClientServer[queue->wLastReadMessageIndex], sizeof(MessageProtocolDatagramRequest));
 					//notificamos todos os consumidores a dizer que a uma nova mensagem
 					SetEvent(hgReadObject);
 					break;
