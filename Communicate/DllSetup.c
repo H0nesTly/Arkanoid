@@ -3,6 +3,9 @@
 #include "GameStructures.h"
 #include "MessageProtocol.h"
 
+extern HANDLE hgSemaphoreWriteToServer;
+extern HANDLE hgMutexWriteNewMessage;
+
 BOOL initClientGameMem(HANDLE* hMapObj, LPVOID* lpSharedMem)
 {
 	*hMapObj = CreateFileMapping(

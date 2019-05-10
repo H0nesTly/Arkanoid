@@ -23,13 +23,6 @@ typedef struct messageQueue MessageQueue;
 typedef enum responseOfMessage TypeOfResponseMessage;
 typedef enum requestOfMessage TypeOfRequestMessage;
 
-extern LPVOID lpgSharedMemMessage;
-extern LPVOID lpgSharedMemGame;
-
-extern HANDLE hgReadObject;
-extern HANDLE hgSemaphoreWriteToServer;
-
-extern HANDLE hgMutexWriteNewMessage;
 
 //Estrutura da memoria partilhada "Zona de Mensagens"
 struct messageProtocolDatagram
@@ -83,7 +76,8 @@ enum responseOfMessage
 {
 	ResponseFail = -1,
 	ResponseLoginFail,
-	ResponseLoginSuccess
+	ResponseLoginSuccess,
+	ResponseTop10
 };
 
 enum requestOfMessage

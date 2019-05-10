@@ -27,3 +27,6 @@ BOOL verifyUserName(PTCHAR);
 BOOL checkUserNameInLobby(PTCHAR, const ServerGameInstance *);
 
 BOOL addUserNameToLobby(PTCHAR, ServerGameInstance*);
+
+/*TODO: INCREMENTAR MENSAGENS POR LER*/
+VOID writeMessageToClient(MessageQueue*, TypeOfResponseMessage, PlayerInfo, PlayerInfo);

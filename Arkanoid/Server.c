@@ -346,3 +346,18 @@ BOOL addUserNameToLobby(PTCHAR userName, ServerGameInstance* gameLobby)
 	}
 	return FALSE;
 }
+
+
+VOID writeMessageToClient(MessageQueue* mqArg, TypeOfResponseMessage response, PlayerInfo pSender, PlayerInfo pDestination)
+{
+	mqArg->queueOfMessageServerClient[0].response = response;
+
+	_tcscpy_s(mqArg->queueOfMessageServerClient[0].messagePD.tcDestination,
+		_countof(pDestination.tcUserName),
+		pDestination);
+
+	_tcscpy_s(mqArg->queueOfMessageServerClient[0].messagePD.tcSender,
+		_countof(pSender.tcUserName),
+		pSender);
+
+}

@@ -42,40 +42,69 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 	{
 		_tprintf_s(TEXT("\nA espera ..."));
 		dwWaitEvent = WaitForSingleObject(hgSyncSemaphoreRead, INFINITE);
-		_tprintf_s(TEXT("\n Semaforo valaor %d|\n"), dwWaitEvent);
+
 		switch (dwWaitEvent)
 		{
 		case WAIT_OBJECT_0:
+			//CRITICAL SECTION
+			WaitForSingleObject(hgMutexReadNewMessage, INFINITE);
 
-			switch (queue->queueOfMessageClientServer[queue->wLastReadMessageIndex].request)
+			for (;queue->wLastReadMessageIndex != queue->wLastUnReadMessageIndex;
+				queue->wLastReadMessageIndex = (queue->wLastReadMessageIndex + 1) % MESSAGE_QUEUE_SIZE)
 			{
-			case LoginMessage:
-
-				if (addUserNameToLobby(queue->queueOfMessageClientServer[queue->wLastReadMessageIndex].messagePD.tcSender, &serverObj->gameInstance))
+				_tprintf_s(TEXT("\n Valor da read %d e da Unread %d"), queue->wLastReadMessageIndex, queue->wLastUnReadMessageIndex);
+				switch (queue->queueOfMessageClientServer[i].request)
 				{
-					_tcscpy_s(lastSender.tcUserName,
-						_countof(lastSender.tcUserName),
-						queue->queueOfMessageClientServer[queue->wLastReadMessageIndex].messagePD.tcSender);
+				case LoginMessage:
+					//verificamos se player quere se conectar
+					if (addUserNameToLobby(queue->queueOfMessageClientServer[queue->wLastReadMessageIndex].messagePD.tcSender, &serverObj->gameInstance))
+					{
+						_tcscpy_s(lastSender.tcUserName,
+							_countof(lastSender.tcUserName),
+							queue->queueOfMessageClientServer[queue->wLastReadMessageIndex].messagePD.tcSender);
 
-					//FIX: Inserir 1 jogador a mais?
-					for (size_t i = 0; i < serverObj->gameInstance.lobbyGame.wPlayersInLobby; i++)
-					{
-						_tprintf_s(TEXT("\n Jogador : %s| Concectou-se %d"),
-							serverObj->gameInstance.lobbyGame.playersInLobby[i].tcUserName,
-							serverObj->gameInstance.lobbyGame.wPlayersInLobby);
+						//FIX: Inserir 1 jogador a mais?
+						for (size_t i = 0; i < serverObj->gameInstance.lobbyGame.wPlayersInLobby; i++)
+						{
+							_tprintf_s(TEXT("\n Jogador : %s| Concectou-se %d"),
+								serverObj->gameInstance.lobbyGame.playersInLobby[i].tcUserName,
+								serverObj->gameInstance.lobbyGame.wPlayersInLobby);
+						}
+
+						//Escrevemos nova mensagem para o cliente 
+						writeMessageToClient(queue,
+							ResponseLoginSuccess,
+							NAME_SERVER,
+							queue->queueOfMessageClientServer[queue->wLastReadMessageIndex].messagePD.tcSender);
+						//VAMOS NOTIFICAR A thread Produtora
+						if (!SetEvent(hgSyncRWObject))
+						{
+							_tprintf_s(TEXT("\n Erro set evento"));
+						}
 					}
-					//VAMOS NOTIFICAR A thread Produtora
-					if (!SetEvent(hgSyncRWObject))
+					else
 					{
-						_tprintf_s(TEXT("\n Erro set evento"));
+						writeMessageToClient(queue, 
+							ResponseLoginFail, 
+							NAME_SERVER, 
+							queue->queueOfMessageClientServer[queue->wLastReadMessageIndex].messagePD.tcSender);
 					}
+					//notificamos todos os consumidores a dizer que a uma nova mensagem
+					SetEvent(hgReadObject);
+					break;
+				case TopPlayersMessage:
+					break;
+				case QuitGameMessage:
+					break;
+				default:
+					break;
 				}
+			}
 
-				break;
-			case QuitGameMessage:
-				break;
-			default:
-				break;
+			//FIM DA CRITICAL SECTION
+			if (!ReleaseMutex(hgMutexReadNewMessage))
+			{
+				//erro lançar mutex
 			}
 
 			break;

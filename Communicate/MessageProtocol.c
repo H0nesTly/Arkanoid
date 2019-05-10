@@ -2,6 +2,14 @@
 #include "MessageProtocol.h"
 #include "GameStructures.h"
 
+extern LPVOID lpgSharedMemMessage;
+extern LPVOID lpgSharedMemGame;
+
+extern HANDLE hgReadObject;
+extern HANDLE hgSemaphoreWriteToServer;
+
+extern HANDLE hgMutexWriteNewMessage;
+
 VOID __cdecl Login(PTCHAR username)
 {
 	MessageQueue* queue = (MessageQueue*)lpgSharedMemMessage;
