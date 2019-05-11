@@ -12,15 +12,11 @@ typedef struct serverThreadsHandlers ServerThreadsHandlers;
 
 struct serverThreadsHandlers
 {
-	HANDLE hThreadProducer;
-	DWORD dwIdProducer;
 	HANDLE hThreadConsumer;
 	DWORD dwIdConsumer;
 	HANDLE hThreadBall;
 	DWORD dwThreadBall;
 };
-
-DWORD WINAPI ProducerMessageThread(LPVOID);
 
 DWORD WINAPI ConsumerMessageThread(LPVOID);
 

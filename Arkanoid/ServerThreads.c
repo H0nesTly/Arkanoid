@@ -2,34 +2,6 @@
 #include "Server.h"
 #include "GameLogic.h"
 
-static PlayerInfo lastSender; //FIX temporario
-
-//retirar thread produtora
-DWORD WINAPI ProducerMessageThread(LPVOID lpArg)
-{
-	Server* serverObj = (Server*)lpArg;
-	MessageQueue* writeMessage = (MessageQueue*)serverObj->serverHandlers.sharedMemHandlers.LpSharedMemMessage;
-
-	DWORD dwWaitEvent;
-
-	while (1)
-	{
-		dwWaitEvent = WaitForSingleObject(hgSyncRWObject, INFINITE);
-		_tprintf_s(TEXT("\n Vamos escrever"));
-		
-		//APENAS ESTÁ A RESSPONDER LOGIN
-		_tcscpy_s(writeMessage->queueOfMessageServerClient[writeMessage->wFirstUnReadMessageIndexSC].messagePD.tcDestination,
-			_countof(writeMessage->queueOfMessageServerClient[writeMessage->wFirstUnReadMessageIndexSC].messagePD.tcDestination),
-			lastSender.tcUserName);
-
-		writeMessage->queueOfMessageServerClient[writeMessage->wFirstUnReadMessageIndexSC].response = ResponseLoginSuccess;
-
-		SetEvent(hgReadObject);
-		ResetEvent(hgSyncRWObject);
-	}
-	return 0;
-}
-
 DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 {
 	Server* serverObj = (Server*)lpArg;
@@ -93,7 +65,7 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 					//Apagar a mensagem indica que foi lida
 					ZeroMemory(queue->queueOfMessageClientServer[queue->wLastReadMessageIndex], sizeof(MessageProtocolDatagramRequest));
 					//notificamos todos os consumidores a dizer que a uma nova mensagem
-					SetEvent(hgReadObject);
+					SetEvent(hgNotifyClient);
 					break;
 				case TopPlayersMessage:
 					break;
@@ -136,6 +108,5 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 VOID freeThreads(ServerThreadsHandlers handlers) 
 {
 	CloseHandle(handlers.hThreadConsumer);
-	CloseHandle(handlers.hThreadProducer);
 	CloseHandle(handlers.hThreadBall);
 }

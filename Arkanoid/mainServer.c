@@ -61,15 +61,6 @@ int _tmain(int argc, LPTSTR argv[])
 		&serverInstance.serverHandlers.threadHandlers.dwIdConsumer //idThread
 	);
 
-	serverInstance.serverHandlers.threadHandlers.hThreadProducer = CreateThread(
-		NULL,
-		0,
-		ProducerMessageThread,	//nome da funçao
-		(LPVOID)&serverInstance,					//Argumento a ser passado
-		0,						//Flags de criaçao(CREATE_SUSPENDED) -> so começar quando existir algum cliente ligado
-		&serverInstance.serverHandlers.threadHandlers.dwIdProducer //idThread
-	);
-
 	serverInstance.serverHandlers.threadHandlers.hThreadBall = CreateThread(
 		NULL,
 		0,
@@ -79,15 +70,13 @@ int _tmain(int argc, LPTSTR argv[])
 		&serverInstance.serverHandlers.threadHandlers.dwThreadBall //idThread
 	);
 
-	if (serverInstance.serverHandlers.threadHandlers.hThreadProducer == NULL ||
-		serverInstance.serverHandlers.threadHandlers.hThreadConsumer == NULL)
+	if ( serverInstance.serverHandlers.threadHandlers.hThreadConsumer == NULL)
 	{
 		exit(EXIT_FAILURE);
 	}
 
 
 	WaitForSingleObject(serverInstance.serverHandlers.threadHandlers.hThreadConsumer, INFINITE);
-	WaitForSingleObject(serverInstance.serverHandlers.threadHandlers.hThreadProducer, INFINITE);
 	WaitForSingleObject(serverInstance.serverHandlers.threadHandlers.hThreadBall, INFINITE);
 
 

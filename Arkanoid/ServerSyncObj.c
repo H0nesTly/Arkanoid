@@ -1,7 +1,7 @@
 #include "ServerSyncObj.h"
 
 HANDLE hgWriteObject = NULL;
-HANDLE hgReadObject = NULL;
+HANDLE hgNotifyClient = NULL;
 HANDLE hgSyncRWObject = NULL;
 HANDLE hgSyncSemaphoreRead = NULL; 
 HANDLE hgMutexReadNewMessage = NULL;
@@ -16,7 +16,7 @@ BOOL initSyncObject()
 		MESSAGE_QUEUE_SIZE,		//conta maxima
 		NAME_SEMAPHORE_OBJECT_SERVER_READ);
 
-	hgReadObject = CreateEvent(
+	hgNotifyClient = CreateEvent(
 		NULL,		//security attributes
 		TRUE,		//manual reset
 		FALSE,		//inital states as nonsignaled
@@ -40,7 +40,7 @@ BOOL initSyncObject()
 		TRUE, 
 		NAME_MUTEX_OBJECT_CLIENT_WRITE_MESSAGE);
 
-	return hgReadObject == NULL || 
+	return hgNotifyClient == NULL ||
 		hgWriteObject == NULL || 
 		hgSyncRWObject == NULL || 
 		hgSyncSemaphoreRead == NULL || 
@@ -50,7 +50,7 @@ BOOL initSyncObject()
 void freeSyncObject()
 {
 	CloseHandle(hgSyncSemaphoreRead);
-	CloseHandle(hgReadObject);
+	CloseHandle(hgNotifyClient);
 	CloseHandle(hgWriteObject);
 	CloseHandle(hgSyncRWObject);
 }
