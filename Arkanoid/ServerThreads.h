@@ -2,7 +2,7 @@
 #include "..\Communicate\stdafx.h"
 #include "..\Communicate\MessageProtocol.h"
 
-extern HANDLE hgReadObject;
+extern HANDLE hgNotifyClient;
 extern HANDLE hgWriteObject;
 extern HANDLE hgSyncRWObject;
 extern HANDLE hgSyncSemaphoreRead;

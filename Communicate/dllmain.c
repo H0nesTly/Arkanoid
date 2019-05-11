@@ -47,7 +47,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 		break;
     case DLL_PROCESS_DETACH:
 		freeMappedMemory(hgMapObjGame,lpgSharedMemGame, hgMapObjMessage, lpgSharedMemMessage);
-		freeSyncObjects(hgReadObject, &hgSemaphoreWriteToServer);
+		freeSyncObjects(&hgReadObject, &hgSemaphoreWriteToServer);
         break;
     }
     return TRUE;

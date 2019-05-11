@@ -16,6 +16,7 @@ VOID __cdecl Login(PTCHAR username)
 	DWORD dwWaitMutex;
 	WORD wNextIndexMessage;
 
+	//MUTEX DEVE ESTAR BLOQUEADO
 	dwWaitMutex = WaitForSingleObject(hgMutexWriteNewMessage, INFINITE);
 	//CRITICAL SECTION
 	

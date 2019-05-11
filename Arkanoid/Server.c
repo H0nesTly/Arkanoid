@@ -348,16 +348,16 @@ BOOL addUserNameToLobby(PTCHAR userName, ServerGameInstance* gameLobby)
 }
 
 
-VOID writeMessageToClient(MessageQueue* mqArg, TypeOfResponseMessage response, PlayerInfo pSender, PlayerInfo pDestination)
+VOID writeMessageToClient(MessageQueue* mqArg, TypeOfResponseMessage response, const PTCHAR pSender, const PTCHAR pDestination)
 {
 	mqArg->queueOfMessageServerClient[0].response = response;
 
 	_tcscpy_s(mqArg->queueOfMessageServerClient[0].messagePD.tcDestination,
-		_countof(pDestination.tcUserName),
+		_countof(pDestination),
 		pDestination);
 
 	_tcscpy_s(mqArg->queueOfMessageServerClient[0].messagePD.tcSender,
-		_countof(pSender.tcUserName),
+		_countof(pSender),
 		pSender);
 
 }

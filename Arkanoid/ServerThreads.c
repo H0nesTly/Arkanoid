@@ -8,7 +8,6 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 	MessageQueue* queue = (MessageQueue*)serverObj->serverHandlers.sharedMemHandlers.LpSharedMemMessage;
 
 	DWORD dwWaitEvent;
-	ZeroMemory(&lastSender, sizeof(PlayerInfo));
 
 	while (1)
 	{
@@ -21,19 +20,16 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 			//CRITICAL SECTION
 			WaitForSingleObject(hgMutexReadNewMessage, INFINITE);
 
-			for (;queue->wLastReadMessageIndex != queue->wLastUnReadMessageIndex;
+			for (;queue->wLastReadMessageIndex == queue->wLastUnReadMessageIndex;//Erro aqui
 				queue->wLastReadMessageIndex = (queue->wLastReadMessageIndex + 1) % MESSAGE_QUEUE_SIZE)
 			{
 				_tprintf_s(TEXT("\n Valor da read %d e da Unread %d"), queue->wLastReadMessageIndex, queue->wLastUnReadMessageIndex);
-				switch (queue->queueOfMessageClientServer[i].request)
+				switch (queue->queueOfMessageClientServer[queue->wLastReadMessageIndex].request)
 				{
 				case LoginMessage:
-					//verificamos se player quere se conectar
+					//Insere na lista de jogadore
 					if (addUserNameToLobby(queue->queueOfMessageClientServer[queue->wLastReadMessageIndex].messagePD.tcSender, &serverObj->gameInstance))
 					{
-						_tcscpy_s(lastSender.tcUserName,
-							_countof(lastSender.tcUserName),
-							queue->queueOfMessageClientServer[queue->wLastReadMessageIndex].messagePD.tcSender);
 
 						//FIX: Inserir 1 jogador a mais?
 						for (size_t i = 0; i < serverObj->gameInstance.lobbyGame.wPlayersInLobby; i++)
@@ -59,11 +55,11 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 						writeMessageToClient(queue, 
 							ResponseLoginFail, 
 							NAME_SERVER, 
-							queue->queueOfMessageClientServer[queue->wLastReadMessageIndex].messagePD.tcSender);
+							queue->queueOfMessageClientServer[queue->wLastReadMessageIndex].messagePD.tcDestination);
 					}
 
 					//Apagar a mensagem indica que foi lida
-					ZeroMemory(queue->queueOfMessageClientServer[queue->wLastReadMessageIndex], sizeof(MessageProtocolDatagramRequest));
+					ZeroMemory(&queue->queueOfMessageClientServer[queue->wLastReadMessageIndex], sizeof(MessageProtocolDatagramRequest));
 					//notificamos todos os consumidores a dizer que a uma nova mensagem
 					SetEvent(hgNotifyClient);
 					break;

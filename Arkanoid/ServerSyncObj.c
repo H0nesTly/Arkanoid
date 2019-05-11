@@ -37,7 +37,7 @@ BOOL initSyncObject()
 	
 	hgMutexReadNewMessage = CreateMutex(
 		NULL, 
-		TRUE, 
+		FALSE, 
 		NAME_MUTEX_OBJECT_CLIENT_WRITE_MESSAGE);
 
 	return hgNotifyClient == NULL ||
