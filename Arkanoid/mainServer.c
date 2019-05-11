@@ -29,7 +29,7 @@ int _tmain(int argc, LPTSTR argv[])
 	_setmode(_fileno(stdout), _O_WTEXT);
 	#endif
 
-	leituraFicheiroConfig(TEXT("config.txt"), &serverConfig);
+	loadGameConfiguration(TEXT("config.txt"), &serverConfig);
 
 	if (!intitServerGameMem(&serverInstance.serverHandlers.sharedMemHandlers.hMapObjGame,
 		&serverInstance.serverHandlers.sharedMemHandlers.lpSharedMemGame))
@@ -80,17 +80,7 @@ int _tmain(int argc, LPTSTR argv[])
 	WaitForSingleObject(serverInstance.serverHandlers.threadHandlers.hThreadBall, INFINITE);
 
 
-	//getTopTenRegistry(scoreTopTen);
-
-	//int i;
-	//for (i = 0; i < 10; i++) {
-	//	_tprintf(TEXT("jogador: %s, Pontuação: %.2f\n"), scoreTopTen[i].jogador, scoreTopTen[i].pontuacao);
-	//}
-	//ScorePlayer novoScore;
-
-
-	
-	leituraFicheiroConfig(TEXT("config.txt"), &serverConfig);
+	loadGameConfiguration(TEXT("config.txt"), &serverConfig);
 
 	getTopTenRegistry(scoreTopTen);
 	
@@ -155,19 +145,7 @@ int _tmain(int argc, LPTSTR argv[])
 		_tprintf(TEXT("jogador: %s, Pontuação: %.2f\n"), scoreTopTen[i].jogador, scoreTopTen[i].pontuacao);
 	}
 
-	//setTopTenRegestry(scoreTopTen);
-
-
-	/*_tprintf(TEXT("Niveis: %d\n"), serverConfig.niveis);
-	_tprintf(TEXT("SpeedUps: %d\n"), serverConfig.speedUps);
-	_tprintf(TEXT("SlowDowns: %d\n"), serverConfig.slowDowns);
-	_tprintf(TEXT("Vidas Iniciais: %d\n"), serverConfig.vidasIniciais);
-	_tprintf(TEXT("Tijolos Iniciais: %d\n"), serverConfig.tejolosIniciais);
-	_tprintf(TEXT("prob speedup: %f\n"), serverConfig.probSpeedUp);
-	_tprintf(TEXT("prob slowdown: %f\n"), serverConfig.probSlowDowns);
-	_tprintf(TEXT("prob bonus: %f\n"), serverConfig.fBonusProbabilities);
-	_tprintf(TEXT("duracao: %d\n"), serverConfig.duracao);
-	_tprintf(TEXT("velocidade bola: %f\n"), serverConfig.fVelocityBall);*/
+	//setTopTenRegistry(scoreTopTen);
 
 
 	freeSyncObject();

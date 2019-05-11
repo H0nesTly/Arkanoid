@@ -20,7 +20,7 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 			//CRITICAL SECTION
 			WaitForSingleObject(hgMutexReadNewMessage, INFINITE);
 
-			for (;queue->wLastReadMessageIndex == queue->wLastUnReadMessageIndex;//Erro aqui
+			for (;queue->wLastReadMessageIndex != queue->wLastUnReadMessageIndex;//Erro aqui
 				queue->wLastReadMessageIndex = (queue->wLastReadMessageIndex + 1) % MESSAGE_QUEUE_SIZE)
 			{
 				_tprintf_s(TEXT("\n Valor da read %d e da Unread %d"), queue->wLastReadMessageIndex, queue->wLastUnReadMessageIndex);

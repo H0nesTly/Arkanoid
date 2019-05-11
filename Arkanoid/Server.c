@@ -1,5 +1,4 @@
 #include "Server.h"
-#pragma warning(disable : 4996)
 
 BOOL intitServerGameMem(HANDLE* hMapObj, LPVOID* lpSharedMem)
 {
@@ -88,76 +87,107 @@ VOID freeMappedMemory(ServerSharedMemoryHandlers* mapped)
 	CloseHandle(mapped->hMapObjMessage);
 }
 
-BOOL leituraFicheiroConfig(TCHAR *nomeFicheiro, GameServerConfiguration *serverConfig)
+BOOL loadGameConfiguration(TCHAR *nomeFicheiro, GameServerConfiguration *serverConfig)
 {
 	TCHAR buffer[256];
 	TCHAR* word = NULL;
+	TCHAR* tcNextToken = NULL;
+	FILE *fOpenFile;
 
+	errno_t  file = _tfopen_s(&fOpenFile, nomeFicheiro, TEXT("r"));
 
 	ZeroMemory(&buffer, sizeof(buffer));
 
-	HANDLE file = _tfopen(nomeFicheiro, TEXT("r"));
-
-	if (file == NULL) {
+	if (file != 0) 
+	{
 		_tprintf(TEXT("Ficheiro não existente \n"));
 		return FALSE;
 	}
 
-	while (_fgetts(buffer, 255, file) != NULL) {
-		if (_tcsstr(buffer, TEXT("niveis")) != NULL) {
-			word = _tcstok(buffer, TEXT(": "));
-			word = _tcstok(NULL, TEXT(": "));
+	while (_fgetts(buffer, 255, fOpenFile) != NULL) 
+	{
+		if (_tcsstr(buffer, TEXT_FILE_LEVELS) != NULL)
+		{
+			word = _tcstok_s(buffer, TEXT(": "), &tcNextToken);
+			word = _tcstok_s(NULL, TEXT(": "), &tcNextToken);
 			serverConfig->niveis = _tstoi(word);
+			continue;
 		}
-		if (_tcsstr(buffer, TEXT("speedups")) != NULL) {
-			word = _tcstok(buffer, TEXT(": "));
-			word = _tcstok(NULL, TEXT(": "));
+		if (_tcsstr(buffer, TEXT_FILE_SPEED_UPS) != NULL)
+		{
+			word = _tcstok_s(buffer, TEXT(": "), &tcNextToken);
+			word = _tcstok_s(NULL, TEXT(": "), &tcNextToken);
 			serverConfig->speedUps = _tstoi(word);
+			continue;
 		}
-		if (_tcsstr(buffer, TEXT("slowdowns")) != NULL) {
-			word = _tcstok(buffer, TEXT(": "));
-			word = _tcstok(NULL, TEXT(": "));
+		if (_tcsstr(buffer, TEXT_FILE_SLOW_DOWNS) != NULL)
+		{
+			word = _tcstok_s(buffer, TEXT(": "), &tcNextToken);
+			word = _tcstok_s(NULL, TEXT(": "), &tcNextToken);
 			serverConfig->slowDowns = _tstoi(word);
+			continue;
 		}
-		if (_tcsstr(buffer, TEXT("vidasiniciais")) != NULL) {
-			word = _tcstok(buffer, TEXT(": "));
-			word = _tcstok(NULL, TEXT(": "));
+		if (_tcsstr(buffer, TEXT_FILE_INITIAL_LIFES) != NULL) 
+		{
+			word = _tcstok_s(buffer, TEXT(": "), &tcNextToken);
+			word = _tcstok_s(NULL, TEXT(": "), &tcNextToken);
 			serverConfig->vidasIniciais = _tstoi(word);
+			continue;
 		}
-		if (_tcsstr(buffer, TEXT("tijolosiniciais")) != NULL) {
-			word = _tcstok(buffer, TEXT(": "));
-			word = _tcstok(NULL, TEXT(": "));
+		if (_tcsstr(buffer, TEXT_FILE_INITIAL_BLOCKS) != NULL)
+		{
+			word = _tcstok_s(buffer, TEXT(": "), &tcNextToken);
+			word = _tcstok_s(NULL, TEXT(": "), &tcNextToken);
 			serverConfig->tejolosIniciais = _tstoi(word);
+			continue;
 		}
-		if (_tcsstr(buffer, TEXT("probabilidadespeedup")) != NULL) {
-			word = _tcstok(buffer, TEXT(": "));
-			word = _tcstok(NULL, TEXT(": "));
+		if (_tcsstr(buffer, TEXT_FILE_PROB_SPEED_UPS) != NULL) 
+		{
+			word = _tcstok_s(buffer, TEXT(": "), &tcNextToken);
+			word = _tcstok_s(NULL, TEXT(": "), &tcNextToken);
 			serverConfig->probSpeedUp = _tstof(word);
+			continue;
 		}
-		if (_tcsstr(buffer, TEXT("probabilidadeslowdown")) != NULL) {
-			word = _tcstok(buffer, TEXT(": "));
-			word = _tcstok(NULL, TEXT(": "));
+		if (_tcsstr(buffer, TEXT_FILE_PROB_SLOW_DOWNS) != NULL) 
+		{
+			word = _tcstok_s(buffer, TEXT(": "), &tcNextToken);
+			word = _tcstok_s(NULL, TEXT(": "), &tcNextToken);
 			serverConfig->probSlowDowns = _tstof(word);
+			continue;
 		}
-		if (_tcsstr(buffer, TEXT("probabilidadebonus")) != NULL) {
-			word = _tcstok(buffer, TEXT(": "));
-			word = _tcstok(NULL, TEXT(": "));
+		if (_tcsstr(buffer, TEXT_FILE_PROB_BONUS) != NULL) 
+		{
+			word = _tcstok_s(buffer, TEXT(": "), &tcNextToken);
+			word = _tcstok_s(NULL, TEXT(": "), &tcNextToken);
 			serverConfig->fBonusProbabilities = _tstoi(word);
+			continue;
 		}
-		if (_tcsstr(buffer, TEXT("duracao")) != NULL) {
-			word = _tcstok(buffer, TEXT(": "));
-			word = _tcstok(NULL, TEXT(": "));
+		if (_tcsstr(buffer, TEXT_FILE_DURATION_LEVEL) != NULL)
+		{
+			word = _tcstok_s(buffer, TEXT(": "), &tcNextToken);
+			word = _tcstok_s(NULL, TEXT(": "), &tcNextToken);
 			serverConfig->duracao = _tstoi(word);
+			continue;
 		}
-		if (_tcsstr(buffer, TEXT("velocidadebola")) != NULL) {
-			word = _tcstok(buffer, TEXT(": "));
-			word = _tcstok(NULL, TEXT(": "));
+		if (_tcsstr(buffer, TEXT_FILE_BALL_SPEED) != NULL) 
+		{
+			word = _tcstok_s(buffer, TEXT(": "), &tcNextToken);
+			word = _tcstok_s(NULL, TEXT(": "), &tcNextToken);
 			serverConfig->fVelocityBall = _tstof(word);
+			continue;
 		}
 
 	}
 
-	return TRUE;
+	if (fOpenFile)
+	{
+		if (fclose(fOpenFile) == 0)
+		{
+			return TRUE;
+		}
+	}
+
+	return FALSE;
 }
 
 BOOL setTopTenRegistry(ScorePlayer scoreTopTen[]) {
@@ -193,10 +223,11 @@ BOOL setTopTenRegistry(ScorePlayer scoreTopTen[]) {
 		_tcscat_s(jogadores, _countof(jogadores), scoreTopTen[i].jogador);
 		
 
-		_stprintf(pontuacao, TEXT("%.2f"), scoreTopTen[i].pontuacao);
+		_stprintf_s(pontuacao, _countof(pontuacao), TEXT("%.2f"), scoreTopTen[i].pontuacao);
 		_tcscat_s(pontuacoes, _countof(pontuacoes), pontuacao);
 
-		if (i < 9) {
+		if (i < 9)
+		{
 			_tcscat_s(jogadores, _countof(jogadores), TEXT(";"));
 			_tcscat_s(pontuacoes, _countof(pontuacoes), TEXT(";"));
 		}
@@ -206,7 +237,7 @@ BOOL setTopTenRegistry(ScorePlayer scoreTopTen[]) {
 
 
 		//Criar/abrir uma chave em HKEY_CURRENT_USER\Software\MinhaAplicacao  
-		if (RegCreateKeyEx(HKEY_CURRENT_USER, TEXT("Software\\Arkanoid"), 0, NULL,
+		if (RegCreateKeyEx(HKEY_CURRENT_USER, TEXT_REGISTY_PATH, 0, NULL,
 			REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &chave, &infoState) != ERROR_SUCCESS) {
 			_tprintf(TEXT("Erro ao criar/abrir chave (%d)\n"), GetLastError());
 			return FALSE;
@@ -236,11 +267,18 @@ VOID setScoreTopTen(ScorePlayer newScore, ScorePlayer scoreTopTen[]) {
 	}
 
 	for (j = 9; j > i; j--) {
-		_tcscpy(scoreTopTen[j].jogador, scoreTopTen[j - 1].jogador);
+
+		_tcscpy_s(scoreTopTen[j].jogador, 
+			_countof(scoreTopTen[j].jogador),
+			scoreTopTen[j - 1].jogador);
 		scoreTopTen[j].pontuacao = scoreTopTen[j - 1].pontuacao;
 	}
 	if (i <= 9) {
-		_tcscpy(scoreTopTen[i].jogador, newScore.jogador);
+
+		_tcscpy_s(scoreTopTen[i].jogador,
+			_countof(scoreTopTen[i].jogador),
+			newScore.jogador);
+
 		scoreTopTen[i].pontuacao = newScore.pontuacao;
 	}
 }
@@ -252,18 +290,21 @@ BOOL getTopTenRegistry(ScorePlayer scoreTopTen[]) {
 	TCHAR scores[200];
 	TCHAR* jogador;
 	TCHAR* score;
+	TCHAR* tcNextToken = NULL;
 	int i = 0;
 
 	ZeroMemory(jogadores, sizeof(jogadores));
 	ZeroMemory(scores, sizeof(scores));
 
 	//Criar/abrir uma chave em HKEY_CURRENT_USER\Software\MinhaAplicacao  
-	if (RegCreateKeyEx(HKEY_CURRENT_USER, TEXT("Software\\Arkanoid"), 0, NULL,
-		REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &chave, &infoState) != ERROR_SUCCESS) {
+	if (RegCreateKeyEx(HKEY_CURRENT_USER, TEXT_REGISTY_PATH, 0, NULL,
+		REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &chave, &infoState) != ERROR_SUCCESS) 
+	{
 		_tprintf(TEXT("Erro ao criar/abrir chave (%d)\n"), GetLastError());
 		return FALSE;
 	}
-	else {  //chave criada ou aberta
+	else
+	{  //chave criada ou aberta
 		//Se a chave foi criada, inicializar os valores    
 		if (infoState == REG_OPENED_EXISTING_KEY) {
 
@@ -273,28 +314,28 @@ BOOL getTopTenRegistry(ScorePlayer scoreTopTen[]) {
 
 			
 			
-			jogador = _tcstok(jogadores, TEXT(";"));
-			
+			jogador = _tcstok_s(jogadores, TEXT(";"), &tcNextToken);		
+
+			//jogador = _tcstok_s(jogadores, TEXT(","), &tcNextToken);
 
 
-
-			jogador = _tcstok(jogadores, TEXT(","));
-
-
-			// Note: strtok is deprecated; consider using strtok_s instead
 			for (i = 0; i < 10; i++)
 			{
 				if (jogador == NULL)
 					break;
 				else
-					_tcscpy(scoreTopTen[i].jogador, jogador);
+					_tcscpy_s(scoreTopTen[i].jogador,
+						_countof(scoreTopTen[i].jogador),
+						jogador);
 
 
 				// Get next token:
-				jogador = _tcstok(NULL, TEXT(";")); // C4996
+				jogador = _tcstok_s(NULL, TEXT(";") ,&tcNextToken); 
 			}
 
-			score = _tcstok(scores, TEXT(";"));
+			tcNextToken = NULL;
+
+			score = _tcstok_s(scores, TEXT(";"), &tcNextToken);
 
 			// Note: strtok is deprecated; consider using strtok_s instead
 			for (i = 0; i < 10; i++)
@@ -305,7 +346,7 @@ BOOL getTopTenRegistry(ScorePlayer scoreTopTen[]) {
 					scoreTopTen[i].pontuacao = _tstof(score);
 
 				// Get next token:
-				score = _tcstok(NULL, TEXT(";")); // C4996
+				score = _tcstok_s(NULL, TEXT(";"), &tcNextToken); // C4996
 			}
 		}
 	}
