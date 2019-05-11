@@ -9,10 +9,11 @@
 #include <stdio.h>
 
 #include "ClientStructures.h"
+#include "ClientThreads.h"
 #include "..\Communicate\MessageProtocol.h"
 
-LPVOID lpgSharedMemGame = NULL;
-HANDLE hgMapObjGame = NULL;
+LPVOID lpgcSharedMemGame = NULL;
+LPVOID lpgcSharedMemMessage = NULL;
 
 int getLoginMethod()
 {
@@ -31,7 +32,7 @@ int getLoginMethod()
 
 void getUserName(ClientStructure* dest)
 {
-	_tprintf(TEXT("\n Insira username(ate 19) :"));
+	_tprintf(TEXT("\n Insira username(ate 20) :"));
 	_tscanf_s( TEXT("%19s") , dest->tcUserName , (unsigned)_countof(dest->tcUserName));
 }
 
@@ -41,12 +42,10 @@ int _tmain(int argc, LPTSTR argv[])
 	UNREFERENCED_PARAMETER(argv);
 	ClientStructure ClientInfo;
 
-	ZeroMemory(&ClientInfo, sizeof(ClientStructure));
+	HANDLE hThreads[NUMBER_OF_CLIENT_THREADS];
+	DWORD dwThreadsIds[NUMBER_OF_CLIENT_THREADS];
 
-	//LPVOID lpSharedMemGame = NULL;
-	//LPVOID	LpSharedMemMessage = NULL;
-	//HANDLE hMapObjGame = NULL;
-	//HANDLE	hMapObjMessage = NULL;
+	ZeroMemory(&ClientInfo, sizeof(ClientStructure));
 
 	//UNICODE: Por defeito, a consola Windows não processa caracteres wide.
 	//A maneira mais fácil para ter esta funcionalidade é chamar _setmode:
@@ -59,7 +58,7 @@ int _tmain(int argc, LPTSTR argv[])
 	switch (getLoginMethod())
 	{
 	case 1:
-		Login(lpgSharedMemGame, ClientInfo.tcUserName);
+		Login(ClientInfo.tcUserName);
 		break;
 	case 2:
 		break;
@@ -70,7 +69,37 @@ int _tmain(int argc, LPTSTR argv[])
 		exit(EXIT_SUCCESS);
 	}
 
-	_gettc(stdin);
+	hThreads[0] = CreateThread(	
+		NULL,
+		0,
+		readInputThread,
+		NULL,
+		0,
+		&dwThreadsIds[0]
+	);
 
+	hThreads[1] = CreateThread(
+		NULL,
+		0,
+		readMessageThread,
+		NULL,
+		0,
+		&dwThreadsIds[1]
+	);	
+	
+	hThreads[2] = CreateThread(
+		NULL,
+		0,
+		readGameDataThread,
+		NULL,
+		0,
+		&dwThreadsIds[2]
+	);
+
+	WaitForMultipleObjects(NUMBER_OF_CLIENT_THREADS, hThreads, TRUE ,INFINITE);
+
+
+	freeThreads(hThreads);
+	system("PAUSE");
 	return 0;
 }

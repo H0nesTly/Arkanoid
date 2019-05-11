@@ -1,45 +1,94 @@
 #include "stdafx.h"
 #include "MessageProtocol.h"
+#include "GameStructures.h"
 
 extern LPVOID lpgSharedMemMessage;
+extern LPVOID lpgSharedMemGame;
 
-extern HANDLE hgWriteObject;
 extern HANDLE hgReadObject;
+extern HANDLE hgSemaphoreWriteToServer;
 
-VOID __cdecl Login(LPVOID  lpSharedMem, PTCHAR username)
+extern HANDLE hgMutexWriteNewMessage;
+
+VOID __cdecl Login(PTCHAR username)
 {
+	MessageQueue* queue = (MessageQueue*)lpgSharedMemMessage;
+	DWORD dwWaitMutex;
+	WORD wNextIndexMessage;
 
-	lpSharedMem = lpgSharedMemMessage;
+	//MUTEX DEVE ESTAR BLOQUEADO
+	dwWaitMutex = WaitForSingleObject(hgMutexWriteNewMessage, INFINITE);
+	//CRITICAL SECTION
+	
+	wNextIndexMessage = (queue->wLastUnReadMessageIndex + 1) % MESSAGE_QUEUE_SIZE;
 
-	MessageQueue* queue = (MessageQueue*)lpSharedMem;
+	//TODO :Se BUFFER ESTIVER CHEIO O QUE FAZER? TENTAR EM X ms apos tentativa??
+	/*Lista de mensagens está cheia*/
+	if (wNextIndexMessage == queue->wLastReadMessageIndex) 
+	{
+		//QUE FAXEMOS? COM A LISTA CHEIA?
+	}
+	else
+	{
+		//Escrevemos mensagem
+		queue->wLastUnReadMessageIndex = wNextIndexMessage;
 
-	//MUTEX ou sincronização quando se escreve no buffer		
-	_tcscpy_s(queue->queueOfMessageClientServer[0].messagePD.tcSender,
-		(sizeof(TCHAR) * MAX_LENGTH_NAME),
-		username);
+		_tcscpy_s(queue->queueOfMessageClientServer[wNextIndexMessage].messagePD.tcSender,
+			_countof(queue->queueOfMessageClientServer[0].messagePD.tcSender),
+			username);
 
-	_tcscpy_s(queue->queueOfMessageClientServer[0].messagePD.tcDestination,
-		(sizeof(TCHAR) * MAX_LENGTH_NAME),
-		NAME_SERVER);
+		_tcscpy_s(queue->queueOfMessageClientServer[wNextIndexMessage].messagePD.tcDestination,
+			_countof(queue->queueOfMessageClientServer[0].messagePD.tcDestination),
+			NAME_SERVER);
 
-	queue->queueOfMessageClientServer[0].request= LoginMessage;
+		queue->queueOfMessageClientServer[wNextIndexMessage].request = LoginMessage;
 
-	_tcscpy_s(queue->queueOfMessageClientServer[0].messagePD.tcData,
-		sizeof(TCHAR) * MAX_LENGTH_NAME,
+		_tcscpy_s(queue->queueOfMessageClientServer[wNextIndexMessage].messagePD.tcData,
+			_countof(queue->queueOfMessageClientServer[wNextIndexMessage].messagePD.tcData),
 			TEXT("Quero me conectar"));
+	}
 
+	//END CRITICAL SECTION	
 	//queue->wLastUnReadMessageIndex++;
 
-	if (!SetEvent(hgWriteObject))
+	if (!ReleaseSemaphore(hgSemaphoreWriteToServer, 1, NULL) || !ReleaseMutex(hgMutexWriteNewMessage))
 	{
-		_tprintf(TEXT("Set event erro (%d)\n"), GetLastError());
+		_tprintf(TEXT("Release do mutex ou semafor FALHOU:(%d)\n"), GetLastError());
 		return;
 	}
 
 }
 
-VOID __cdecl ReceiveBroadcast(){}
+VOID __cdecl ReceiveBroadcast()
+{
+	Game* game = (Game*)lpgSharedMemGame;
 
-VOID __cdecl SendMessageDll(){}
+	_tprintf(TEXT("Posicaçao da bola %d\n"), game->ball.ballPosition.x);
+}
 
-VOID __cdecl ReceiveMessage(){}
+VOID __cdecl SendMessageDll() {}
+
+VOID __cdecl ReceiveMessage(const PTCHAR UserName)
+{
+	MessageQueue* queue = (MessageQueue*)lpgSharedMemMessage;
+
+	WaitForSingleObject(hgReadObject, INFINITE);
+	//Critical section
+
+	if (_tcscmp(UserName, queue->queueOfMessageServerClient[queue->wLastUnReadMessageIndexSC].messagePD.tcDestination) == 0 ||
+		queue->queueOfMessageServerClient[queue->wLastUnReadMessageIndexSC].messagePD.tcDestination[0] == '*')
+	{
+		switch (queue->queueOfMessageServerClient[queue->wLastUnReadMessageIndexSC].response)
+		{
+		case ResponseLoginSuccess:
+			_tprintf(TEXT("Login Bem Sucedido\n"));
+			break;
+		case ResponseLoginFail:
+			_tprintf(TEXT("Login MAL Sucedido\n"));
+			break;
+		default:
+			break;
+		}
+	}
+	ResetEvent(hgReadObject);
+}

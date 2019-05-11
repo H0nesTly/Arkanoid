@@ -43,7 +43,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -132,10 +132,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ClientThreads.c" />
     <ClCompile Include="mainClient.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientStructures.h" />
+    <ClInclude Include="ClientThreads.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Communicate\Communicate.vcxproj">

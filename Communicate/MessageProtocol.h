@@ -7,7 +7,9 @@
 
 
 #define NAME_EVENT_OBJECT_SERVER_READ TEXT("readEvent")
+#define NAME_SEMAPHORE_OBJECT_SERVER_READ TEXT("readSemaphore")
 #define NAME_EVENT_OBJECT_SERVER_WRITE TEXT("writeEvent")
+#define NAME_MUTEX_OBJECT_CLIENT_WRITE_MESSAGE TEXT("writeMessageMutex")
 #define NAME_SHARED_MEMORY_MESSAGE TEXT("dllSharedMemMessage") //NOME da Mem Mapeada 
 
 #define NAME_SERVER TEXT("Server")
@@ -20,6 +22,7 @@ typedef struct messageQueue MessageQueue;
 
 typedef enum responseOfMessage TypeOfResponseMessage;
 typedef enum requestOfMessage TypeOfRequestMessage;
+
 
 //Estrutura da memoria partilhada "Zona de Mensagens"
 struct messageProtocolDatagram
@@ -44,17 +47,22 @@ struct messageProtocolDatagramRequest
 	MessageProtocolDatagram messagePD;
 };
 
+// LastReadMessage
+//	  v 
+// [ |#|#|#| ] -> queueOfMessageClientServer
+//        ^
+//		  LastUnReadMessage	
 struct messageQueue
 {
 	//VARIAVEIS DE INDEX da primeira queue
-	WORD wFirstUnReadMessageIndex;
-	WORD wLastUnReadMessageIndex;
+	WORD wLastUnReadMessageIndex;	//Está variável é usada no Cliente para saber onde colocar a mensagem 
+	WORD wLastReadMessageIndex;		//Está variável é usada no lado do Servidor para saber que mensagens ainda não leu
 
 	MessageProtocolDatagramRequest queueOfMessageClientServer[MESSAGE_QUEUE_SIZE];			//Cliente- produtor | Servidor - consumidor
 
 	//VARIAVEIS DE INDEX da segunda queue
-	WORD wFirstUnReadMessageIndexSC;
-	WORD wLastUnReadMessageIndexSC;
+	WORD wLastUnReadMessageIndexSC; //Está variável é usada no lado do Cliente para saber que mensagens ainda não leu
+	WORD wLastReadMessageIndexSC;	//Está variável é usada no Servidor para saber onde colocar a mensagem 
 	MessageProtocolDatagramResponse queueOfMessageServerClient[MESSAGE_QUEUE_READER_SIZE];	//Servidor - Produtor | Cliente - consumidor
 };
 
@@ -68,7 +76,8 @@ enum responseOfMessage
 {
 	ResponseFail = -1,
 	ResponseLoginFail,
-	ResponseLoginSuccess
+	ResponseLoginSuccess,
+	ResponseTop10
 };
 
 enum requestOfMessage
@@ -91,13 +100,13 @@ extern "C" {          // we need to export the C interface
 	#endif
 
 	/*Enviamos mensagem ao servidor*/
-	DLL_API VOID __cdecl Login(LPVOID  lpSharedMem, PTCHAR username);
+	DLL_API VOID __cdecl Login(PTCHAR);
 
 	DLL_API VOID __cdecl ReceiveBroadcast();
 
 	DLL_API VOID __cdecl SendMessageDll();
 
-	DLL_API VOID __cdecl ReceiveMessage();
+	DLL_API VOID __cdecl ReceiveMessage(const PTCHAR);
 
 	#ifdef __cplusplus
 }

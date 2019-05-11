@@ -1,6 +1,5 @@
 #pragma once
 #include "stdafx.h"
-
 /*Cria handle para ler os dados da memoria mapeada*/
 BOOL initClientGameMem(HANDLE*, LPVOID*);
 

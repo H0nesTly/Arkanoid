@@ -14,6 +14,8 @@ typedef struct serverThreadsHandlers ServerThreadsHandlers;
 typedef struct gameServerConfiguration GameServerConfiguration;
 typedef struct lobby Lobby;
 
+typedef struct playerInfo PlayerInfo;
+
 typedef enum stateOfGame StateOfGame;
 
 
@@ -33,15 +35,23 @@ struct serverHandles
 
 struct gameServerConfiguration
 {
-	float fVelocityBall;
-	float fBonusProbabilities[3];
+	int niveis;
+	int speedUps;
+	int slowDowns;
+	int duracao;
+	double probSpeedUp;
+	double probSlowDowns;
+	int vidasIniciais;
+	int tejolosIniciais;
+	double fVelocityBall;
+	double fBonusProbabilities;
 	WORD wWidthGameBoard, wHeightGameBoard;	
 	WORD wWidthPlayerBlock, wHeightPlayerBlock;
 };
 
 struct lobby
 {
-	TCHAR playersInLobby[MAX_PLAYER_INSTANCES];
+	PlayerInfo playersInLobby[MAX_PLAYER_INSTANCES];
 	WORD wPlayersInLobby;
 };
 
@@ -62,7 +72,7 @@ struct server
 
 enum stateOfGame
 {
-	WaitForPlayers,
+	WaitingForPlayers,
 	GameInProgress,
 	GameOver
 };
