@@ -24,7 +24,7 @@ BOOL intitServerGameMem(HANDLE*, LPVOID*);
 /*Mapea a Memoria que ira armazenar o array de mensagens*/
 BOOL intitServerMessageMem(HANDLE*, LPVOID*);
 
-void freeMappedMemory(ServerSharedMemoryHandlers* );
+void freeMappedMemoryServer(ServerSharedMemoryHandlers* );
 
 BOOL loadGameConfiguration(TCHAR *nomeFicheiro, GameServerConfiguration *serverConfig);
 

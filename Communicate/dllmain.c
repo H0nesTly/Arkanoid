@@ -2,25 +2,9 @@
 #include "stdafx.h"
 
 #include "DllSetup.h"
+#include <minwinbase.h>
 
-//Ponteiro para objetos do jogo
-LPVOID lpgSharedMemGame = NULL;
-HANDLE hgMapObjGame = NULL;
-
-//Ponteiro para objetos das mensagens
-LPVOID lpgSharedMemMessage = NULL;
-HANDLE hgMapObjMessage = NULL;
-
-//HANDLE PARA sincronizaçao
-HANDLE hgWriteObject = NULL;
-HANDLE hgReadObject = NULL;
-
-//Semaforo para notificar que existe uma nova mensagem para o servidor ler
-HANDLE hgSemaphoreWriteToServer = NULL;
-
-//Mutex's para a escrita de novas mensagens
-HANDLE hgMutexWriteNewMessage = NULL;
-
+ClientConnection gClientConnection;
 
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
@@ -30,24 +14,14 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     switch (ul_reason_for_call)
     {
     case DLL_PROCESS_ATTACH:
-
-		//Inicializar memoria partilhada 
-		if (!initClientGameMem(&hgMapObjGame, &lpgSharedMemGame))
-			return FALSE;
-
-		if (!initClientMessageMem(&hgMapObjMessage, &lpgSharedMemMessage))
-			return FALSE;
-
-		if (!initSyncObjects(&hgReadObject, &hgSemaphoreWriteToServer))
-			return FALSE;
+		ZeroMemory(&gClientConnection, sizeof(ClientConnection));
 		break;
     case DLL_THREAD_ATTACH:
 		break;
     case DLL_THREAD_DETACH:
 		break;
     case DLL_PROCESS_DETACH:
-		freeMappedMemory(hgMapObjGame,lpgSharedMemGame, hgMapObjMessage, lpgSharedMemMessage);
-		freeSyncObjects(&hgReadObject, &hgSemaphoreWriteToServer);
+		freeComponents(&gClientConnection);
         break;
     }
     return TRUE;

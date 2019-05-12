@@ -11,6 +11,7 @@
 #include "ClientStructures.h"
 #include "ClientThreads.h"
 #include "..\Communicate\MessageProtocol.h"
+#include "..\Communicate\DllSetup.h"
 
 LPVOID lpgcSharedMemGame = NULL;
 LPVOID lpgcSharedMemMessage = NULL;
@@ -58,7 +59,7 @@ int _tmain(int argc, LPTSTR argv[])
 	switch (getLoginMethod())
 	{
 	case 1:
-		Login(ClientInfo.tcUserName);
+		Login(ClientInfo.tcUserName, clientSharedMemoryConnection);
 		break;
 	case 2:
 		break;

@@ -1,5 +1,6 @@
 #pragma once
 #include "stdafx.h"
+#include "DllSetup.h"
 
 #define MAX_LENGTH_NAME 20
 #define MESSAGE_QUEUE_SIZE 20
@@ -100,7 +101,7 @@ extern "C" {          // we need to export the C interface
 	#endif
 
 	/*Enviamos mensagem ao servidor*/
-	DLL_API VOID __cdecl Login(PTCHAR);
+	DLL_API VOID __cdecl Login(PTCHAR, TypeOfClientConnection);
 
 	DLL_API VOID __cdecl ReceiveBroadcast();
 

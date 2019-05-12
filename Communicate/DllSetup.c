@@ -3,8 +3,57 @@
 #include "GameStructures.h"
 #include "MessageProtocol.h"
 
-extern HANDLE hgSemaphoreWriteToServer;
-extern HANDLE hgMutexWriteNewMessage;
+BOOL initComponets(ClientConnection* ccArg)
+{
+	switch (ccArg->typeOfConnection)
+	{
+	case clientSharedMemoryConnection:
+		return initSharedMemory(&ccArg->SharedMem);
+		break;
+	case clientNamedPipeLocalConnection:
+		break;
+	case clientNamedPipeRemoteConnection:
+		break;
+	default:
+		break;
+	}
+	return FALSE;
+}
+
+VOID freeComponents(ClientConnection* ccArg)
+{
+	switch (ccArg->typeOfConnection)
+	{
+	case clientSharedMemoryConnection:
+		freeMappedMemory(
+			ccArg->SharedMem.hGame,
+			ccArg->SharedMem.lpGame,
+			ccArg->SharedMem.hMessage,
+			ccArg->SharedMem.lpMessage);
+
+		freeSyncObjects(
+			ccArg->SharedMem.hSemaphoreWriteMessageToServer,
+			ccArg->SharedMem.hEventReadNewMessage,
+			ccArg->SharedMem.hMutexWriteNewMessage);
+
+		break;
+	case clientNamedPipeLocalConnection:
+		break;
+	case clientNamedPipeRemoteConnection:
+		break;
+	default:
+		break;
+	}
+}
+
+/*--------------- FIM Geral Init/Free ---------------*/
+
+BOOL initSharedMemory(SharedMemory* shArg)
+{
+	return initClientGameMem(&shArg->hGame, &shArg->lpGame) && 
+		initClientMessageMem(&shArg->hMessage, &shArg->lpMessage) &&
+		initSyncObjects(&shArg->hEventReadNewMessage, &shArg->hSemaphoreWriteMessageToServer, &shArg->hMutexWriteNewMessage);
+}
 
 BOOL initClientGameMem(HANDLE* hMapObj, LPVOID* lpSharedMem)
 {
@@ -21,14 +70,14 @@ BOOL initClientGameMem(HANDLE* hMapObj, LPVOID* lpSharedMem)
 	{
 		return FALSE;
 	}
-	
+
 
 	if (GetLastError() != ERROR_ALREADY_EXISTS) // A dll foi chamada antes do servidor ERRO!!!!
 	{
 		_tprintf(TEXT("Mapear memoria do Jogo %d \n"), GetLastError());
 		return FALSE;
 	}
-	
+
 	*lpSharedMem = MapViewOfFile(
 		*hMapObj,
 		FILE_MAP_READ,
@@ -89,14 +138,14 @@ VOID freeMappedMemory(HANDLE hMapObjGame, LPVOID lpSharedGame, HANDLE hMapObjMes
 	CloseHandle(hMapObjMessage);
 }
 
-BOOL initSyncObjects(HANDLE* hRObj, HANDLE* hwSemaphore)
+BOOL initSyncObjects(HANDLE* hRObj, HANDLE* hwSemaphore, HANDLE* hMutex)
 {
 	*hRObj = CreateEvent(
 		NULL,		//security attributes
 		TRUE,		//manual reset
 		FALSE,		//inital states as nonsignaled
 		NAME_EVENT_OBJECT_SERVER_READ);
-	
+
 	if (GetLastError() != ERROR_ALREADY_EXISTS)
 	{
 		return FALSE;
@@ -107,19 +156,19 @@ BOOL initSyncObjects(HANDLE* hRObj, HANDLE* hwSemaphore)
 		TRUE,		//Herança do handler
 		NAME_SEMAPHORE_OBJECT_SERVER_READ);
 
-	hgMutexWriteNewMessage = OpenMutex(
-		MUTEX_ALL_ACCESS, 
-		TRUE, 
+	*hMutex = OpenMutex(
+		MUTEX_ALL_ACCESS,
+		TRUE,
 		NAME_MUTEX_OBJECT_CLIENT_WRITE_MESSAGE);
 
 	_tprintf(TEXT("Criou eventos \n"));
 
-	return *hRObj == NULL || *hwSemaphore == NULL || hgMutexWriteNewMessage == NULL ? FALSE : TRUE;
+	return *hRObj == NULL || *hwSemaphore == NULL || *hMutex == NULL ? FALSE : TRUE;
 }
 
-VOID freeSyncObjects(HANDLE hWObj, HANDLE hRObj)
+VOID freeSyncObjects(HANDLE hWObj, HANDLE hRObj, HANDLE hMutex)
 {
-	CloseHandle(hgMutexWriteNewMessage);
 	CloseHandle(hWObj);
 	CloseHandle(hRObj);
+	CloseHandle(hMutex);
 }

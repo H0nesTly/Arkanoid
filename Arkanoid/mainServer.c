@@ -29,7 +29,7 @@ int _tmain(int argc, LPTSTR argv[])
 	_setmode(_fileno(stdout), _O_WTEXT);
 	#endif
 
-	loadGameConfiguration(TEXT("config.txt"), &serverConfig);
+	//loadGameConfiguration(TEXT("config.txt"), &serverConfig);
 
 	if (!intitServerGameMem(&serverInstance.serverHandlers.sharedMemHandlers.hMapObjGame,
 		&serverInstance.serverHandlers.sharedMemHandlers.lpSharedMemGame))
@@ -149,7 +149,7 @@ int _tmain(int argc, LPTSTR argv[])
 
 
 	freeSyncObject();
-	freeMappedMemory(&serverInstance.serverHandlers.sharedMemHandlers);
+	freeMappedMemoryServer(&serverInstance.serverHandlers.sharedMemHandlers);
 	freeThreads(serverInstance.serverHandlers.threadHandlers);
 
 
