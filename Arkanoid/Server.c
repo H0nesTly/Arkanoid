@@ -388,17 +388,17 @@ BOOL addUserNameToLobby(PTCHAR userName, ServerGameInstance* gameLobby)
 	return FALSE;
 }
 
-
+//TODO: passar para proxima mensagem
 VOID writeMessageToClient(MessageQueue* mqArg, TypeOfResponseMessage response, const PTCHAR pSender, const PTCHAR pDestination)
 {
 	mqArg->queueOfMessageServerClient[0].response = response;
 
 	_tcscpy_s(mqArg->queueOfMessageServerClient[0].messagePD.tcDestination,
-		_countof(pDestination),
+		_countof(mqArg->queueOfMessageServerClient[0].messagePD.tcDestination),
 		pDestination);
 
 	_tcscpy_s(mqArg->queueOfMessageServerClient[0].messagePD.tcSender,
-		_countof(pSender),
+		_countof(mqArg->queueOfMessageServerClient[0].messagePD.tcSender),
 		pSender);
 
 }

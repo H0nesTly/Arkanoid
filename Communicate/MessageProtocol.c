@@ -25,21 +25,22 @@ static VOID loginSharedMemory(const PTCHAR username)
 	else
 	{
 		//Escrevemos mensagem
-		queue->wLastUnReadMessageIndex = wNextIndexMessage;
 
-		_tcscpy_s(queue->queueOfMessageClientServer[wNextIndexMessage].messagePD.tcSender,
+		_tcscpy_s(queue->queueOfMessageClientServer[queue->wLastUnReadMessageIndex].messagePD.tcSender,
 			_countof(queue->queueOfMessageClientServer[0].messagePD.tcSender),
 			username);
 
-		_tcscpy_s(queue->queueOfMessageClientServer[wNextIndexMessage].messagePD.tcDestination,
+		_tcscpy_s(queue->queueOfMessageClientServer[queue->wLastUnReadMessageIndex].messagePD.tcDestination,
 			_countof(queue->queueOfMessageClientServer[0].messagePD.tcDestination),
 			NAME_SERVER);
 
-		queue->queueOfMessageClientServer[wNextIndexMessage].request = LoginMessage;
+		queue->queueOfMessageClientServer[queue->wLastUnReadMessageIndex].request = LoginMessage;
 
-		_tcscpy_s(queue->queueOfMessageClientServer[wNextIndexMessage].messagePD.tcData,
-			_countof(queue->queueOfMessageClientServer[wNextIndexMessage].messagePD.tcData),
+		_tcscpy_s(queue->queueOfMessageClientServer[queue->wLastUnReadMessageIndex].messagePD.tcData,
+			_countof(queue->queueOfMessageClientServer[queue->wLastUnReadMessageIndex].messagePD.tcData),
 			TEXT("Quero me conectar"));
+
+		queue->wLastUnReadMessageIndex = wNextIndexMessage;
 	}
 
 	//END CRITICAL SECTION	

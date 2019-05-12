@@ -37,7 +37,7 @@ struct clientConnection
 
 		struct pipeRemote
 		{
-			LPVOID y;
+			int y;
 		} PipeRemote;
 	};
 };
