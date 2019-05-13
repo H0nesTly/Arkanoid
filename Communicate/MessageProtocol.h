@@ -13,6 +13,8 @@
 #define NAME_MUTEX_OBJECT_CLIENT_WRITE_MESSAGE TEXT("writeMessageMutex")
 #define NAME_SHARED_MEMORY_MESSAGE TEXT("dllSharedMemMessage") //NOME da Mem Mapeada 
 
+#define NAME_NAMED_PIPE TEXT("\\\\.\\pipe\\namedPipePath")
+
 #define NAME_SERVER TEXT("Server")
 
 typedef struct messageProtocolDatagram MessageProtocolDatagram;

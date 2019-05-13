@@ -11,6 +11,7 @@ BOOL initComponets(ClientConnection* ccArg)
 		return initSharedMemory(&ccArg->SharedMem);
 		break;
 	case clientNamedPipeLocalConnection:
+		return initNamedPipeLocal(&ccArg->PipeLocal);
 		break;
 	case clientNamedPipeRemoteConnection:
 		break;
@@ -38,6 +39,7 @@ VOID freeComponents(ClientConnection* ccArg)
 
 		break;
 	case clientNamedPipeLocalConnection:
+		freeNamedPipeLocal(ccArg->PipeLocal);
 		break;
 	case clientNamedPipeRemoteConnection:
 		break;
@@ -171,4 +173,25 @@ VOID freeSyncObjects(HANDLE hWObj, HANDLE hRObj, HANDLE hMutex)
 	CloseHandle(hWObj);
 	CloseHandle(hRObj);
 	CloseHandle(hMutex);
+}
+
+BOOL initNamedPipeLocal(PipeLocal* plArg)
+{
+	plArg->hNamedPipe = CreateFile(
+		NAME_NAMED_PIPE,	//Nome do Pipe		
+		GENERIC_READ |		//Acessos
+		GENERIC_WRITE,
+		0,					//modo de partilha
+		NULL,				//securty atributes
+		OPEN_EXISTING,		//abrir o pipe
+		0,					//atributos normais
+		NULL);				//template file
+
+	return plArg->hNamedPipe == NULL ||
+		GetLastError() != ERROR_PIPE_BUSY ? FALSE : TRUE;
+}
+
+VOID freeNamedPipeLocal(PipeLocal* plArg)
+{
+	CloseHandle(plArg->hNamedPipe);
 }

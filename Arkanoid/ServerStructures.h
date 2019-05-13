@@ -9,6 +9,7 @@
 typedef struct server Server;
 typedef struct serverGameInstance ServerGameInstance;
 typedef struct serverSharedMemoryHandlers ServerSharedMemoryHandlers;
+typedef struct namedPipeInstance NamedPipeInstance;
 typedef struct serverHandles ServerHandlers;
 typedef struct serverThreadsHandlers ServerThreadsHandlers;
 typedef struct gameServerConfiguration GameServerConfiguration;
@@ -27,8 +28,18 @@ struct serverSharedMemoryHandlers
 	HANDLE	hMapObjMessage;
 };
 
+
+struct namedPipeInstance
+{
+	OVERLAPPED oOverLap;
+	HANDLE hNPInstance;
+	BOOL fPendig;
+};
+
 struct serverHandles
 {
+	//TODO:  Apenas Alocar FIFOS Necessários
+	NamedPipeInstance namedPipeInstances[MAX_PLAYER_INSTANCES];
 	ServerSharedMemoryHandlers sharedMemHandlers;
 	ServerThreadsHandlers threadHandlers;
 };

@@ -32,7 +32,8 @@ struct clientConnection
 
 		struct pipeLocal
 		{
-			LPVOID x;
+			HANDLE hNamedPipe;
+			//Estado?
 		} PipeLocal;
 
 		struct pipeRemote
@@ -69,3 +70,9 @@ BOOL initSyncObjects(HANDLE*, HANDLE*, HANDLE*);
 
 VOID freeSyncObjects(HANDLE, HANDLE, HANDLE);
 /*----------  FIM Funçoes de Bootstrapping para memoria partilhada ----------*/
+
+/*---------- Funçoes de Bootstrapping para NamedPipes ----------*/
+BOOL initNamedPipeLocal(PipeLocal*);
+
+VOID freeNamedPipeLocal(PipeLocal*);
+/*---------- FIM Funçoes de Bootstrapping para NamedPipes ----------*/
