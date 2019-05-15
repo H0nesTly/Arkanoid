@@ -123,6 +123,13 @@ BOOL initServerPipeLocal(NamedPipeInstance* npInstances, HANDLE* hEventOL,WORD w
 		{
 			return FALSE;
 		}
+
+		npInstances[i].fPendigIO = waitNewClientNP(
+			npInstances[i].hNPInstance,
+			&npInstances[i].oOverLap);
+
+		npInstances[i].State = npInstances[i].fPendigIO ? ConnectingState : ReadState;
+
 	}
 
 	return TRUE;
@@ -450,4 +457,25 @@ VOID writeMessageToClient(MessageQueue* mqArg, TypeOfResponseMessage response, c
 		_countof(mqArg->queueOfMessageServerClient[0].messagePD.tcSender),
 		pSender);
 
+}
+
+BOOL waitNewClientNP(HANDLE hNamedipe, LPOVERLAPPED lpo)
+{
+	//Suposto retornar 0
+	if(ConnectNamedPipe(hNamedipe, lpo))
+		return FALSE;
+
+	switch (GetLastError())
+	{
+	case ERROR_IO_PENDING:
+		return TRUE;
+		//Um cliente conectou-se dentro do time-out 
+	case ERROR_PIPE_CONNECTED:
+		if (SetEvent(lpo->hEvent))
+			break;
+	default:
+		//nao estavamos a espera 
+		return  FALSE;
+	}
+	return TRUE;
 }

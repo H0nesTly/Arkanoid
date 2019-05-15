@@ -45,3 +45,6 @@ BOOL addUserNameToLobby(PTCHAR, ServerGameInstance*);
 
 /*TODO: INCREMENTAR MENSAGENS POR LER*/
 VOID writeMessageToClient(MessageQueue*, TypeOfResponseMessage, const PTCHAR , const PTCHAR);
+
+/*--------------- NAMED PIPES ---------------*/
+BOOL waitNewClientNP(HANDLE, LPOVERLAPPED);
