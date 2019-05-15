@@ -21,7 +21,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     case DLL_THREAD_DETACH:
 		break;
     case DLL_PROCESS_DETACH:
-		freeComponents(&gClientConnection);
+		freeComponentsDLL(&gClientConnection);
         break;
     }
     return TRUE;

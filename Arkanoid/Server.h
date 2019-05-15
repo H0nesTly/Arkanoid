@@ -48,3 +48,5 @@ VOID writeMessageToClient(MessageQueue*, TypeOfResponseMessage, const PTCHAR , c
 
 /*--------------- NAMED PIPES ---------------*/
 BOOL waitNewClientNP(HANDLE, LPOVERLAPPED);
+
+VOID disconnectNamedPipe(NamedPipeInstance*);

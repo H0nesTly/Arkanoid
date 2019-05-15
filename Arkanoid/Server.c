@@ -479,3 +479,17 @@ BOOL waitNewClientNP(HANDLE hNamedipe, LPOVERLAPPED lpo)
 	}
 	return TRUE;
 }
+
+VOID disconnectNamedPipe(NamedPipeInstance* npToDisconect)
+{
+	if(!DisconnectNamedPipe(npToDisconect->hNPInstance))
+	{
+		_tprintf(TEXT("\nDisconeção do named pipe falhou com o erro %d"), GetLastError());
+	}
+
+	npToDisconect->fPendigIO = waitNewClientNP(
+			npToDisconect->hNPInstance,
+			&npToDisconect->oOverLap);
+
+		npToDisconect->State = npToDisconect->fPendigIO ? ConnectingState : ReadState;
+}

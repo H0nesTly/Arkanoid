@@ -51,28 +51,28 @@ enum typeOfClientConnection
 };
 
 
-BOOL initComponets(ClientConnection* );
+BOOL initComponetsDLL(ClientConnection* );
 
-VOID freeComponents(ClientConnection*);
+VOID freeComponentsDLL(ClientConnection*);
 /*---------- Funçoes de Bootstrapping para memoria partilhada ----------*/
 
-BOOL initSharedMemory(SharedMemory*);
+BOOL initSharedMemoryDLL(SharedMemory*);
 
 /*Cria handle para ler os dados da memoria mapeada*/
-BOOL initClientGameMem(HANDLE*, LPVOID*);
+BOOL initClientGameMemDLL(HANDLE*, LPVOID*);
 
 /*Cria handle p da memoria mapeada*/
-BOOL initClientMessageMem(HANDLE*, LPVOID*);
+BOOL initClientMessageMemDLL(HANDLE*, LPVOID*);
 
-VOID freeMappedMemory(HANDLE, LPVOID, HANDLE, LPVOID);
+VOID freeMappedMemoryDLL(HANDLE, LPVOID, HANDLE, LPVOID);
 
-BOOL initSyncObjects(HANDLE*, HANDLE*, HANDLE*);
+BOOL initSyncObjectsDLL(HANDLE*, HANDLE*, HANDLE*);
 
-VOID freeSyncObjects(HANDLE, HANDLE, HANDLE);
+VOID freeSyncObjectsDLL(HANDLE, HANDLE, HANDLE);
 /*----------  FIM Funçoes de Bootstrapping para memoria partilhada ----------*/
 
 /*---------- Funçoes de Bootstrapping para NamedPipes ----------*/
-BOOL initNamedPipeLocal(PipeLocal*);
+BOOL initNamedPipeLocalDLL(PipeLocal*);
 
-VOID freeNamedPipeLocal(PipeLocal*);
+VOID freeNamedPipeLocalDLL(PipeLocal*);
 /*---------- FIM Funçoes de Bootstrapping para NamedPipes ----------*/

@@ -93,10 +93,14 @@ VOID __cdecl Login(PTCHAR username,TypeOfClientConnection arg)
 {
 	gClientConnection.typeOfConnection = arg;
 
+	/*Inicializamos shared memory / evento / NP
+	 * Dependendo como o utilizador se pretende connectar
+	 */
+	initComponetsDLL(&gClientConnection);
+
 	switch (gClientConnection.typeOfConnection)
 	{
 	case clientSharedMemoryConnection:
-		initSharedMemory(&gClientConnection.SharedMem);
 		loginSharedMemory(username);
 		break;
 	case clientNamedPipeLocalConnection:

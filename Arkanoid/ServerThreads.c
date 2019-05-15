@@ -2,7 +2,7 @@
 #include "Server.h"
 #include "GameLogic.h"
 
-static void readNewMessageSharedMemory(MessageQueue* queue)
+static void readNewMessageSharedMemory(MessageQueue* queue, Server* serverObj)
 {
 	//CRITICAL SECTION
 	WaitForSingleObject(hgMutexReadNewMessage, INFINITE);
@@ -21,7 +21,7 @@ static void readNewMessageSharedMemory(MessageQueue* queue)
 				//FIX: Inserir 1 jogador a mais?
 				for (size_t i = 0; i < serverObj->gameInstance.lobbyGame.wPlayersInLobby; i++)
 				{
-					_tprintf_s(TEXT("\n Jogador : %s| Concectou-se %d"),
+					_tprintf(TEXT("\n Jogador : %s| Concectou-se %d"),
 						serverObj->gameInstance.lobbyGame.playersInLobby[i].tcUserName,
 						serverObj->gameInstance.lobbyGame.wPlayersInLobby);
 				}
@@ -50,33 +50,32 @@ static void readNewMessageSharedMemory(MessageQueue* queue)
 			//notificamos todos os consumidores a dizer que a uma nova mensagem
 			SetEvent(hgNotifyClient);
 			//TODO: Esperamos X ms e damos reset no evento
-		}
-
-		//FIM DA CRITICAL SECTION
-		if (!ReleaseMutex(hgMutexReadNewMessage))
-		{
-			//erro lançar mutex
-		}
-		break;
+					//FIM DA CRITICAL SECTION
+			if (!ReleaseMutex(hgMutexReadNewMessage))
+			{
+				//erro lançar mutex
+			}
+			break;
 		case TopPlayersMessage:
 			break;
 		case QuitGameMessage:
 			break;
 		default:
 			break;
+		}
 	}
 }
 
 static void readNewMessageNamedPipes()
 {
-	
+
 }
 
 DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 {
 	Server* serverObj = (Server*)lpArg;
 	MessageQueue* queue = (MessageQueue*)serverObj->serverHandlers.sharedMemHandlers.LpSharedMemMessage;
-	NamedPipeInstance* npInstances = (MessageQueue*) serverObj->serverHandlers.namedPipeInstances;
+	NamedPipeInstance* npInstances = (NamedPipeInstance*)serverObj->serverHandlers.namedPipeInstances;
 
 	DWORD dwWaitEvent;
 
@@ -89,7 +88,7 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 		switch (dwWaitEvent)
 		{
 		case WAIT_OBJECT_0:
-			readNewMessageSharedMemory(queue);
+			readNewMessageSharedMemory(queue, serverObj);
 			break;
 		default:
 			_tprintf(TEXT("Erro \n"));
