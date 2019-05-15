@@ -78,6 +78,56 @@ BOOL intitServerMessageMem(HANDLE* hMapObj, LPVOID* lpSharedMem)
 	return TRUE;
 }
 
+BOOL initServerPipeLocal(NamedPipeInstance* npInstances, HANDLE* hEventOL,WORD wInstances)
+{
+	WORD i;
+	for (i = 0; i < wInstances; i++)
+	{
+		hEventOL[i] = CreateEvent(
+			NULL,	//security
+			TRUE,	//MANUAL RESET 
+			/*Functions such as GetOverlappedResult and the synchronization 
+			 *wait functions reset auto-reset events to the nonsignaled state. Therefore, 
+			 *you should use a manual reset event; if you use an auto-reset event*/
+			FALSE,	//estado inicial- unsiganed
+			NULL);	//sem nome
+
+		if (hEventOL[i] == NULL)
+		{
+			return FALSE;
+		}
+
+		ZeroMemory(&npInstances[i].oOverLap, sizeof(OVERLAPPED));
+
+		npInstances[i].oOverLap.hEvent = hEventOL[i];
+		
+		npInstances[i].hNPInstance = CreateNamedPipe(
+			NAME_NAMED_PIPE,		//Nome do pipe
+			PIPE_ACCESS_DUPLEX |	//Pipe read/write("duplex")
+			FILE_FLAG_OVERLAPPED,	//overlapped mode ON
+			PIPE_TYPE_MESSAGE |		//Vamos passar uma estrutura
+			PIPE_READMODE_MESSAGE |
+			PIPE_NOWAIT,				//MODO bloquante MUDAR SECALHAR
+			/*The pipe server should not perform a blocking read operation until the pipe client has started. 
+			 *Otherwise, a race condition can occur.
+			 * This typically occurs when initialization code, 
+			 * such as the C run-time, needs to lock and examine inherited handles.*/
+			wInstances,					//Número de named pipes a criar
+			sizeof(MessageProtocolDatagram),	// Tamanho das mensagens que vai escrever
+			sizeof(MessageProtocolDatagram),	//Tamanho das mensagens que vai ler
+			NMPWAIT_USE_DEFAULT_WAIT,				//TimeOut
+			NULL							//Atributos de segurança
+		);
+
+		if (npInstances[i].hNPInstance == INVALID_HANDLE_VALUE)
+		{
+			return FALSE;
+		}
+	}
+
+	return TRUE;
+}
+
 VOID freeMappedMemoryServer(ServerSharedMemoryHandlers* mapped)
 {
 	UnmapViewOfFile(mapped->lpSharedMemGame);
@@ -355,7 +405,6 @@ BOOL getTopTenRegistry(ScorePlayer scoreTopTen[]) {
 	return TRUE;
 
 }
-
 
 static BOOL checkUserNameInLobby(PTCHAR userName, const ServerGameInstance* gameArg)
 {

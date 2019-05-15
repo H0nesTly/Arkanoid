@@ -17,6 +17,7 @@ typedef struct lobby Lobby;
 
 typedef struct playerInfo PlayerInfo;
 
+typedef enum stateOfNamedPipe StateOfNamedPipe;
 typedef enum stateOfGame StateOfGame;
 
 
@@ -28,18 +29,20 @@ struct serverSharedMemoryHandlers
 	HANDLE	hMapObjMessage;
 };
 
-
 struct namedPipeInstance
 {
 	OVERLAPPED oOverLap;
 	HANDLE hNPInstance;
-	BOOL fPendig;
+	BOOL fPendigIO;
+	StateOfNamedPipe State;
 };
 
 struct serverHandles
 {
-	//TODO:  Apenas Alocar FIFOS Necessários
+	//TODO:  Apenas Alocar FIFOS/eventos Necessários
+	HANDLE hEventOverlap[MAX_PLAYER_INSTANCES];
 	NamedPipeInstance namedPipeInstances[MAX_PLAYER_INSTANCES];
+
 	ServerSharedMemoryHandlers sharedMemHandlers;
 	ServerThreadsHandlers threadHandlers;
 };
@@ -80,6 +83,12 @@ struct server
 	ServerGameInstance gameInstance;
 };
 
+enum stateOfNamedPipe
+{
+	ConnectingState,
+	ReadState,
+	WriteState
+};
 
 enum stateOfGame
 {

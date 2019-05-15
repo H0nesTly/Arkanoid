@@ -85,6 +85,7 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 		_tprintf_s(TEXT("\nA espera de Clientes para se conectar ..."));
 		dwWaitEvent = WaitForSingleObject(hgSyncSemaphoreRead, INFINITE);
 
+
 		switch (dwWaitEvent)
 		{
 		case WAIT_OBJECT_0:
