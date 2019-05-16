@@ -178,7 +178,7 @@ VOID freeSyncObjectsDLL(HANDLE hWObj, HANDLE hRObj, HANDLE hMutex)
 BOOL initNamedPipeLocalDLL(PipeLocal* plArg)
 {
 	BOOL fReturn;
-	DWORD dwPipeMode
+	DWORD dwPipeMode;
 	plArg->hNamedPipe = CreateFile(
 		NAME_NAMED_PIPE,	//Nome do Pipe		
 		GENERIC_READ |		//Acessos

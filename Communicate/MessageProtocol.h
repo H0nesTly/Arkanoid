@@ -61,7 +61,7 @@ struct messageProtocolPipe
 		TypeOfRequestMessage request;
 		TypeOfResponseMessage response;
 	};
-	MessageProtocolDatagram headerMessage;
+	MessageProtocolDatagram messagePD;
 
 };
 

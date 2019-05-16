@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "MessageProtocol.h"
 #include "GameStructures.h"
+#include <minwinbase.h>
 
 extern ClientConnection gClientConnection;
 
@@ -54,6 +55,40 @@ static VOID loginSharedMemory(const PTCHAR username)
 	}
 }
 
+static VOID loginLocalPIPE(const PTCHAR username)
+{
+	HANDLE hPipe = gClientConnection.PipeLocal.hNamedPipe;
+	MessageProtocolPipe messageToSend;
+	DWORD dwBytesToWrite;
+
+	ZeroMemory(&messageToSend, sizeof(MessageProtocolPipe));
+
+	_tcscpy_s(messageToSend.messagePD.tcSender,
+			_countof(messageToSend.messagePD.tcSender),
+			username);
+
+		_tcscpy_s(messageToSend.messagePD.tcDestination,
+			_countof(messageToSend.messagePD.tcDestination),
+			NAME_SERVER);
+
+		messageToSend.wTypeOfMessage = TYPE_OF_MESSAGE_REQUEST;
+		messageToSend.request = LoginMessage;
+
+		_tcscpy_s(messageToSend.messagePD.tcData,
+			_countof(messageToSend.messagePD.tcData),
+			TEXT("Quero me conectar"));
+
+	dwBytesToWrite = sizeof(MessageProtocolPipe);
+	if (WriteFile(hPipe,
+		&messageToSend,
+		dwBytesToWrite,
+		&dwBytesToWrite,
+		NULL))
+	{
+		_tprintf(TEXT("\nMensaagem enviada com sucesso tamanho %d\n"), dwBytesToWrite);
+	}
+}
+
 static VOID  receiveBroadcastSharedMemory()
 {
 
@@ -104,6 +139,7 @@ VOID __cdecl Login(PTCHAR username,TypeOfClientConnection arg)
 		loginSharedMemory(username);
 		break;
 	case clientNamedPipeLocalConnection:
+		loginLocalPIPE(username);
 		break;
 	case clientNamedPipeRemoteConnection:
 		break;

@@ -127,7 +127,6 @@ BOOL initServerPipeLocal(NamedPipeInstance* npInstances, WORD wInstances)
 			&npInstances[i].oOverLap);
 
 		npInstances[i].State = npInstances[i].fPendigIO ? ConnectingState : ReadState;
-
 	}
 
 	return TRUE;
