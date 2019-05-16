@@ -111,8 +111,8 @@ BOOL initServerPipeLocal(NamedPipeInstance* npInstances, WORD wInstances)
 			 * This typically occurs when initialization code,
 			 * such as the C run-time, needs to lock and examine inherited handles.*/
 			wInstances,					//Número de named pipes a criar
-			sizeof(MessageProtocolDatagram),	// Tamanho das mensagens que vai escrever
-			sizeof(MessageProtocolDatagram),	//Tamanho das mensagens que vai ler
+			sizeof(MessageProtocolPipe),	// Tamanho das mensagens que vai escrever
+			sizeof(MessageProtocolPipe),	//Tamanho das mensagens que vai ler
 			NMPWAIT_USE_DEFAULT_WAIT,				//TimeOut
 			NULL							//Atributos de segurança
 		);

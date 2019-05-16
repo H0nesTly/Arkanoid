@@ -177,6 +177,8 @@ VOID freeSyncObjectsDLL(HANDLE hWObj, HANDLE hRObj, HANDLE hMutex)
 
 BOOL initNamedPipeLocalDLL(PipeLocal* plArg)
 {
+	BOOL fReturn;
+	DWORD dwPipeMode
 	plArg->hNamedPipe = CreateFile(
 		NAME_NAMED_PIPE,	//Nome do Pipe		
 		GENERIC_READ |		//Acessos
@@ -184,11 +186,31 @@ BOOL initNamedPipeLocalDLL(PipeLocal* plArg)
 		0,					//modo de partilha
 		NULL,				//securty atributes
 		OPEN_EXISTING,		//abrir o pipe
-		0,					//atributos normais
+		FILE_ATTRIBUTE_NORMAL,			//atributos normais
 		NULL);				//template file
 
-	return plArg->hNamedPipe == NULL ||
-		GetLastError() != ERROR_PIPE_BUSY ? FALSE : TRUE;
+	 if (plArg->hNamedPipe == INVALID_HANDLE_VALUE ||
+		GetLastError() != ERROR_PIPE_BUSY)
+	 {
+		return  FALSE; 
+	 }
+	 // The pipe connected; change to message-read mode. 
+	 /*The client side of a named pipe starts out in byte mode, even if the server side is in message mode.
+	  * To avoid problems receiving data, set the client side to message mode as well. 
+	  * To change the mode of the pipe, the pipe client must open a read-only pipe with 
+	  * GENERIC_READ and FILE_WRITE_ATTRIBUTES access.
+	  */
+
+	dwPipeMode = PIPE_READMODE_MESSAGE;
+	fReturn = SetNamedPipeHandleState(
+		plArg->hNamedPipe,	//handler
+		 &dwPipeMode,		//Modo do pipe
+		 NULL,				//Tamnanho em bytes 
+		 NULL				//timeout
+	 );
+
+	return fReturn ? TRUE : FALSE;
+
 }
 
 VOID freeNamedPipeLocalDLL(PipeLocal* plArg)

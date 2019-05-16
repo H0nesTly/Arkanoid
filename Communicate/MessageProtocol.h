@@ -5,6 +5,8 @@
 #define MAX_LENGTH_NAME 20
 #define MESSAGE_QUEUE_SIZE 20
 #define MESSAGE_QUEUE_READER_SIZE (MESSAGE_QUEUE_SIZE / 2)
+#define TYPE_OF_MESSAGE_RESPONSE 0
+#define TYPE_OF_MESSAGE_REQUEST 1
 
 
 #define NAME_EVENT_OBJECT_SERVER_READ TEXT("readEvent")
@@ -21,6 +23,7 @@ typedef struct messageProtocolDatagram MessageProtocolDatagram;
 typedef struct messageProtocolDatagramResponse MessageProtocolDatagramResponse;
 typedef struct messageProtocolDatagramRequest MessageProtocolDatagramRequest;
 typedef struct messageProtocolDatagram MessageProtocolDatagram;
+typedef struct messageProtocolPipe MessageProtocolPipe;
 typedef struct messageQueue MessageQueue;
 
 typedef enum responseOfMessage TypeOfResponseMessage;
@@ -48,6 +51,18 @@ struct messageProtocolDatagramRequest
 {
 	TypeOfRequestMessage request;
 	MessageProtocolDatagram messagePD;
+};
+
+struct messageProtocolPipe
+{
+	WORD wTypeOfMessage;//TYPE_OF_MESSAGE_RESPONSE  \ TYPE_OF_MESSAGE_REQUEST 
+	union
+	{
+		TypeOfRequestMessage request;
+		TypeOfResponseMessage response;
+	};
+	MessageProtocolDatagram headerMessage;
+
 };
 
 // LastReadMessage
