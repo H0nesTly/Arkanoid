@@ -51,7 +51,14 @@ int _tmain(int argc, LPTSTR argv[])
 		exit(EXIT_FAILURE);
 	}
 
-
+	//	if (!initServerPipeLocal(&*serverInstance.serverHandlers.namedPipeInstances, MAX_PLAYER_INSTANCES))
+	//esta a compilar como c++
+	if (!initServerPipeLocal(&serverInstance.serverHandlers.namedPipeInstances, MAX_PLAYER_INSTANCES))
+	{
+		_tprintf(TEXT("ERRO Criar Pipes"));
+		exit(EXIT_FAILURE);
+	}
+	
 	serverInstance.serverHandlers.threadHandlers.hThreadConsumer = CreateThread(
 		NULL,
 		0,

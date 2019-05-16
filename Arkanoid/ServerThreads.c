@@ -78,12 +78,32 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 	NamedPipeInstance* npInstances = (NamedPipeInstance*)serverObj->serverHandlers.namedPipeInstances;
 
 	DWORD dwWaitEvent;
+	HANDLE hAllHandlers[SIZE_OF_HANDLERS_READ];
+
+	for (int i = 0; i <= INDEX_OF_HANDLERS_NAMEDPIPE; ++i)
+	{
+		hAllHandlers[i] = serverObj->serverHandlers.namedPipeInstances[i].oOverLap.hEvent;
+	}
+
+
+	hAllHandlers[INDEX_OF_HANDLERS_WAIT_MESSAGE] = hgSyncSemaphoreRead;
 
 	while (1)
 	{
 		_tprintf_s(TEXT("\nA espera de Clientes para se conectar ..."));
-		dwWaitEvent = WaitForSingleObject(hgSyncSemaphoreRead, INFINITE);
+		//dwWaitEvent = WaitForSingleObject(hgSyncSemaphoreRead, INFINITE);
 
+		dwWaitEvent = WaitForMultipleObjects(
+			SIZE_OF_HANDLERS_READ, //Numero de handlers
+			hAllHandlers,		//eventos para estar a espera
+			FALSE,				//Nao espera por todos
+			INFINITE);
+
+
+		_tprintf_s(TEXT("\nValor do dwait %d | index %d | Erro %d"), 
+					dwWaitEvent,
+					WAIT_OBJECT_0 + dwWaitEvent -1,
+			GetLastError());
 
 		switch (dwWaitEvent)
 		{

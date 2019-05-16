@@ -40,7 +40,6 @@ struct namedPipeInstance
 struct serverHandles
 {
 	//TODO:  Apenas Alocar FIFOS/eventos Necessários
-	HANDLE hEventOverlap[MAX_PLAYER_INSTANCES];
 	NamedPipeInstance namedPipeInstances[MAX_PLAYER_INSTANCES];
 
 	ServerSharedMemoryHandlers sharedMemHandlers;

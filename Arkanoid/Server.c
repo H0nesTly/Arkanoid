@@ -78,29 +78,27 @@ BOOL intitServerMessageMem(HANDLE* hMapObj, LPVOID* lpSharedMem)
 	return TRUE;
 }
 
-BOOL initServerPipeLocal(NamedPipeInstance* npInstances, HANDLE* hEventOL,WORD wInstances)
+BOOL initServerPipeLocal(NamedPipeInstance* npInstances, WORD wInstances)
 {
 	WORD i;
 	for (i = 0; i < wInstances; i++)
 	{
-		hEventOL[i] = CreateEvent(
+		ZeroMemory(&npInstances[i].oOverLap, sizeof(OVERLAPPED));
+
+		npInstances[i].oOverLap.hEvent = CreateEvent(
 			NULL,	//security
 			TRUE,	//MANUAL RESET 
-			/*Functions such as GetOverlappedResult and the synchronization 
-			 *wait functions reset auto-reset events to the nonsignaled state. Therefore, 
+			/*Functions such as GetOverlappedResult and the synchronization
+			 *wait functions reset auto-reset events to the nonsignaled state. Therefore,
 			 *you should use a manual reset event; if you use an auto-reset event*/
 			FALSE,	//estado inicial- unsiganed
 			NULL);	//sem nome
 
-		if (hEventOL[i] == NULL)
+		if (npInstances[i].oOverLap.hEvent == NULL)
 		{
 			return FALSE;
 		}
 
-		ZeroMemory(&npInstances[i].oOverLap, sizeof(OVERLAPPED));
-
-		npInstances[i].oOverLap.hEvent = hEventOL[i];
-		
 		npInstances[i].hNPInstance = CreateNamedPipe(
 			NAME_NAMED_PIPE,		//Nome do pipe
 			PIPE_ACCESS_DUPLEX |	//Pipe read/write("duplex")
@@ -108,9 +106,9 @@ BOOL initServerPipeLocal(NamedPipeInstance* npInstances, HANDLE* hEventOL,WORD w
 			PIPE_TYPE_MESSAGE |		//Vamos passar uma estrutura
 			PIPE_READMODE_MESSAGE |
 			PIPE_NOWAIT,				//MODO bloquante MUDAR SECALHAR
-			/*The pipe server should not perform a blocking read operation until the pipe client has started. 
+			/*The pipe server should not perform a blocking read operation until the pipe client has started.
 			 *Otherwise, a race condition can occur.
-			 * This typically occurs when initialization code, 
+			 * This typically occurs when initialization code,
 			 * such as the C run-time, needs to lock and examine inherited handles.*/
 			wInstances,					//Número de named pipes a criar
 			sizeof(MessageProtocolDatagram),	// Tamanho das mensagens que vai escrever
@@ -155,13 +153,13 @@ BOOL loadGameConfiguration(TCHAR *nomeFicheiro, GameServerConfiguration *serverC
 
 	ZeroMemory(&buffer, sizeof(buffer));
 
-	if (file != 0) 
+	if (file != 0)
 	{
 		_tprintf(TEXT("Ficheiro não existente \n"));
 		return FALSE;
 	}
 
-	while (_fgetts(buffer, 255, fOpenFile) != NULL) 
+	while (_fgetts(buffer, 255, fOpenFile) != NULL)
 	{
 		if (_tcsstr(buffer, TEXT_FILE_LEVELS) != NULL)
 		{
@@ -184,7 +182,7 @@ BOOL loadGameConfiguration(TCHAR *nomeFicheiro, GameServerConfiguration *serverC
 			serverConfig->slowDowns = _tstoi(word);
 			continue;
 		}
-		if (_tcsstr(buffer, TEXT_FILE_INITIAL_LIFES) != NULL) 
+		if (_tcsstr(buffer, TEXT_FILE_INITIAL_LIFES) != NULL)
 		{
 			word = _tcstok_s(buffer, TEXT(": "), &tcNextToken);
 			word = _tcstok_s(NULL, TEXT(": "), &tcNextToken);
@@ -198,21 +196,21 @@ BOOL loadGameConfiguration(TCHAR *nomeFicheiro, GameServerConfiguration *serverC
 			serverConfig->tejolosIniciais = _tstoi(word);
 			continue;
 		}
-		if (_tcsstr(buffer, TEXT_FILE_PROB_SPEED_UPS) != NULL) 
+		if (_tcsstr(buffer, TEXT_FILE_PROB_SPEED_UPS) != NULL)
 		{
 			word = _tcstok_s(buffer, TEXT(": "), &tcNextToken);
 			word = _tcstok_s(NULL, TEXT(": "), &tcNextToken);
 			serverConfig->probSpeedUp = _tstof(word);
 			continue;
 		}
-		if (_tcsstr(buffer, TEXT_FILE_PROB_SLOW_DOWNS) != NULL) 
+		if (_tcsstr(buffer, TEXT_FILE_PROB_SLOW_DOWNS) != NULL)
 		{
 			word = _tcstok_s(buffer, TEXT(": "), &tcNextToken);
 			word = _tcstok_s(NULL, TEXT(": "), &tcNextToken);
 			serverConfig->probSlowDowns = _tstof(word);
 			continue;
 		}
-		if (_tcsstr(buffer, TEXT_FILE_PROB_BONUS) != NULL) 
+		if (_tcsstr(buffer, TEXT_FILE_PROB_BONUS) != NULL)
 		{
 			word = _tcstok_s(buffer, TEXT(": "), &tcNextToken);
 			word = _tcstok_s(NULL, TEXT(": "), &tcNextToken);
@@ -226,7 +224,7 @@ BOOL loadGameConfiguration(TCHAR *nomeFicheiro, GameServerConfiguration *serverC
 			serverConfig->duracao = _tstoi(word);
 			continue;
 		}
-		if (_tcsstr(buffer, TEXT_FILE_BALL_SPEED) != NULL) 
+		if (_tcsstr(buffer, TEXT_FILE_BALL_SPEED) != NULL)
 		{
 			word = _tcstok_s(buffer, TEXT(": "), &tcNextToken);
 			word = _tcstok_s(NULL, TEXT(": "), &tcNextToken);
@@ -262,23 +260,23 @@ BOOL setTopTenRegistry(ScorePlayer scoreTopTen[]) {
 	ZeroMemory(jogador, sizeof(jogador));
 	ZeroMemory(pontuacoes, sizeof(pontuacoes));
 	ZeroMemory(pontuacao, sizeof(pontuacao));
-	
+
 
 	if (scoreTopTen == NULL) {
 		return FALSE;
 	}
 
 	for (i = 0; i < 10; i++) {
-		
-		if(_tcsclen(scoreTopTen[i].jogador) == 0)
-			break;
-		
 
-		
+		if (_tcsclen(scoreTopTen[i].jogador) == 0)
+			break;
+
+
+
 		//_stprintf(jogador, TEXT("%s"), scoreTopTen[i].jogador);
 		//_tcscat_s(jogadores, _countof(jogadores), TEXT("Joao\0"));
 		_tcscat_s(jogadores, _countof(jogadores), scoreTopTen[i].jogador);
-		
+
 
 		_stprintf_s(pontuacao, _countof(pontuacao), TEXT("%.2f"), scoreTopTen[i].pontuacao);
 		_tcscat_s(pontuacoes, _countof(pontuacoes), pontuacao);
@@ -290,10 +288,10 @@ BOOL setTopTenRegistry(ScorePlayer scoreTopTen[]) {
 		}
 	}
 	if (_tcslen(jogadores) > 0) {
-//		_stprintf(jogador, TEXT("%s"), jogadores);
+		//		_stprintf(jogador, TEXT("%s"), jogadores);
 
 
-		//Criar/abrir uma chave em HKEY_CURRENT_USER\Software\MinhaAplicacao  
+				//Criar/abrir uma chave em HKEY_CURRENT_USER\Software\MinhaAplicacao  
 		if (RegCreateKeyEx(HKEY_CURRENT_USER, TEXT_REGISTY_PATH, 0, NULL,
 			REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &chave, &infoState) != ERROR_SUCCESS) {
 			_tprintf(TEXT("Erro ao criar/abrir chave (%d)\n"), GetLastError());
@@ -305,7 +303,7 @@ BOOL setTopTenRegistry(ScorePlayer scoreTopTen[]) {
 				_tprintf(TEXT("Chave: HKEY_CURRENT_USER\\Software\\Arkanoid criada\n"));
 				//Criar valor "Autor" = "Meu nome"  
 
-				
+
 				RegSetValueEx(chave, TEXT("Jogador"), 0, REG_SZ, (LPBYTE)jogadores, sizeof(jogadores));
 				RegSetValueEx(chave, TEXT("Pontuacao"), 0, REG_SZ, (LPBYTE)pontuacoes, sizeof(pontuacoes));
 			}
@@ -325,7 +323,7 @@ VOID setScoreTopTen(ScorePlayer newScore, ScorePlayer scoreTopTen[]) {
 
 	for (j = 9; j > i; j--) {
 
-		_tcscpy_s(scoreTopTen[j].jogador, 
+		_tcscpy_s(scoreTopTen[j].jogador,
 			_countof(scoreTopTen[j].jogador),
 			scoreTopTen[j - 1].jogador);
 		scoreTopTen[j].pontuacao = scoreTopTen[j - 1].pontuacao;
@@ -355,7 +353,7 @@ BOOL getTopTenRegistry(ScorePlayer scoreTopTen[]) {
 
 	//Criar/abrir uma chave em HKEY_CURRENT_USER\Software\MinhaAplicacao  
 	if (RegCreateKeyEx(HKEY_CURRENT_USER, TEXT_REGISTY_PATH, 0, NULL,
-		REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &chave, &infoState) != ERROR_SUCCESS) 
+		REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &chave, &infoState) != ERROR_SUCCESS)
 	{
 		_tprintf(TEXT("Erro ao criar/abrir chave (%d)\n"), GetLastError());
 		return FALSE;
@@ -369,9 +367,9 @@ BOOL getTopTenRegistry(ScorePlayer scoreTopTen[]) {
 			RegQueryValueEx(chave, TEXT("Jogador"), NULL, NULL, (LPBYTE)jogadores, &tamanho);
 			RegQueryValueEx(chave, TEXT("Pontuacao"), NULL, NULL, (LPBYTE)scores, &tamanho);
 
-			
-			
-			jogador = _tcstok_s(jogadores, TEXT(";"), &tcNextToken);		
+
+
+			jogador = _tcstok_s(jogadores, TEXT(";"), &tcNextToken);
 
 			//jogador = _tcstok_s(jogadores, TEXT(","), &tcNextToken);
 
@@ -387,7 +385,7 @@ BOOL getTopTenRegistry(ScorePlayer scoreTopTen[]) {
 
 
 				// Get next token:
-				jogador = _tcstok_s(NULL, TEXT(";") ,&tcNextToken); 
+				jogador = _tcstok_s(NULL, TEXT(";"), &tcNextToken);
 			}
 
 			tcNextToken = NULL;
@@ -462,7 +460,7 @@ VOID writeMessageToClient(MessageQueue* mqArg, TypeOfResponseMessage response, c
 BOOL waitNewClientNP(HANDLE hNamedipe, LPOVERLAPPED lpo)
 {
 	//Suposto retornar 0
-	if(ConnectNamedPipe(hNamedipe, lpo))
+	if (ConnectNamedPipe(hNamedipe, lpo))
 		return FALSE;
 
 	switch (GetLastError())
@@ -482,14 +480,14 @@ BOOL waitNewClientNP(HANDLE hNamedipe, LPOVERLAPPED lpo)
 
 VOID disconnectNamedPipe(NamedPipeInstance* npToDisconect)
 {
-	if(!DisconnectNamedPipe(npToDisconect->hNPInstance))
+	if (!DisconnectNamedPipe(npToDisconect->hNPInstance))
 	{
 		_tprintf(TEXT("\nDisconeção do named pipe falhou com o erro %d"), GetLastError());
 	}
 
 	npToDisconect->fPendigIO = waitNewClientNP(
-			npToDisconect->hNPInstance,
-			&npToDisconect->oOverLap);
+		npToDisconect->hNPInstance,
+		&npToDisconect->oOverLap);
 
-		npToDisconect->State = npToDisconect->fPendigIO ? ConnectingState : ReadState;
+	npToDisconect->State = npToDisconect->fPendigIO ? ConnectingState : ReadState;
 }
