@@ -62,6 +62,7 @@ int _tmain(int argc, LPTSTR argv[])
 		Login(ClientInfo.tcUserName, clientSharedMemoryConnection);
 		break;
 	case 2:
+		Login(ClientInfo.tcUserName, clientNamedPipeLocalConnection);
 		break;
 	case 3:
 		break;

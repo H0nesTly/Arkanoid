@@ -78,7 +78,7 @@ BOOL intitServerMessageMem(HANDLE* hMapObj, LPVOID* lpSharedMem)
 	return TRUE;
 }
 
-BOOL initServerPipeLocal(NamedPipeInstance* npInstances, WORD wInstances)
+BOOL initServerPipeLocal(NamedPipeInstance npInstances[], WORD wInstances)
 {
 	WORD i;
 	for (i = 0; i < wInstances; i++)
@@ -87,15 +87,16 @@ BOOL initServerPipeLocal(NamedPipeInstance* npInstances, WORD wInstances)
 
 		npInstances[i].oOverLap.hEvent = CreateEvent(
 			NULL,	//security
-			TRUE,	//MANUAL RESET 
+			TRUE,	//Manual - reset 
 			/*Functions such as GetOverlappedResult and the synchronization
 			 *wait functions reset auto-reset events to the nonsignaled state. Therefore,
-			 *you should use a manual reset event; if you use an auto-reset event*/
-			FALSE,	//estado inicial- unsiganed
+			 *you should use a manual reset event*/
+			TRUE,	//estado inicial- unsiganed
 			NULL);	//sem nome
 
 		if (npInstances[i].oOverLap.hEvent == NULL)
 		{
+			_tprintf(TEXT("\nErro criar evento para overlapped ERRO: %d"), GetLastError());
 			return FALSE;
 		}
 
@@ -105,7 +106,7 @@ BOOL initServerPipeLocal(NamedPipeInstance* npInstances, WORD wInstances)
 			FILE_FLAG_OVERLAPPED,	//overlapped mode ON
 			PIPE_TYPE_MESSAGE |		//Vamos passar uma estrutura
 			PIPE_READMODE_MESSAGE |
-			PIPE_NOWAIT,				//MODO bloquante MUDAR SECALHAR
+			PIPE_WAIT,				//MODO bloquante MUDAR SECALHAR
 			/*The pipe server should not perform a blocking read operation until the pipe client has started.
 			 *Otherwise, a race condition can occur.
 			 * This typically occurs when initialization code,
@@ -113,12 +114,13 @@ BOOL initServerPipeLocal(NamedPipeInstance* npInstances, WORD wInstances)
 			wInstances,					//Número de named pipes a criar
 			sizeof(MessageProtocolPipe),	// Tamanho das mensagens que vai escrever
 			sizeof(MessageProtocolPipe),	//Tamanho das mensagens que vai ler
-			NMPWAIT_USE_DEFAULT_WAIT,				//TimeOut
+			5000,				//TimeOut
 			NULL							//Atributos de segurança
 		);
 
 		if (npInstances[i].hNPInstance == INVALID_HANDLE_VALUE)
 		{
+			        _tprintf(TEXT("CreateNamedPipe failed with %d.\n"), GetLastError());
 			return FALSE;
 		}
 
@@ -472,6 +474,7 @@ BOOL waitNewClientNP(HANDLE hNamedipe, LPOVERLAPPED lpo)
 			break;
 	default:
 		//nao estavamos a espera 
+		_tprintf(TEXT("\nErro no connect named pipe [%d]"), GetLastError());
 		return  FALSE;
 	}
 	return TRUE;

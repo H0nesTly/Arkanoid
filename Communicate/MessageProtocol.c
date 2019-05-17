@@ -85,7 +85,7 @@ static VOID loginLocalPIPE(const PTCHAR username)
 		&dwBytesToWrite,
 		NULL))
 	{
-		_tprintf(TEXT("\nMensaagem enviada com sucesso tamanho %d\n"), dwBytesToWrite);
+		_tprintf(TEXT("\nMensaagem enviada com sucesso tamanho %d |Erro %d\n"), dwBytesToWrite, GetLastError());
 	}
 }
 

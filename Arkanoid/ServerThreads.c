@@ -66,7 +66,7 @@ static void readNewMessageSharedMemory(MessageQueue* queue, Server* serverObj)
 	}
 }
 
-static void readNewMessageNamedPipes()
+static void readNewMessageNamedPipes(Server* serverObj)
 {
 
 }
@@ -76,15 +76,17 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 	Server* serverObj = (Server*)lpArg;
 	MessageQueue* queue = (MessageQueue*)serverObj->serverHandlers.sharedMemHandlers.LpSharedMemMessage;
 	NamedPipeInstance* npInstances = (NamedPipeInstance*)serverObj->serverHandlers.namedPipeInstances;
+	MessageProtocolPipe mppAux;
 
+	DWORD dwNumberOfBytesRead;
 	DWORD dwWaitEvent;
 	HANDLE hAllHandlers[SIZE_OF_HANDLERS_READ];
+	int i;
 
 	for (int i = 0; i <= INDEX_OF_HANDLERS_NAMEDPIPE; ++i)
 	{
 		hAllHandlers[i] = serverObj->serverHandlers.namedPipeInstances[i].oOverLap.hEvent;
 	}
-
 
 	hAllHandlers[INDEX_OF_HANDLERS_WAIT_MESSAGE] = hgSyncSemaphoreRead;
 
@@ -100,15 +102,48 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 			INFINITE);
 
 
-		_tprintf_s(TEXT("\nValor do dwait %d | index %d | Erro %d"), 
-					dwWaitEvent,
-					WAIT_OBJECT_0 + dwWaitEvent -1,
+		_tprintf_s(TEXT("\nValor do dwait %d | index %d | Erro %d"),
+			dwWaitEvent,
+			WAIT_OBJECT_0 + dwWaitEvent,
 			GetLastError());
+
+		i = WAIT_OBJECT_0 + dwWaitEvent;
+		if (i < 0 || i > SIZE_OF_HANDLERS_READ - 1)
+		{
+			_tprintf(TEXT("\nErro out of range"));
+			continue;
+		}
 
 		switch (dwWaitEvent)
 		{
 		case WAIT_OBJECT_0:
-			readNewMessageSharedMemory(queue, serverObj);
+			if (i == INDEX_OF_HANDLERS_WAIT_MESSAGE)
+			{
+				//foi semaforo(Memoria Partilhada)
+				readNewMessageSharedMemory(queue, serverObj);
+			}
+			else
+			{
+				DWORD dwAux;
+				//Foi namedpipe
+				GetOverlappedResult(
+					npInstances[i].hNPInstance,
+					&npInstances[i].oOverLap,
+					&dwNumberOfBytesRead,
+					FALSE
+				);
+
+				ReadFile(
+					npInstances[i].hNPInstance,
+					&mppAux,
+					sizeof(MessageProtocolPipe),
+					&dwAux,
+					&npInstances[i].oOverLap);
+
+				//ResetEvent(npInstances[i].oOverLap.hEvent);
+				_tprintf(TEXT("\nLi informação valor %d\nSender %s"), dwAux, mppAux.messagePD.tcSender);
+
+			}
 			break;
 		default:
 			_tprintf(TEXT("Erro \n"));
@@ -126,7 +161,7 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 	{
 		Sleep(1000); //Remover apenas para exemplo
 		moveBall(&game->ball);
-		_tprintf(TEXT("Bola x-%d \n"), game->ball.ballPosition.x);
+		_tprintf(TEXT("\nBola x-%d"), game->ball.ballPosition.x);
 	}
 
 	return 0;

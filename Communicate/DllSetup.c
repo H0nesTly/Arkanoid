@@ -179,6 +179,7 @@ BOOL initNamedPipeLocalDLL(PipeLocal* plArg)
 {
 	BOOL fReturn;
 	DWORD dwPipeMode;
+
 	plArg->hNamedPipe = CreateFile(
 		NAME_NAMED_PIPE,	//Nome do Pipe		
 		GENERIC_READ |		//Acessos
@@ -186,12 +187,13 @@ BOOL initNamedPipeLocalDLL(PipeLocal* plArg)
 		0,					//modo de partilha
 		NULL,				//securty atributes
 		OPEN_EXISTING,		//abrir o pipe
-		FILE_ATTRIBUTE_NORMAL,			//atributos normais
+		0,			//atributos normais
 		NULL);				//template file
 
 	 if (plArg->hNamedPipe == INVALID_HANDLE_VALUE ||
-		GetLastError() != ERROR_PIPE_BUSY)
+		GetLastError() == ERROR_PIPE_BUSY)
 	 {
+		 _tprintf(TEXT("Erro Criar PIPE %d"), GetLastError());
 		return  FALSE; 
 	 }
 	 // The pipe connected; change to message-read mode. 
@@ -200,7 +202,6 @@ BOOL initNamedPipeLocalDLL(PipeLocal* plArg)
 	  * To change the mode of the pipe, the pipe client must open a read-only pipe with 
 	  * GENERIC_READ and FILE_WRITE_ATTRIBUTES access.
 	  */
-
 	dwPipeMode = PIPE_READMODE_MESSAGE;
 	fReturn = SetNamedPipeHandleState(
 		plArg->hNamedPipe,	//handler
@@ -209,8 +210,9 @@ BOOL initNamedPipeLocalDLL(PipeLocal* plArg)
 		 NULL				//timeout
 	 );
 
-	return fReturn ? TRUE : FALSE;
+	_tprintf(TEXT("\nPipe Criado com sucesso Eror: %d"), GetLastError());
 
+	return fReturn ? TRUE : FALSE;
 }
 
 VOID freeNamedPipeLocalDLL(PipeLocal* plArg)

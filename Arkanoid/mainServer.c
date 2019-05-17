@@ -53,7 +53,7 @@ int _tmain(int argc, LPTSTR argv[])
 
 	//	if (!initServerPipeLocal(&*serverInstance.serverHandlers.namedPipeInstances, MAX_PLAYER_INSTANCES))
 	//esta a compilar como c++
-	if (!initServerPipeLocal(&serverInstance.serverHandlers.namedPipeInstances, MAX_PLAYER_INSTANCES))
+	if (!initServerPipeLocal(serverInstance.serverHandlers.namedPipeInstances, MAX_PLAYER_INSTANCES))
 	{
 		_tprintf(TEXT("ERRO Criar Pipes"));
 		exit(EXIT_FAILURE);
