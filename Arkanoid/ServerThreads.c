@@ -1,6 +1,7 @@
 #include "ServerThreads.h"
 #include "Server.h"
 #include "GameLogic.h"
+#include <minwinbase.h>
 
 static void readNewMessageSharedMemory(MessageQueue* queue, Server* serverObj)
 {
@@ -66,21 +67,116 @@ static void readNewMessageSharedMemory(MessageQueue* queue, Server* serverObj)
 	}
 }
 
-static void readNewMessageNamedPipes(Server* serverObj)
+static void readNewMessageNamedPipes(Server* serverObj, MessageProtocolPipe * messageReceive, WORD wIndex)
 {
+	NamedPipeInstance* npInstances = (NamedPipeInstance*)serverObj->serverHandlers.namedPipeInstances;
+	DWORD dwNumberOfBytesRead, dwBytesReadAsync;
+	BOOL bOverLapped, bOperationReturn, a;
 
+	if (npInstances[wIndex].fPendigIO)
+	{
+		bOverLapped = GetOverlappedResult(
+			npInstances[wIndex].hNPInstance,
+			&npInstances[wIndex].oOverLap,
+			&dwNumberOfBytesRead,
+			FALSE);
+
+		a = GetLastError();
+
+		switch (npInstances[wIndex].State)
+		{
+		case ReadState:
+		case ConnectingState:
+			if (!bOverLapped)
+			{
+				switch (GetLastError())
+				{
+					//Pode acontecer quando existe muitos pedios de I/O Assincrono
+				case ERROR_INVALID_USER_BUFFER:
+				case ERROR_NOT_ENOUGH_MEMORY:
+					_tprintf(TEXT("\nErro Critico [%d]"), GetLastError());
+					break;
+				case ERROR_BROKEN_PIPE:
+					_tprintf(TEXT("\nPipeDesconectou-se Erro[%d]"), GetLastError());
+					break;
+					//Funçao Cancelada
+				case ERROR_OPERATION_ABORTED:
+					_tprintf(TEXT("\nOperaçao cancelada Erro Critico [%d]"), GetLastError());
+					break;
+				default:
+					_tprintf(TEXT("\nERRO default [%d]"), GetLastError());
+					break;
+				}
+				DisconnectAndReconnect(&npInstances[wIndex]);
+				_tprintf(TEXT("\nErro Pending Coneçao [%d]"), GetLastError());
+				return;
+			}
+			break;
+			//case ReadState:
+			//	if (!bOverLapped || dwNumberOfBytesRead == 0)
+			//	{
+			//		DisconnectNamedPipe(&npInstances[i].hNPInstance);
+			//		_tprintf(TEXT("Erro Pending ler [%d]"), GetLastError());
+			//		continue;
+			//	}
+			//	npInstances[i].State = ReadState;
+			//	break;
+				//case WriteState:
+				//	if (!bOverLapped )
+				//	{
+				//		DisconnectNamedPipe(&npInstances[i].hNPInstance);
+				//		_tprintf(TEXT("Erro Pending escrever [%d]"), GetLastError());
+				//		continue;
+				//	}
+				//	npInstances[i].State = ReadState;
+				//	break;
+		default:
+			_tprintf(TEXT("Erro  Undefined pipesate [%d]"), GetLastError());
+			break;
+		}
+	}
+
+	switch (npInstances[wIndex].State)
+	{
+	case ConnectingState:
+	case ReadState:
+
+		bOperationReturn = ReadFile(
+			npInstances[wIndex].hNPInstance, //handler de onde vai ler
+			messageReceive,			//destino
+			sizeof(MessageProtocolPipe) + 200, //tamanho da mensagem
+			&dwBytesReadAsync,						//valor de onde vai guardar valores lidos
+			&npInstances[wIndex].oOverLap);	//atualiza estado
+
+		_tprintf(TEXT("\n Handle [%p] Nome %s Erro[%d]\n"), npInstances[wIndex].hNPInstance, messageReceive->messagePD.tcSender, GetLastError());
+
+		// The read operation completed successfully. 
+
+		if (bOperationReturn  && dwBytesReadAsync != 0)
+		{
+			npInstances[wIndex].fPendigIO = FALSE;
+			//npInstances[i].State = WriteState;
+			return;
+		}
+
+		// The read operation is still pending. 
+
+		if (!bOperationReturn && (GetLastError() == ERROR_IO_PENDING))
+		{
+			npInstances[wIndex].fPendigIO = TRUE;
+			return;
+		}
+		break;
+	}
 }
 
 DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 {
 	Server* serverObj = (Server*)lpArg;
 	MessageQueue* queue = (MessageQueue*)serverObj->serverHandlers.sharedMemHandlers.LpSharedMemMessage;
-	NamedPipeInstance* npInstances = (NamedPipeInstance*)serverObj->serverHandlers.namedPipeInstances;
-	MessageProtocolPipe mppAux;
+	MessageProtocolPipe messageReceive;
 
-	DWORD dwNumberOfBytesRead, dwBytesReadAsync;
 	DWORD dwWaitEvent;
-	BOOL bOverLapped, bOperationReturn, a;
 
 	HANDLE hAllHandlers[SIZE_OF_HANDLERS_READ];
 	int i;
@@ -92,6 +188,7 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 
 	hAllHandlers[INDEX_OF_HANDLERS_WAIT_MESSAGE] = hgSyncSemaphoreRead;
 
+	ZeroMemory(&messageReceive, sizeof(MessageProtocolPipe));
 	while (1)
 	{
 		_tprintf_s(TEXT("\nA espera de Clientes para se conectar ..."));
@@ -108,107 +205,15 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 			_tprintf(TEXT("\nErro out of range"));
 			continue;
 		}
-		if (i <= INDEX_OF_HANDLERS_NAMEDPIPE)
+
+		if (i < INDEX_OF_HANDLERS_NAMEDPIPE)
 		{
-			if (npInstances[i].fPendigIO)
-			{
-				bOverLapped = GetOverlappedResult(
-					npInstances[i].hNPInstance,
-					&npInstances[i].oOverLap,
-					&dwNumberOfBytesRead,
-					FALSE);
-
-				a = GetLastError();
-
-				switch (npInstances[i].State)
-				{
-				case ReadState:
-				case ConnectingState:
-					if (!bOverLapped)
-					{
-						switch (GetLastError())
-						{
-							//Pode acontecer quando existe muitos pedios de I/O Assincrono
-						case ERROR_INVALID_USER_BUFFER:
-						case ERROR_NOT_ENOUGH_MEMORY:
-							_tprintf(TEXT("\nErro Critico [%d]"), GetLastError());
-							break;
-						case ERROR_BROKEN_PIPE:
-							_tprintf(TEXT("\nPipeDesconectou-se Erro[%d]"), GetLastError());
-							break;
-							//Funçao Cancelada
-						case ERROR_OPERATION_ABORTED:
-							_tprintf(TEXT("\nOperaçao cancelada Erro Critico [%d]"), GetLastError());
-							break;
-						default:
-							_tprintf(TEXT("\nERRO default [%d]"), GetLastError());
-							break;
-						}
-						DisconnectAndReconnect(&npInstances[i]);
-						_tprintf(TEXT("\nErro Pending Coneçao [%d]"), GetLastError());
-						continue;
-					}
-					break;
-				//case ReadState:
-				//	if (!bOverLapped || dwNumberOfBytesRead == 0)
-				//	{
-				//		DisconnectNamedPipe(&npInstances[i].hNPInstance);
-				//		_tprintf(TEXT("Erro Pending ler [%d]"), GetLastError());
-				//		continue;
-				//	}
-				//	npInstances[i].State = ReadState;
-				//	break;
-					//case WriteState:
-					//	if (!bOverLapped )
-					//	{
-					//		DisconnectNamedPipe(&npInstances[i].hNPInstance);
-					//		_tprintf(TEXT("Erro Pending escrever [%d]"), GetLastError());
-					//		continue;
-					//	}
-					//	npInstances[i].State = ReadState;
-					//	break;
-				default:
-					_tprintf(TEXT("Erro  Undefined pipesate [%d]"), GetLastError());
-					break;
-				}
-			}
-
-			switch (npInstances[i].State)
-			{
-			case ConnectingState:
-			case ReadState:
-
-				bOperationReturn = ReadFile(
-					npInstances[i].hNPInstance, //handler de onde vai ler
-					&mppAux,			//destino
-					sizeof(MessageProtocolPipe) + 200, //tamanho da mensagem
-					&dwBytesReadAsync,						//valor de onde vai guardar valores lidos
-					&npInstances[i].oOverLap);	//atualiza estado
-
-				_tprintf(TEXT("\n Handle [%p] Nome %s Erro[%d]\n"), npInstances[i].hNPInstance, mppAux.messagePD.tcSender, GetLastError());
-
-				// The read operation completed successfully. 
-
-				if (bOperationReturn  && dwBytesReadAsync != 0)
-				{
-					npInstances[i].fPendigIO = FALSE;
-					//npInstances[i].State = WriteState;
-					continue;
-				}
-
-				// The read operation is still pending. 
-
-				if (!bOperationReturn && (GetLastError() == ERROR_IO_PENDING))
-				{
-					npInstances[i].fPendigIO = TRUE;
-					continue;
-				}
-				break;
-			}
+			//Recebeu
+			readNewMessageNamedPipes(serverObj, &messageReceive, i);
 		}
 		else
 		{
-			if (i > INDEX_OF_HANDLERS_NAMEDPIPE)
+			if (i >= INDEX_OF_HANDLERS_NAMEDPIPE)
 			{
 				//foi semaforo(Memoria Partilhada)
 				readNewMessageSharedMemory(queue, serverObj);
@@ -223,12 +228,12 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 {
 	Game* game = (Game*)lpArg;
 
-	while (1)
-	{
-		Sleep(1000); //Remover apenas para exemplo
-		moveBall(&game->ball);
-		_tprintf(TEXT("\nBola x-%d"), game->ball.ballPosition.x);
-	}
+	//while (1)
+	//{
+	//	Sleep(1000); //Remover apenas para exemplo
+	//	moveBall(&game->ball);
+	//	_tprintf(TEXT("\nBola x-%d"), game->ball.ballPosition.x);
+	//}
 
 	return 0;
 }
