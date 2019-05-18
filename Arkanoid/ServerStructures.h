@@ -33,6 +33,7 @@ struct namedPipeInstance
 {
 	OVERLAPPED oOverLap;
 	HANDLE hNPInstance;
+	HANDLE hMyEvent;
 	BOOL fPendigIO;
 	StateOfNamedPipe State;
 };

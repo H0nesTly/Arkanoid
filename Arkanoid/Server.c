@@ -83,9 +83,9 @@ BOOL initServerPipeLocal(NamedPipeInstance npInstances[], WORD wInstances)
 	WORD i;
 	for (i = 0; i < wInstances; i++)
 	{
-		ZeroMemory(&npInstances[i].oOverLap, sizeof(OVERLAPPED));
+		ZeroMemory(&npInstances[i], sizeof(OVERLAPPED));
 
-		npInstances[i].oOverLap.hEvent = CreateEvent(
+		npInstances[i].hMyEvent = CreateEvent(
 			NULL,	//security
 			TRUE,	//Manual - reset 
 			/*Functions such as GetOverlappedResult and the synchronization
@@ -94,11 +94,13 @@ BOOL initServerPipeLocal(NamedPipeInstance npInstances[], WORD wInstances)
 			TRUE,	//estado inicial- unsiganed
 			NULL);	//sem nome
 
-		if (npInstances[i].oOverLap.hEvent == NULL)
+		if (npInstances[i].hMyEvent == NULL)
 		{
 			_tprintf(TEXT("\nErro criar evento para overlapped ERRO: %d"), GetLastError());
 			return FALSE;
 		}
+
+		npInstances[i].oOverLap.hEvent = npInstances[i].hMyEvent;
 
 		npInstances[i].hNPInstance = CreateNamedPipe(
 			NAME_NAMED_PIPE,		//Nome do pipe
@@ -106,7 +108,7 @@ BOOL initServerPipeLocal(NamedPipeInstance npInstances[], WORD wInstances)
 			FILE_FLAG_OVERLAPPED,	//overlapped mode ON
 			PIPE_TYPE_MESSAGE |		//Vamos passar uma estrutura
 			PIPE_READMODE_MESSAGE |
-			PIPE_WAIT,				//MODO bloquante MUDAR SECALHAR
+			PIPE_WAIT,				//MODO bloquante
 			/*The pipe server should not perform a blocking read operation until the pipe client has started.
 			 *Otherwise, a race condition can occur.
 			 * This typically occurs when initialization code,
@@ -120,7 +122,7 @@ BOOL initServerPipeLocal(NamedPipeInstance npInstances[], WORD wInstances)
 
 		if (npInstances[i].hNPInstance == INVALID_HANDLE_VALUE)
 		{
-			        _tprintf(TEXT("CreateNamedPipe failed with %d.\n"), GetLastError());
+			_tprintf(TEXT("CreateNamedPipe failed with %d.\n"), GetLastError());
 			return FALSE;
 		}
 
@@ -466,12 +468,15 @@ BOOL waitNewClientNP(HANDLE hNamedipe, LPOVERLAPPED lpo)
 
 	switch (GetLastError())
 	{
+		//Esta a decorrer um açao assincrona
 	case ERROR_IO_PENDING:
 		return TRUE;
+		break;
 		//Um cliente conectou-se dentro do time-out 
 	case ERROR_PIPE_CONNECTED:
 		if (SetEvent(lpo->hEvent))
-			break;
+			return FALSE;
+		break;
 	default:
 		//nao estavamos a espera 
 		_tprintf(TEXT("\nErro no connect named pipe [%d]"), GetLastError());
@@ -480,9 +485,9 @@ BOOL waitNewClientNP(HANDLE hNamedipe, LPOVERLAPPED lpo)
 	return TRUE;
 }
 
-VOID disconnectNamedPipe(NamedPipeInstance* npToDisconect)
+VOID DisconnectAndReconnect(NamedPipeInstance* npToDisconect)
 {
-	if (!DisconnectNamedPipe(npToDisconect->hNPInstance))
+	if (! DisconnectNamedPipe(npToDisconect->hNPInstance))
 	{
 		_tprintf(TEXT("\nDisconeção do named pipe falhou com o erro %d"), GetLastError());
 	}

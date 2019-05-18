@@ -16,6 +16,6 @@
 #include <stdlib.h>     // for _countof
 #include <stdio.h>
 #include <errno.h>      // for return values
-
+#include <minwinbase.h>
 
 // reference additional headers your program requires here

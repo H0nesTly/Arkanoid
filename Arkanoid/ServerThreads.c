@@ -78,14 +78,16 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 	NamedPipeInstance* npInstances = (NamedPipeInstance*)serverObj->serverHandlers.namedPipeInstances;
 	MessageProtocolPipe mppAux;
 
-	DWORD dwNumberOfBytesRead;
+	DWORD dwNumberOfBytesRead, dwBytesReadAsync;
 	DWORD dwWaitEvent;
+	BOOL bOverLapped, bOperationReturn, a;
+
 	HANDLE hAllHandlers[SIZE_OF_HANDLERS_READ];
 	int i;
 
 	for (int i = 0; i <= INDEX_OF_HANDLERS_NAMEDPIPE; ++i)
 	{
-		hAllHandlers[i] = serverObj->serverHandlers.namedPipeInstances[i].oOverLap.hEvent;
+		hAllHandlers[i] = serverObj->serverHandlers.namedPipeInstances[i].hMyEvent;
 	}
 
 	hAllHandlers[INDEX_OF_HANDLERS_WAIT_MESSAGE] = hgSyncSemaphoreRead;
@@ -93,7 +95,6 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 	while (1)
 	{
 		_tprintf_s(TEXT("\nA espera de Clientes para se conectar ..."));
-		//dwWaitEvent = WaitForSingleObject(hgSyncSemaphoreRead, INFINITE);
 
 		dwWaitEvent = WaitForMultipleObjects(
 			SIZE_OF_HANDLERS_READ, //Numero de handlers
@@ -101,53 +102,118 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 			FALSE,				//Nao espera por todos
 			INFINITE);
 
-
-		_tprintf_s(TEXT("\nValor do dwait %d | index %d | Erro %d"),
-			dwWaitEvent,
-			WAIT_OBJECT_0 + dwWaitEvent,
-			GetLastError());
-
 		i = WAIT_OBJECT_0 + dwWaitEvent;
 		if (i < 0 || i > SIZE_OF_HANDLERS_READ - 1)
 		{
 			_tprintf(TEXT("\nErro out of range"));
 			continue;
 		}
-
-		switch (dwWaitEvent)
+		if (i <= INDEX_OF_HANDLERS_NAMEDPIPE)
 		{
-		case WAIT_OBJECT_0:
-			if (i == INDEX_OF_HANDLERS_WAIT_MESSAGE)
+			if (npInstances[i].fPendigIO)
+			{
+				bOverLapped = GetOverlappedResult(
+					npInstances[i].hNPInstance,
+					&npInstances[i].oOverLap,
+					&dwNumberOfBytesRead,
+					FALSE);
+
+				a = GetLastError();
+
+				switch (npInstances[i].State)
+				{
+				case ReadState:
+				case ConnectingState:
+					if (!bOverLapped)
+					{
+						switch (GetLastError())
+						{
+							//Pode acontecer quando existe muitos pedios de I/O Assincrono
+						case ERROR_INVALID_USER_BUFFER:
+						case ERROR_NOT_ENOUGH_MEMORY:
+							_tprintf(TEXT("\nErro Critico [%d]"), GetLastError());
+							break;
+						case ERROR_BROKEN_PIPE:
+							_tprintf(TEXT("\nPipeDesconectou-se Erro[%d]"), GetLastError());
+							break;
+							//Funçao Cancelada
+						case ERROR_OPERATION_ABORTED:
+							_tprintf(TEXT("\nOperaçao cancelada Erro Critico [%d]"), GetLastError());
+							break;
+						default:
+							_tprintf(TEXT("\nERRO default [%d]"), GetLastError());
+							break;
+						}
+						DisconnectAndReconnect(&npInstances[i]);
+						_tprintf(TEXT("\nErro Pending Coneçao [%d]"), GetLastError());
+						continue;
+					}
+					break;
+				//case ReadState:
+				//	if (!bOverLapped || dwNumberOfBytesRead == 0)
+				//	{
+				//		DisconnectNamedPipe(&npInstances[i].hNPInstance);
+				//		_tprintf(TEXT("Erro Pending ler [%d]"), GetLastError());
+				//		continue;
+				//	}
+				//	npInstances[i].State = ReadState;
+				//	break;
+					//case WriteState:
+					//	if (!bOverLapped )
+					//	{
+					//		DisconnectNamedPipe(&npInstances[i].hNPInstance);
+					//		_tprintf(TEXT("Erro Pending escrever [%d]"), GetLastError());
+					//		continue;
+					//	}
+					//	npInstances[i].State = ReadState;
+					//	break;
+				default:
+					_tprintf(TEXT("Erro  Undefined pipesate [%d]"), GetLastError());
+					break;
+				}
+			}
+
+			switch (npInstances[i].State)
+			{
+			case ConnectingState:
+			case ReadState:
+
+				bOperationReturn = ReadFile(
+					npInstances[i].hNPInstance, //handler de onde vai ler
+					&mppAux,			//destino
+					sizeof(MessageProtocolPipe) + 200, //tamanho da mensagem
+					&dwBytesReadAsync,						//valor de onde vai guardar valores lidos
+					&npInstances[i].oOverLap);	//atualiza estado
+
+				_tprintf(TEXT("\n Handle [%p] Nome %s Erro[%d]\n"), npInstances[i].hNPInstance, mppAux.messagePD.tcSender, GetLastError());
+
+				// The read operation completed successfully. 
+
+				if (bOperationReturn  && dwBytesReadAsync != 0)
+				{
+					npInstances[i].fPendigIO = FALSE;
+					//npInstances[i].State = WriteState;
+					continue;
+				}
+
+				// The read operation is still pending. 
+
+				if (!bOperationReturn && (GetLastError() == ERROR_IO_PENDING))
+				{
+					npInstances[i].fPendigIO = TRUE;
+					continue;
+				}
+				break;
+			}
+		}
+		else
+		{
+			if (i > INDEX_OF_HANDLERS_NAMEDPIPE)
 			{
 				//foi semaforo(Memoria Partilhada)
 				readNewMessageSharedMemory(queue, serverObj);
 			}
-			else
-			{
-				DWORD dwAux;
-				//Foi namedpipe
-				GetOverlappedResult(
-					npInstances[i].hNPInstance,
-					&npInstances[i].oOverLap,
-					&dwNumberOfBytesRead,
-					FALSE
-				);
-
-				ReadFile(
-					npInstances[i].hNPInstance,
-					&mppAux,
-					sizeof(MessageProtocolPipe),
-					&dwAux,
-					&npInstances[i].oOverLap);
-
-				//ResetEvent(npInstances[i].oOverLap.hEvent);
-				_tprintf(TEXT("\nLi informação valor %d\nSender %s"), dwAux, mppAux.messagePD.tcSender);
-
-			}
-			break;
-		default:
-			_tprintf(TEXT("Erro \n"));
-			break;
+			_tprintf(TEXT("\nErro %d, WAIT %d\n"), GetLastError(), dwWaitEvent);
 		}
 	}
 	return 0;

@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "MessageProtocol.h"
 #include "GameStructures.h"
-#include <minwinbase.h>
 
 extern ClientConnection gClientConnection;
 
@@ -64,19 +63,19 @@ static VOID loginLocalPIPE(const PTCHAR username)
 	ZeroMemory(&messageToSend, sizeof(MessageProtocolPipe));
 
 	_tcscpy_s(messageToSend.messagePD.tcSender,
-			_countof(messageToSend.messagePD.tcSender),
-			username);
+		_countof(messageToSend.messagePD.tcSender),
+		username);
 
-		_tcscpy_s(messageToSend.messagePD.tcDestination,
-			_countof(messageToSend.messagePD.tcDestination),
-			NAME_SERVER);
+	_tcscpy_s(messageToSend.messagePD.tcDestination,
+		_countof(messageToSend.messagePD.tcDestination),
+		NAME_SERVER);
 
-		messageToSend.wTypeOfMessage = TYPE_OF_MESSAGE_REQUEST;
-		messageToSend.request = LoginMessage;
+	messageToSend.wTypeOfMessage = TYPE_OF_MESSAGE_REQUEST;
+	messageToSend.request = LoginMessage;
 
-		_tcscpy_s(messageToSend.messagePD.tcData,
-			_countof(messageToSend.messagePD.tcData),
-			TEXT("Quero me conectar"));
+	_tcscpy_s(messageToSend.messagePD.tcData,
+		_countof(messageToSend.messagePD.tcData),
+		TEXT("Quero me conectar"));
 
 	dwBytesToWrite = sizeof(MessageProtocolPipe);
 	if (WriteFile(hPipe,
@@ -124,7 +123,27 @@ static VOID receiveMessageSharedMemory(const PTCHAR UserName)
 	ResetEvent(gClientConnection.SharedMem.hEventReadNewMessage);
 }
 
-VOID __cdecl Login(PTCHAR username,TypeOfClientConnection arg)
+static VOID	receiveMessageLocalPipe(const PTCHAR UserName)
+{
+	HANDLE hPipe = gClientConnection.PipeLocal.hNamedPipe;
+	MessageProtocolPipe messageToReceive;
+
+	//CloseHandle(hPipe);
+	DWORD dwBytesToRead;
+	ZeroMemory(&messageToReceive,sizeof(MessageProtocolPipe));
+
+	//dwBytesToRead = sizeof(MessageProtocolPipe);
+	//if ( ReadFile(hPipe,
+	//	&messageToReceive,
+	//	dwBytesToRead,
+	//	&dwBytesToRead,
+	//	NULL))
+	//{
+	//	_tprintf(TEXT("\nMensaagem recebida com sucesso tamanho %d |Erro %d\n"), dwBytesToRead, GetLastError());
+	//}
+}
+
+VOID __cdecl Login(PTCHAR username, TypeOfClientConnection arg)
 {
 	gClientConnection.typeOfConnection = arg;
 
@@ -181,17 +200,21 @@ VOID __cdecl SendMessageDll()
 
 VOID __cdecl ReceiveMessage(const PTCHAR UserName)
 {
-
 	switch (gClientConnection.typeOfConnection)
 	{
 	case clientSharedMemoryConnection:
 		receiveMessageSharedMemory(UserName);
 		break;
 	case clientNamedPipeLocalConnection:
+		receiveMessageLocalPipe(UserName);
 		break;
 	case clientNamedPipeRemoteConnection:
 		break;
 	default:
 		break;
 	}
+
+
+
+
 }
