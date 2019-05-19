@@ -446,18 +446,37 @@ BOOL addUserNameToLobby(PTCHAR userName, ServerGameInstance* gameLobby)
 }
 
 //TODO: passar para proxima mensagem
-VOID writeMessageToClient(MessageQueue* mqArg, TypeOfResponseMessage response, const PTCHAR pSender, const PTCHAR pDestination)
+VOID writeMessageToClientSharedMemory(MessageQueue* mqArg, TypeOfResponseMessage response, const PTCHAR pSender, const PTCHAR pDestination)
 {
 	mqArg->queueOfMessageServerClient[0].response = response;
 
-	_tcscpy_s(mqArg->queueOfMessageServerClient[0].messagePD.tcDestination,
-		_countof(mqArg->queueOfMessageServerClient[0].messagePD.tcDestination),
+	writeMessageToProtocolDatagram(
+		&mqArg->queueOfMessageServerClient[0].messagePD,
+		pSender,
+		pDestination);
+}
+
+VOID writeMessageToClientPipeResponse(MessageProtocolPipe* mppArg, TypeOfResponseMessage response, const PTCHAR pSender, const PTCHAR pDestination)
+{
+	mppArg->wTypeOfMessage = TYPE_OF_MESSAGE_RESPONSE;
+
+	mppArg->response = response;
+
+	writeMessageToProtocolDatagram(
+		&mppArg->messagePD,
+		pSender,
+		pDestination);
+}
+
+VOID writeMessageToProtocolDatagram(MessageProtocolDatagram* message_protocol_datagram, const PTCHAR pSender, const PTCHAR pDestination)
+{
+	_tcscpy_s(message_protocol_datagram->tcDestination,
+		_countof(message_protocol_datagram->tcDestination),
 		pDestination);
 
-	_tcscpy_s(mqArg->queueOfMessageServerClient[0].messagePD.tcSender,
-		_countof(mqArg->queueOfMessageServerClient[0].messagePD.tcSender),
+	_tcscpy_s(message_protocol_datagram->tcSender,
+		_countof(message_protocol_datagram->tcSender),
 		pSender);
-
 }
 
 BOOL waitNewClientNP(HANDLE hNamedipe, LPOVERLAPPED lpo)
@@ -487,7 +506,7 @@ BOOL waitNewClientNP(HANDLE hNamedipe, LPOVERLAPPED lpo)
 
 VOID DisconnectAndReconnect(NamedPipeInstance* npToDisconect)
 {
-	if (! DisconnectNamedPipe(npToDisconect->hNPInstance))
+	if (!DisconnectNamedPipe(npToDisconect->hNPInstance))
 	{
 		_tprintf(TEXT("\nDisconeção do named pipe falhou com o erro %d"), GetLastError());
 	}
