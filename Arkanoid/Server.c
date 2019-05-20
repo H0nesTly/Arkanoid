@@ -116,7 +116,7 @@ BOOL initServerPipeLocal(NamedPipeInstance npInstances[], WORD wInstances)
 			wInstances,					//Número de named pipes a criar
 			sizeof(MessageProtocolPipe),	// Tamanho das mensagens que vai escrever
 			sizeof(MessageProtocolPipe),	//Tamanho das mensagens que vai ler
-			5000,				//TimeOut
+			0,				//TimeOut
 			NULL							//Atributos de segurança
 		);
 
@@ -482,6 +482,8 @@ VOID writeMessageToProtocolDatagram(MessageProtocolDatagram* message_protocol_da
 
 BOOL ConnectNewClientToNP(HANDLE hNamedipe, LPOVERLAPPED lpo)
 {
+	BOOL bPendingIO = FALSE;
+
 	if (ConnectNamedPipe(hNamedipe, lpo))
 	{
 		_tprintf(TEXT("ConnectNamedPipe failed with %d.\n"), GetLastError());
@@ -492,7 +494,8 @@ BOOL ConnectNewClientToNP(HANDLE hNamedipe, LPOVERLAPPED lpo)
 	{
 		//Esta a decorrer um açao assincrona
 	case ERROR_IO_PENDING:
-		return TRUE;
+		bPendingIO = TRUE;
+		break;
 		//Um cliente conectou-se dentro do time-out 
 	case ERROR_PIPE_CONNECTED:
 		if (SetEvent(lpo->hEvent))
@@ -502,7 +505,7 @@ BOOL ConnectNewClientToNP(HANDLE hNamedipe, LPOVERLAPPED lpo)
 		_tprintf(TEXT("\nErro no connect named pipe [%d]"), GetLastError());
 		return  FALSE;
 	}
-	return FALSE;
+	return bPendingIO;
 }
 
 VOID DisconnectAndReconnect(NamedPipeInstance* npToDisconect)

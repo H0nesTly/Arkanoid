@@ -127,10 +127,10 @@ static VOID	receiveMessageLocalPipe(const PTCHAR UserName)
 
 	DWORD dwBytesToRead;
 	BOOL bSucess;
-	ZeroMemory(&messageToReceive, sizeof(MessageProtocolPipe));
 
 	do
 	{
+		ZeroMemory(&messageToReceive, sizeof(MessageProtocolPipe));
 		dwBytesToRead = sizeof(MessageProtocolPipe);
 
 		bSucess = ReadFile(hPipe,
@@ -139,13 +139,28 @@ static VOID	receiveMessageLocalPipe(const PTCHAR UserName)
 			&dwBytesToRead,
 			NULL);
 
-		_tprintf(TEXT("\nMensaagem recebida com sucesso tamanho %d | Info %s | Erro %d\n"), dwBytesToRead, messageToReceive.messagePD.tcData ,GetLastError());
+		if (messageToReceive.wTypeOfMessage == TYPE_OF_MESSAGE_RESPONSE)
+		{
+			switch (messageToReceive.response)
+			{
+			case ResponseLoginFail:
+				_tprintf(TEXT("\n%s"), messageToReceive.messagePD.tcData);
+				break;
+			case ResponseLoginSuccess:
+				_tprintf(TEXT("\n%s"), messageToReceive.messagePD.tcData);
+
+				break;
+			}
+		}
+
+		_tprintf(TEXT("\nMensaagem recebida com sucesso tamanho %d |Erro %d\n"), dwBytesToRead, GetLastError());
 
 		if (GetLastError() != ERROR_MORE_DATA && !bSucess)
 		{
 			break;
 		}
 	} while (!bSucess);
+
 }
 
 VOID __cdecl Login(PTCHAR username, TypeOfClientConnection arg)

@@ -54,8 +54,6 @@ inline static VOID readNewMessageSharedMemory(MessageQueue* queue, Server* serve
 			{
 				//erro desbloquear mutex
 			}
-			//TODO: Set Waitable timer
-			Sleep(20000);
 			ResetEvent(hgNotifyClient);
 
 			break;
@@ -105,10 +103,9 @@ inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Serv
 					_tprintf(TEXT("\nERRO default [%d]"), GetLastError());
 					break;
 				}
-			}
-				npInstances->State = ReadState;
-
 				return;
+			}
+			npInstances->State = ReadState;
 
 			break;
 		case WriteState:
@@ -147,45 +144,11 @@ inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Serv
 			&npInstances->oOverLap);	//atualiza estado
 
 
-
 		// The read operation completed successfully. 
 
 		if (bOperationReturn  && npInstances->dwNumberOfBytesRead != 0)
 		{
 			//processamos mensagem
-
-			if (npInstances->message.wTypeOfMessage == TYPE_OF_MESSAGE_REQUEST)
-			{
-				_tprintf(TEXT("\n Handle [%p] Nome %s Erro[%d], Return %d\n"), npInstances->hNPInstance, npInstances->message.messagePD.tcSender, GetLastError(), bOperationReturn);
-
-				switch (npInstances->message.request)
-				{
-				case LoginMessage:
-					npInstances->message.response = ResponseLoginSuccess;
-					npInstances->message.wTypeOfMessage = TYPE_OF_MESSAGE_RESPONSE;
-
-					_tcscpy_s(npInstances->message.messagePD.tcData,
-						_countof(npInstances->message.messagePD.tcData),
-						TEXT("Teste Named Pipe"));
-					//if (addUserNameToLobby(npInstances->message.messagePD.tcSender, &serverObj->gameInstance))
-					//{
-					//	//responde Sucesso
-					//	ZeroMemory(&npInstances->message , sizeof(MessageProtocolPipe));
-					//}
-					//else
-					//{
-					//	//Ja existe um cliente com este nome
-					//	
-					//}
-					break;
-				case TopPlayersMessage:
-					break;
-				case KeyPressedMessage:
-					break;
-				case QuitGameMessage:
-					break;
-				}
-			}
 
 			npInstances->fPendigIO = FALSE;
 			npInstances->State = WriteState;
@@ -202,6 +165,50 @@ inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Serv
 
 		break;
 	case WriteState:
+
+		if (npInstances->message.wTypeOfMessage == TYPE_OF_MESSAGE_REQUEST)
+		{
+			_tprintf(TEXT("\n Handle [%p] Nome %s Erro[%d]\n"), npInstances->hNPInstance, npInstances->message.messagePD.tcSender, GetLastError());
+
+			switch (npInstances->message.request)
+			{
+			case LoginMessage:
+
+				npInstances->message.wTypeOfMessage = TYPE_OF_MESSAGE_RESPONSE;
+
+				if (addUserNameToLobby(npInstances->message.messagePD.tcSender, &serverObj->gameInstance))
+				{
+					//responde Sucesso
+					ZeroMemory(&npInstances->message, sizeof(MessageProtocolPipe));
+
+					npInstances->message.response = ResponseLoginSuccess;
+
+					_tcscpy_s(npInstances->message.messagePD.tcData,
+						_countof(npInstances->message.messagePD.tcData),
+						TEXT("Login Bem Sucessido"));
+				}
+				else
+				{
+					//Ja existe um cliente com este nome
+					ZeroMemory(&npInstances->message, sizeof(MessageProtocolPipe));
+
+					npInstances->message.response = ResponseLoginFail;
+
+					_tcscpy_s(npInstances->message.messagePD.tcData,
+						_countof(npInstances->message.messagePD.tcData),
+						TEXT("Login Mal Sucessido"));
+				}
+				break;
+			case TopPlayersMessage:
+				break;
+			case KeyPressedMessage:
+				break;
+			case QuitGameMessage:
+				break;
+			}
+		}
+
+
 		bOperationReturn = WriteFile(
 			npInstances->hNPInstance,		//File handler
 			&npInstances->message,			//Destino
@@ -225,8 +232,6 @@ inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Serv
 			npInstances->fPendigIO = TRUE;
 			return;
 		}
-
-
 
 		break;
 	default:
