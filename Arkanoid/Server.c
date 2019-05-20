@@ -126,11 +126,12 @@ BOOL initServerPipeLocal(NamedPipeInstance npInstances[], WORD wInstances)
 			return FALSE;
 		}
 
-		npInstances[i].fPendigIO = waitNewClientNP(
+		npInstances[i].fPendigIO = ConnectNewClientToNP(
 			npInstances[i].hNPInstance,
 			&npInstances[i].oOverLap);
 
-		npInstances[i].State = npInstances[i].fPendigIO ? ConnectingState : ReadState;
+		npInstances[i].State = npInstances[i].fPendigIO ? ConnectingState :
+			ReadState;
 	}
 
 	return TRUE;
@@ -479,29 +480,29 @@ VOID writeMessageToProtocolDatagram(MessageProtocolDatagram* message_protocol_da
 		pSender);
 }
 
-BOOL waitNewClientNP(HANDLE hNamedipe, LPOVERLAPPED lpo)
+BOOL ConnectNewClientToNP(HANDLE hNamedipe, LPOVERLAPPED lpo)
 {
-	//Suposto retornar 0
 	if (ConnectNamedPipe(hNamedipe, lpo))
+	{
+		_tprintf(TEXT("ConnectNamedPipe failed with %d.\n"), GetLastError());
 		return FALSE;
+	}
 
 	switch (GetLastError())
 	{
 		//Esta a decorrer um açao assincrona
 	case ERROR_IO_PENDING:
 		return TRUE;
-		break;
 		//Um cliente conectou-se dentro do time-out 
 	case ERROR_PIPE_CONNECTED:
 		if (SetEvent(lpo->hEvent))
-			return FALSE;
-		break;
+			break;
 	default:
 		//nao estavamos a espera 
 		_tprintf(TEXT("\nErro no connect named pipe [%d]"), GetLastError());
 		return  FALSE;
 	}
-	return TRUE;
+	return FALSE;
 }
 
 VOID DisconnectAndReconnect(NamedPipeInstance* npToDisconect)
@@ -511,9 +512,11 @@ VOID DisconnectAndReconnect(NamedPipeInstance* npToDisconect)
 		_tprintf(TEXT("\nDisconeção do named pipe falhou com o erro %d"), GetLastError());
 	}
 
-	npToDisconect->fPendigIO = waitNewClientNP(
+	npToDisconect->fPendigIO = ConnectNewClientToNP(
 		npToDisconect->hNPInstance,
 		&npToDisconect->oOverLap);
 
-	npToDisconect->State = npToDisconect->fPendigIO ? ConnectingState : ReadState;
+	npToDisconect->State = npToDisconect->fPendigIO ?
+		ConnectingState :
+		ReadState;
 }

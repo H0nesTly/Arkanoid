@@ -3,6 +3,7 @@
 #include "GameLogic.h"
 #include <minwinbase.h>
 #include <minwinbase.h>
+#include <stdlib.h>
 
 inline static VOID readNewMessageSharedMemory(MessageQueue* queue, Server* serverObj)
 {
@@ -83,8 +84,6 @@ inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Serv
 
 		switch (npInstances->State)
 		{
-		case WriteState:
-		case ReadState:
 		case ConnectingState:
 			if (!bOverLapped)
 			{
@@ -96,7 +95,7 @@ inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Serv
 					_tprintf(TEXT("\nErro Critico [%d]"), GetLastError());
 					break;
 				case ERROR_BROKEN_PIPE:
-					_tprintf(TEXT("\nPipeDesconectou-se Erro[%d]"), GetLastError());
+					_tprintf(TEXT("\nPipe Desconectou-se Erro[%d]"), GetLastError());
 					break;
 					//Funçao Cancelada
 				case ERROR_OPERATION_ABORTED:
@@ -106,29 +105,30 @@ inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Serv
 					_tprintf(TEXT("\nERRO default [%d]"), GetLastError());
 					break;
 				}
+			}
+				npInstances->State = ReadState;
+
+				return;
+
+			break;
+		case WriteState:
+			if (!bOverLapped || dwBytesReadAsync != sizeof(MessageProtocolPipe))
+			{
 				DisconnectAndReconnect(npInstances);
-				_tprintf(TEXT("\nErro Pending Coneçao [%d]"), GetLastError());
 				return;
 			}
+			npInstances->State = ReadState;
 			break;
-			//case ReadState:
-			//	if (!bOverLapped || dwNumberOfBytesRead == 0)
-			//	{
-			//		DisconnectNamedPipe(&npInstances[i].hNPInstance);
-			//		_tprintf(TEXT("Erro Pending ler [%d]"), GetLastError());
-			//		continue;
-			//	}
-			//	npInstances[i].State = ReadState;
-			//	break;
-			//	case WriteState:
-			//		if (!bOverLapped )
-			//		{
-			//			DisconnectNamedPipe(&npInstances[i].hNPInstance);
-			//			_tprintf(TEXT("Erro Pending escrever [%d]"), GetLastError());
-			//			continue;
-			//		}
-			//		npInstances[i].State = ReadState;
-			//		break;
+		case ReadState:
+			if (!bOverLapped || dwBytesReadAsync == 0)
+			{
+				DisconnectAndReconnect(npInstances);
+				return;
+			}
+			npInstances->dwNumberOfBytesRead = dwBytesReadAsync;
+			npInstances->State = WriteState;
+			break;
+
 		default:
 			_tprintf(TEXT("Erro  Undefined pipesate [%d]"), GetLastError());
 			break;
@@ -137,7 +137,6 @@ inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Serv
 
 	switch (npInstances->State)
 	{
-	case ConnectingState:
 	case ReadState:
 
 		bOperationReturn = ReadFile(
@@ -147,7 +146,7 @@ inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Serv
 			&npInstances->dwNumberOfBytesRead,						//valor de onde vai guardar valores lidos
 			&npInstances->oOverLap);	//atualiza estado
 
-		_tprintf(TEXT("\n Handle [%p] Nome %s Erro[%d]\n"), npInstances->hNPInstance, npInstances->message.messagePD.tcSender, GetLastError());
+
 
 		// The read operation completed successfully. 
 
@@ -157,19 +156,27 @@ inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Serv
 
 			if (npInstances->message.wTypeOfMessage == TYPE_OF_MESSAGE_REQUEST)
 			{
+				_tprintf(TEXT("\n Handle [%p] Nome %s Erro[%d], Return %d\n"), npInstances->hNPInstance, npInstances->message.messagePD.tcSender, GetLastError(), bOperationReturn);
+
 				switch (npInstances->message.request)
 				{
 				case LoginMessage:
-					if (addUserNameToLobby(npInstances->message.messagePD.tcSender, &serverObj->gameInstance))
-					{
-						//responde Sucesso
-						ZeroMemory(&npInstances->message , sizeof(MessageProtocolPipe));
-					}
-					else
-					{
-						//Ja existe um cliente com este nome
-						
-					}
+					npInstances->message.response = ResponseLoginSuccess;
+					npInstances->message.wTypeOfMessage = TYPE_OF_MESSAGE_RESPONSE;
+
+					_tcscpy_s(npInstances->message.messagePD.tcData,
+						_countof(npInstances->message.messagePD.tcData),
+						TEXT("Teste Named Pipe"));
+					//if (addUserNameToLobby(npInstances->message.messagePD.tcSender, &serverObj->gameInstance))
+					//{
+					//	//responde Sucesso
+					//	ZeroMemory(&npInstances->message , sizeof(MessageProtocolPipe));
+					//}
+					//else
+					//{
+					//	//Ja existe um cliente com este nome
+					//	
+					//}
 					break;
 				case TopPlayersMessage:
 					break;
@@ -199,7 +206,7 @@ inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Serv
 			npInstances->hNPInstance,		//File handler
 			&npInstances->message,			//Destino
 			sizeof(MessageProtocolPipe),	//tamanho a ler
-			&npInstances->dwNumberOfBytesWritten,	//bytes lidos
+			&dwBytesReadAsync,	//bytes lidos
 			&npInstances->oOverLap);
 
 		// The write operation completed successfully. 
@@ -208,7 +215,7 @@ inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Serv
 		{
 			npInstances->fPendigIO = FALSE;
 			npInstances->State = ReadState;
-		_tprintf(TEXT("\n Mensagem escrita com sucesso!!"));
+			_tprintf(TEXT("\n Mensagem escrita com sucesso!!"));
 		}
 
 		// The write operation is still pending. 
@@ -216,12 +223,15 @@ inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Serv
 		if (!bOperationReturn && (GetLastError() == ERROR_IO_PENDING))
 		{
 			npInstances->fPendigIO = TRUE;
-			return;;
+			return;
 		}
+
+
+
 		break;
 	default:
 		_tprintf(TEXT("\n Estado não esperado"));
-		return;
+		break;
 	}
 }
 
@@ -247,7 +257,7 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 
 	while (1)
 	{
-		_tprintf_s(TEXT("\nA espera de Clientes para se conectar ..."));
+		_tprintf_s(TEXT("\nA espera de Clientes para se conectar ... [%d]"), GetLastError());
 
 		dwWaitEvent = WaitForMultipleObjects(
 			SIZE_OF_HANDLERS_READ, //Numero de handlers
@@ -265,7 +275,6 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 		if (i < INDEX_OF_HANDLERS_NAMEDPIPE)
 		{
 			readNewMessageNamedPipes(npInstance + i, serverObj);
-
 		}
 		else
 		{

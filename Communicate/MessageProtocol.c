@@ -90,7 +90,6 @@ static VOID loginLocalPIPE(const PTCHAR username)
 
 static VOID  receiveBroadcastSharedMemory()
 {
-
 	Game* game = (Game*)gClientConnection.SharedMem.lpGame;
 
 	_tprintf(TEXT("Posicaçao da bola %d\n"), game->ball.ballPosition.x);
@@ -103,7 +102,7 @@ static VOID receiveMessageSharedMemory(const PTCHAR UserName)
 	WaitForSingleObject(gClientConnection.SharedMem.hEventReadNewMessage, INFINITE);
 	//Critical section
 
-	if (_tcscmp(UserName, queue->queueOfMessageServerClient[queue->wLastUnReadMessageIndexSC].messagePD.tcDestination) == 0 
+	if (_tcscmp(UserName, queue->queueOfMessageServerClient[queue->wLastUnReadMessageIndexSC].messagePD.tcDestination) == 0
 		/*||
 		queue->queueOfMessageServerClient[queue->wLastUnReadMessageIndexSC].messagePD.tcDestination[0] == '*'*/)
 	{
@@ -127,17 +126,26 @@ static VOID	receiveMessageLocalPipe(const PTCHAR UserName)
 	MessageProtocolPipe messageToReceive;
 
 	DWORD dwBytesToRead;
-	ZeroMemory(&messageToReceive,sizeof(MessageProtocolPipe));
+	BOOL bSucess;
+	ZeroMemory(&messageToReceive, sizeof(MessageProtocolPipe));
 
-	//dwBytesToRead = sizeof(MessageProtocolPipe);
-	//if ( ReadFile(hPipe,
-	//	&messageToReceive,
-	//	dwBytesToRead,
-	//	&dwBytesToRead,
-	//	NULL))
-	//{
-	//	_tprintf(TEXT("\nMensaagem recebida com sucesso tamanho %d |Erro %d\n"), dwBytesToRead, GetLastError());
-	//}
+	do
+	{
+		dwBytesToRead = sizeof(MessageProtocolPipe);
+
+		bSucess = ReadFile(hPipe,
+			&messageToReceive,
+			dwBytesToRead,
+			&dwBytesToRead,
+			NULL);
+
+		_tprintf(TEXT("\nMensaagem recebida com sucesso tamanho %d | Info %s | Erro %d\n"), dwBytesToRead, messageToReceive.messagePD.tcData ,GetLastError());
+
+		if (GetLastError() != ERROR_MORE_DATA && !bSucess)
+		{
+			break;
+		}
+	} while (!bSucess);
 }
 
 VOID __cdecl Login(PTCHAR username, TypeOfClientConnection arg)

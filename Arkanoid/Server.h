@@ -51,6 +51,6 @@ VOID writeMessageToClientPipe(MessageProtocolPipe* , TypeOfResponseMessage , con
 VOID writeMessageToProtocolDatagram(MessageProtocolDatagram* , const PTCHAR , const PTCHAR );
 
 /*--------------- NAMED PIPES ---------------*/
-BOOL waitNewClientNP(HANDLE, LPOVERLAPPED);
+BOOL ConnectNewClientToNP(HANDLE, LPOVERLAPPED);
 
 VOID DisconnectAndReconnect(NamedPipeInstance*);
