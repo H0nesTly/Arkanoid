@@ -98,14 +98,14 @@ static VOID  receiveBroadcastSharedMemory()
 
 static VOID receiveMessageSharedMemory(const PTCHAR UserName)
 {
-
 	MessageQueue* queue = (MessageQueue*)gClientConnection.SharedMem.lpMessage;
 
 	WaitForSingleObject(gClientConnection.SharedMem.hEventReadNewMessage, INFINITE);
 	//Critical section
 
-	if (_tcscmp(UserName, queue->queueOfMessageServerClient[queue->wLastUnReadMessageIndexSC].messagePD.tcDestination) == 0 ||
-		queue->queueOfMessageServerClient[queue->wLastUnReadMessageIndexSC].messagePD.tcDestination[0] == '*')
+	if (_tcscmp(UserName, queue->queueOfMessageServerClient[queue->wLastUnReadMessageIndexSC].messagePD.tcDestination) == 0 
+		/*||
+		queue->queueOfMessageServerClient[queue->wLastUnReadMessageIndexSC].messagePD.tcDestination[0] == '*'*/)
 	{
 		switch (queue->queueOfMessageServerClient[queue->wLastUnReadMessageIndexSC].response)
 		{
@@ -119,8 +119,6 @@ static VOID receiveMessageSharedMemory(const PTCHAR UserName)
 			break;
 		}
 	}
-	//FIX: RESET apenas 1 vai ler
-	ResetEvent(gClientConnection.SharedMem.hEventReadNewMessage);
 }
 
 static VOID	receiveMessageLocalPipe(const PTCHAR UserName)
@@ -128,7 +126,6 @@ static VOID	receiveMessageLocalPipe(const PTCHAR UserName)
 	HANDLE hPipe = gClientConnection.PipeLocal.hNamedPipe;
 	MessageProtocolPipe messageToReceive;
 
-	//CloseHandle(hPipe);
 	DWORD dwBytesToRead;
 	ZeroMemory(&messageToReceive,sizeof(MessageProtocolPipe));
 

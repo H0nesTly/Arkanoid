@@ -2,6 +2,7 @@
 #include "Server.h"
 #include "GameLogic.h"
 #include <minwinbase.h>
+#include <minwinbase.h>
 
 inline static VOID readNewMessageSharedMemory(MessageQueue* queue, Server* serverObj)
 {
@@ -18,7 +19,6 @@ inline static VOID readNewMessageSharedMemory(MessageQueue* queue, Server* serve
 			//Insere na lista de jogadore
 			if (addUserNameToLobby(queue->queueOfMessageClientServer[queue->wLastReadMessageIndex].messagePD.tcSender, &serverObj->gameInstance))
 			{
-
 				//FIX: Inserir 1 jogador a mais?
 				for (size_t i = 0; i < serverObj->gameInstance.lobbyGame.wPlayersInLobby; i++)
 				{
@@ -32,30 +32,31 @@ inline static VOID readNewMessageSharedMemory(MessageQueue* queue, Server* serve
 					ResponseLoginSuccess,
 					NAME_SERVER,
 					queue->queueOfMessageClientServer[queue->wLastReadMessageIndex].messagePD.tcSender);
-				//VAMOS NOTIFICAR A thread Produtora
-				if (!SetEvent(hgSyncRWObject))
-				{
-					_tprintf_s(TEXT("\n Erro set evento"));
-				}
 			}
 			else
 			{
 				writeMessageToClientSharedMemory(queue,
 					ResponseLoginFail,
 					NAME_SERVER,
-					queue->queueOfMessageClientServer[queue->wLastReadMessageIndex].messagePD.tcDestination);
+					queue->queueOfMessageClientServer[queue->wLastReadMessageIndex].messagePD.tcSender);
 			}
 
 			//Apagar a mensagem indica que foi lida
 			ZeroMemory(&queue->queueOfMessageClientServer[queue->wLastReadMessageIndex], sizeof(MessageProtocolDatagramRequest));
+
 			//notificamos todos os consumidores a dizer que a uma nova mensagem
 			SetEvent(hgNotifyClient);
+
 			//TODO: Esperamos X ms e damos reset no evento
 					//FIM DA CRITICAL SECTION
 			if (!ReleaseMutex(hgMutexReadNewMessage))
 			{
-				//erro lançar mutex
+				//erro desbloquear mutex
 			}
+			//TODO: Set Waitable timer
+			Sleep(20000);
+			ResetEvent(hgNotifyClient);
+
 			break;
 		case TopPlayersMessage:
 			break;
@@ -67,21 +68,20 @@ inline static VOID readNewMessageSharedMemory(MessageQueue* queue, Server* serve
 	}
 }
 
-inline static VOID readNewMessageNamedPipes(Server* serverObj, MessageProtocolPipe * messageReceive, MessageProtocolPipe* messageToSend, WORD wIndex)
+inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Server* serverObj)
 {
-	NamedPipeInstance* npInstances = (NamedPipeInstance*)serverObj->serverHandlers.namedPipeInstances;
-	DWORD dwNumberOfBytesRead, dwBytesReadAsync;
+	DWORD dwBytesReadAsync;
 	BOOL bOverLapped, bOperationReturn;
 
-	if (npInstances[wIndex].fPendigIO)
+	if (npInstances->fPendigIO)
 	{
 		bOverLapped = GetOverlappedResult(
-			npInstances[wIndex].hNPInstance,
-			&npInstances[wIndex].oOverLap,
-			&dwNumberOfBytesRead,
+			npInstances->hNPInstance,
+			&npInstances->oOverLap,
+			&dwBytesReadAsync,
 			FALSE);
 
-		switch (npInstances[wIndex].State)
+		switch (npInstances->State)
 		{
 		case WriteState:
 		case ReadState:
@@ -106,7 +106,7 @@ inline static VOID readNewMessageNamedPipes(Server* serverObj, MessageProtocolPi
 					_tprintf(TEXT("\nERRO default [%d]"), GetLastError());
 					break;
 				}
-				DisconnectAndReconnect(&npInstances[wIndex]);
+				DisconnectAndReconnect(npInstances);
 				_tprintf(TEXT("\nErro Pending Coneçao [%d]"), GetLastError());
 				return;
 			}
@@ -120,45 +120,68 @@ inline static VOID readNewMessageNamedPipes(Server* serverObj, MessageProtocolPi
 			//	}
 			//	npInstances[i].State = ReadState;
 			//	break;
-				//case WriteState:
-				//	if (!bOverLapped )
-				//	{
-				//		DisconnectNamedPipe(&npInstances[i].hNPInstance);
-				//		_tprintf(TEXT("Erro Pending escrever [%d]"), GetLastError());
-				//		continue;
-				//	}
-				//	npInstances[i].State = ReadState;
-				//	break;
+			//	case WriteState:
+			//		if (!bOverLapped )
+			//		{
+			//			DisconnectNamedPipe(&npInstances[i].hNPInstance);
+			//			_tprintf(TEXT("Erro Pending escrever [%d]"), GetLastError());
+			//			continue;
+			//		}
+			//		npInstances[i].State = ReadState;
+			//		break;
 		default:
 			_tprintf(TEXT("Erro  Undefined pipesate [%d]"), GetLastError());
 			break;
 		}
 	}
 
-	switch (npInstances[wIndex].State)
+	switch (npInstances->State)
 	{
 	case ConnectingState:
 	case ReadState:
 
 		bOperationReturn = ReadFile(
-			npInstances[wIndex].hNPInstance, //handler de onde vai ler
-			messageReceive,			//destino
-			sizeof(MessageProtocolPipe) + 200, //tamanho da mensagem
-			&dwBytesReadAsync,						//valor de onde vai guardar valores lidos
-			&npInstances[wIndex].oOverLap);	//atualiza estado
+			npInstances->hNPInstance, //handler de onde vai ler
+			&npInstances->message,			//destino
+			sizeof(MessageProtocolPipe), //tamanho da mensagem
+			&npInstances->dwNumberOfBytesRead,						//valor de onde vai guardar valores lidos
+			&npInstances->oOverLap);	//atualiza estado
 
-		_tprintf(TEXT("\n Handle [%p] Nome %s Erro[%d]\n"), npInstances[wIndex].hNPInstance, messageReceive->messagePD.tcSender, GetLastError());
+		_tprintf(TEXT("\n Handle [%p] Nome %s Erro[%d]\n"), npInstances->hNPInstance, npInstances->message.messagePD.tcSender, GetLastError());
 
 		// The read operation completed successfully. 
 
-		if (bOperationReturn  && dwBytesReadAsync != 0)
+		if (bOperationReturn  && npInstances->dwNumberOfBytesRead != 0)
 		{
-			//if(addUserNameToLobby(queue->queueOfMessageClientServer[queue->wLastReadMessageIndex].messagePD.tcSender, &serverObj->gameInstance))
-			//{
-			//	
-			//}
-			npInstances[wIndex].fPendigIO = FALSE;
-			npInstances[wIndex].State = WriteState;
+			//processamos mensagem
+
+			if (npInstances->message.wTypeOfMessage == TYPE_OF_MESSAGE_REQUEST)
+			{
+				switch (npInstances->message.request)
+				{
+				case LoginMessage:
+					if (addUserNameToLobby(npInstances->message.messagePD.tcSender, &serverObj->gameInstance))
+					{
+						//responde Sucesso
+						ZeroMemory(&npInstances->message , sizeof(MessageProtocolPipe));
+					}
+					else
+					{
+						//Ja existe um cliente com este nome
+						
+					}
+					break;
+				case TopPlayersMessage:
+					break;
+				case KeyPressedMessage:
+					break;
+				case QuitGameMessage:
+					break;
+				}
+			}
+
+			npInstances->fPendigIO = FALSE;
+			npInstances->State = WriteState;
 			return;
 		}
 
@@ -166,20 +189,39 @@ inline static VOID readNewMessageNamedPipes(Server* serverObj, MessageProtocolPi
 
 		if (!bOperationReturn && (GetLastError() == ERROR_IO_PENDING))
 		{
-			npInstances[wIndex].fPendigIO = TRUE;
+			npInstances->fPendigIO = TRUE;
 			return;
 		}
+
 		break;
 	case WriteState:
-		//bOperationReturn = WriteFile(npInstances[wIndex].hNPInstance,
-		//	,);
+		bOperationReturn = WriteFile(
+			npInstances->hNPInstance,		//File handler
+			&npInstances->message,			//Destino
+			sizeof(MessageProtocolPipe),	//tamanho a ler
+			&npInstances->dwNumberOfBytesWritten,	//bytes lidos
+			&npInstances->oOverLap);
 
-		if (! bOperationReturn && (GetLastError() == ERROR_IO_PENDING)) 
-            { 
-               Pipe[i].fPendingIO = TRUE; 
-               continue; 
-            }
+		// The write operation completed successfully. 
+
+		if (bOperationReturn && npInstances->dwNumberOfBytesWritten == sizeof(MessageProtocolPipe))
+		{
+			npInstances->fPendigIO = FALSE;
+			npInstances->State = ReadState;
+		_tprintf(TEXT("\n Mensagem escrita com sucesso!!"));
+		}
+
+		// The write operation is still pending. 
+
+		if (!bOperationReturn && (GetLastError() == ERROR_IO_PENDING))
+		{
+			npInstances->fPendigIO = TRUE;
+			return;;
+		}
 		break;
+	default:
+		_tprintf(TEXT("\n Estado não esperado"));
+		return;
 	}
 }
 
@@ -187,8 +229,7 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 {
 	Server* serverObj = (Server*)lpArg;
 	MessageQueue* queue = (MessageQueue*)serverObj->serverHandlers.sharedMemHandlers.LpSharedMemMessage;
-	MessageProtocolPipe messageReceive;
-	MessageProtocolPipe messageToSend;
+	NamedPipeInstance*  npInstance = (NamedPipeInstance*)serverObj->serverHandlers.namedPipeInstances;
 
 	DWORD dwWaitEvent;
 
@@ -198,12 +239,11 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 	for (int i = 0; i <= INDEX_OF_HANDLERS_NAMEDPIPE; ++i)
 	{
 		hAllHandlers[i] = serverObj->serverHandlers.namedPipeInstances[i].hMyEvent;
+		ZeroMemory(&serverObj->serverHandlers.namedPipeInstances[i].message, sizeof(MessageProtocolPipe));
 	}
 
 	hAllHandlers[INDEX_OF_HANDLERS_WAIT_MESSAGE] = hgSyncSemaphoreRead;
 
-	ZeroMemory(&messageReceive, sizeof(MessageProtocolPipe));
-	ZeroMemory(&messageToSend, sizeof(MessageProtocolPipe));
 
 	while (1)
 	{
@@ -224,7 +264,8 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 
 		if (i < INDEX_OF_HANDLERS_NAMEDPIPE)
 		{
-			readNewMessageNamedPipes(serverObj, &messageReceive, &messageToSend, i);
+			readNewMessageNamedPipes(npInstance + i, serverObj);
+
 		}
 		else
 		{

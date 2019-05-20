@@ -1,6 +1,7 @@
 #pragma once
 #include "..\Communicate\stdafx.h"
 #include "..\Communicate\GameStructures.h"
+#include "..\Communicate\MessageProtocol.h"
 #include "Server.h"
 #include "ServerThreads.h"
 #include "ServerSyncObj.h"
@@ -36,6 +37,9 @@ struct namedPipeInstance
 	HANDLE hMyEvent;
 	BOOL fPendigIO;
 	StateOfNamedPipe State;
+	MessageProtocolPipe message;
+	DWORD dwNumberOfBytesRead;
+	DWORD dwNumberOfBytesWritten;
 };
 
 struct serverHandles

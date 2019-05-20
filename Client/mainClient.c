@@ -84,7 +84,7 @@ int _tmain(int argc, LPTSTR argv[])
 		NULL,
 		0,
 		readMessageThread,
-		NULL,
+		(LPVOID) &ClientInfo,
 		0,
 		&dwThreadsIds[1]
 	);	
