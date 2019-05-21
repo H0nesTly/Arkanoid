@@ -14,37 +14,30 @@ static VOID loginSharedMemory(const PTCHAR username)
 	//CRITICAL SECTION
 	dwWaitMutex = WaitForSingleObject(gClientConnection.SharedMem.hMutexWriteNewMessage, INFINITE);
 
-	wNextIndexMessage = (queue->wLastUnReadMessageIndex + 1) % MESSAGE_QUEUE_SIZE;
+	wNextIndexMessage = (queue->circularBufferClientServer.wHeadIndex + 1) % MESSAGE_QUEUE_SIZE;
 
 	//TODO :Se BUFFER ESTIVER CHEIO O QUE FAZER? TENTAR EM X ms apos tentativa??
 	/*Lista de mensagens está cheia*/
-	if (wNextIndexMessage == queue->wLastReadMessageIndex)
-	{
-		//QUE FAXEMOS? COM A LISTA CHEIA?
-	}
-	else
-	{
 		//Escrevemos mensagem
 
-		_tcscpy_s(queue->queueOfMessageClientServer[queue->wLastUnReadMessageIndex].messagePD.tcSender,
-			_countof(queue->queueOfMessageClientServer[0].messagePD.tcSender),
-			username);
+	_tcscpy_s(queue->circularBufferClientServer.queueOfMessage[queue->circularBufferClientServer.wHeadIndex].tcSender,
+		_countof(queue->circularBufferClientServer.queueOfMessage[0].tcSender),
+		username);
 
-		_tcscpy_s(queue->queueOfMessageClientServer[queue->wLastUnReadMessageIndex].messagePD.tcDestination,
-			_countof(queue->queueOfMessageClientServer[0].messagePD.tcDestination),
-			NAME_SERVER);
+	_tcscpy_s(queue->circularBufferClientServer.queueOfMessage[queue->circularBufferClientServer.wHeadIndex].tcDestination,
+		_countof(queue->circularBufferClientServer.queueOfMessage[0].tcDestination),
+		NAME_SERVER);
 
-		queue->queueOfMessageClientServer[queue->wLastUnReadMessageIndex].request = LoginMessage;
+	queue->circularBufferClientServer.queueOfMessage[queue->circularBufferClientServer.wHeadIndex].request = LoginMessage;
 
-		_tcscpy_s(queue->queueOfMessageClientServer[queue->wLastUnReadMessageIndex].messagePD.tcData,
-			_countof(queue->queueOfMessageClientServer[queue->wLastUnReadMessageIndex].messagePD.tcData),
-			TEXT("Quero me conectar"));
+	_tcscpy_s(queue->circularBufferClientServer.queueOfMessage[queue->circularBufferClientServer.wHeadIndex].tcData,
+		_countof(queue->circularBufferClientServer.queueOfMessage[0].tcData),
+		TEXT("Quero me conectar"));
 
-		queue->wLastUnReadMessageIndex = wNextIndexMessage;
-	}
+	queue->circularBufferClientServer.wHeadIndex = wNextIndexMessage;
 
 	//END CRITICAL SECTION	
-	//queue->wLastUnReadMessageIndex++;
+	//queue->wHeadIndex++;
 
 	if (!ReleaseSemaphore(gClientConnection.SharedMem.hSemaphoreWriteMessageToServer, 1, NULL) ||
 		!ReleaseMutex(gClientConnection.SharedMem.hMutexWriteNewMessage))
@@ -102,11 +95,11 @@ static VOID receiveMessageSharedMemory(const PTCHAR UserName)
 	WaitForSingleObject(gClientConnection.SharedMem.hEventReadNewMessage, INFINITE);
 	//Critical section
 
-	if (_tcscmp(UserName, queue->queueOfMessageServerClient[queue->wLastUnReadMessageIndexSC].messagePD.tcDestination) == 0
+	if (_tcscmp(UserName, queue->circularBufferServerClient.queueOfMessage[queue->circularBufferServerClient.wTailIndex].tcDestination) == 0
 		/*||
-		queue->queueOfMessageServerClient[queue->wLastUnReadMessageIndexSC].messagePD.tcDestination[0] == '*'*/)
+		queue->queueOfMessageServerClient[queue->wTailIndex].messagePD.tcDestination[0] == '*'*/)
 	{
-		switch (queue->queueOfMessageServerClient[queue->wLastUnReadMessageIndexSC].response)
+		switch (queue->circularBufferServerClient.queueOfMessage[queue->circularBufferServerClient.wTailIndex].request)
 		{
 		case ResponseLoginSuccess:
 			_tprintf(TEXT("Login Bem Sucedido\n"));

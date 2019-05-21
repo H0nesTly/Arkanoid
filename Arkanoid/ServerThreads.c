@@ -10,15 +10,20 @@ inline static VOID readNewMessageSharedMemory(MessageQueue* queue, Server* serve
 	//CRITICAL SECTION
 	WaitForSingleObject(hgMutexReadNewMessage, INFINITE);
 
-	for (; queue->wLastReadMessageIndex != queue->wLastUnReadMessageIndex;//Erro aqui
-		queue->wLastReadMessageIndex = (queue->wLastReadMessageIndex + 1) % MESSAGE_QUEUE_SIZE)
+	for (; queue->circularBufferClientServer.wTailIndex != queue->circularBufferClientServer.wHeadIndex;//Erro aqui
+		queue->circularBufferClientServer.wTailIndex = (queue->circularBufferClientServer.wTailIndex + 1) % MESSAGE_QUEUE_SIZE)
 	{
-		_tprintf_s(TEXT("\n Valor da read %d e da Unread %d"), queue->wLastReadMessageIndex, queue->wLastUnReadMessageIndex);
-		switch (queue->queueOfMessageClientServer[queue->wLastReadMessageIndex].request)
+		_tprintf_s(TEXT("\n Valor da read %d e da Unread %d"), 
+			queue->circularBufferClientServer.wTailIndex, 
+			queue->circularBufferClientServer.wHeadIndex);
+
+		switch (queue->circularBufferClientServer.queueOfMessage[queue->circularBufferClientServer.wTailIndex].request)
 		{
 		case LoginMessage:
 			//Insere na lista de jogadore
-			if (addUserNameToLobby(queue->queueOfMessageClientServer[queue->wLastReadMessageIndex].messagePD.tcSender, &serverObj->gameInstance))
+			if (addUserNameToLobby(
+				queue->circularBufferClientServer.queueOfMessage[queue->circularBufferClientServer.wTailIndex].tcSender, 
+				&serverObj->gameInstance))
 			{
 				//FIX: Inserir 1 jogador a mais?
 				for (size_t i = 0; i < serverObj->gameInstance.lobbyGame.wPlayersInLobby; i++)
@@ -32,18 +37,18 @@ inline static VOID readNewMessageSharedMemory(MessageQueue* queue, Server* serve
 				writeMessageToClientSharedMemory(queue,
 					ResponseLoginSuccess,
 					NAME_SERVER,
-					queue->queueOfMessageClientServer[queue->wLastReadMessageIndex].messagePD.tcSender);
+					queue->circularBufferClientServer.queueOfMessage[queue->circularBufferClientServer.wTailIndex].tcSender);
 			}
 			else
 			{
 				writeMessageToClientSharedMemory(queue,
 					ResponseLoginFail,
 					NAME_SERVER,
-					queue->queueOfMessageClientServer[queue->wLastReadMessageIndex].messagePD.tcSender);
+					queue->circularBufferClientServer.queueOfMessage[queue->circularBufferClientServer.wTailIndex].tcSender);
 			}
 
 			//Apagar a mensagem indica que foi lida
-			ZeroMemory(&queue->queueOfMessageClientServer[queue->wLastReadMessageIndex], sizeof(MessageProtocolDatagramRequest));
+			ZeroMemory(&queue->circularBufferClientServer.queueOfMessage[queue->circularBufferClientServer.wTailIndex], sizeof(MessageProtocolDatagramRequest));
 
 			//notificamos todos os consumidores a dizer que a uma nova mensagem
 			SetEvent(hgNotifyClient);

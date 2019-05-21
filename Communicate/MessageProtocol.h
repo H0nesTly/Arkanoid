@@ -25,6 +25,8 @@ typedef struct messageProtocolDatagramRequest MessageProtocolDatagramRequest;
 typedef struct messageProtocolDatagram MessageProtocolDatagram;
 typedef struct messageProtocolPipe MessageProtocolPipe;
 typedef struct messageQueue MessageQueue;
+typedef struct circularBuffer CircularBuffer;
+
 
 typedef enum responseOfMessage TypeOfResponseMessage;
 typedef enum requestOfMessage TypeOfRequestMessage;
@@ -34,6 +36,12 @@ typedef enum requestOfMessage TypeOfRequestMessage;
 struct messageProtocolDatagram
 {
 	//Header
+	union
+	{
+		TypeOfRequestMessage request;
+		TypeOfResponseMessage response;
+	};
+
 	TCHAR tcSender[MAX_LENGTH_NAME];
 	TCHAR tcDestination[MAX_LENGTH_NAME];
 
@@ -62,26 +70,29 @@ struct messageProtocolPipe
 		TypeOfResponseMessage response;
 	};
 	MessageProtocolDatagram messagePD;
+};
+
+struct circularBuffer
+{
+	//VARIAVEIS DE INDEX da primeira queue
+	WORD wHeadIndex;		//Está variável é usada no Cliente para saber onde colocar a mensagem 
+	WORD wTailIndex;		//Está variável é usada no lado do Servidor para saber que mensagens ainda não leu
+
+	MessageProtocolDatagram queueOfMessage[MESSAGE_QUEUE_SIZE];
 
 };
 
-// LastReadMessage
+// TailIndex
 //	  v 
-// [ |#|#|#| ] -> queueOfMessageClientServer
+// [ |#|#|#| ] -> queueOfMessages
 //        ^
-//		  LastUnReadMessage	
+//		  HeadIndex	
 struct messageQueue
 {
-	//VARIAVEIS DE INDEX da primeira queue
-	WORD wLastUnReadMessageIndex;	//Está variável é usada no Cliente para saber onde colocar a mensagem 
-	WORD wLastReadMessageIndex;		//Está variável é usada no lado do Servidor para saber que mensagens ainda não leu
+	CircularBuffer circularBufferClientServer; //Cliente - produtor | Servidor - consumidor
 
-	MessageProtocolDatagramRequest queueOfMessageClientServer[MESSAGE_QUEUE_SIZE];			//Cliente- produtor | Servidor - consumidor
+	CircularBuffer circularBufferServerClient; //Servidor - Produtor | Cliente - consumidor
 
-	//VARIAVEIS DE INDEX da segunda queue
-	WORD wLastUnReadMessageIndexSC; //Está variável é usada no lado do Cliente para saber que mensagens ainda não leu
-	WORD wLastReadMessageIndexSC;	//Está variável é usada no Servidor para saber onde colocar a mensagem 
-	MessageProtocolDatagramResponse queueOfMessageServerClient[MESSAGE_QUEUE_READER_SIZE];	//Servidor - Produtor | Cliente - consumidor
 };
 
 //Estrutura da memoria partilhada "Dados do Jogo"

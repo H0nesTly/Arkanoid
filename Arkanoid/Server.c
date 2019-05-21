@@ -449,10 +449,10 @@ BOOL addUserNameToLobby(PTCHAR userName, ServerGameInstance* gameLobby)
 //TODO: passar para proxima mensagem
 VOID writeMessageToClientSharedMemory(MessageQueue* mqArg, TypeOfResponseMessage response, const PTCHAR pSender, const PTCHAR pDestination)
 {
-	mqArg->queueOfMessageServerClient[0].response = response;
+	mqArg->circularBufferServerClient.queueOfMessage[0].response = response;
 
 	writeMessageToProtocolDatagram(
-		&mqArg->queueOfMessageServerClient[0].messagePD,
+		&mqArg->circularBufferServerClient.queueOfMessage[0],
 		pSender,
 		pDestination);
 }

@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CircularBuffer.h" />
     <ClInclude Include="DllSetup.h" />
     <ClInclude Include="GameStructures.h" />
     <ClInclude Include="MessageProtocol.h" />
