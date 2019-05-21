@@ -18,5 +18,7 @@
 #include <errno.h>      // for return values
 //#include <minwinbase.h>
 #include <strsafe.h>
+#include <minwinbase.h>
+#include <minwinbase.h>
 
 // reference additional headers your program requires here

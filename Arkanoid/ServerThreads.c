@@ -1,9 +1,6 @@
 #include "ServerThreads.h"
 #include "Server.h"
 #include "GameLogic.h"
-#include <minwinbase.h>
-#include <minwinbase.h>
-#include <stdlib.h>
 
 inline static VOID readNewMessageSharedMemory(MessageQueue* queue, Server* serverObj)
 {
