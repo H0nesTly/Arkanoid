@@ -6,6 +6,8 @@ HANDLE hgSyncRWObject = NULL;
 HANDLE hgSyncSemaphoreRead = NULL; 
 HANDLE hgMutexReadNewMessage = NULL;
 
+HANDLE hgSemaphoreNotifyClientNewMessage = NULL;
+
 
 BOOL initSyncObject()
 {
@@ -15,6 +17,13 @@ BOOL initSyncObject()
 		0,			//conta inicial
 		MESSAGE_QUEUE_SIZE,		//conta maxima
 		NAME_SEMAPHORE_OBJECT_SERVER_READ);
+
+	hgSemaphoreNotifyClientNewMessage = CreateSemaphore(
+		NULL,
+		0,
+		MESSAGE_QUEUE_SIZE,
+		NAME_SEMAPHORE_OBJECT_SERVER_WRITE
+	);
 
 	hgNotifyClient = CreateEvent(
 		NULL,		//security attributes
@@ -40,7 +49,8 @@ BOOL initSyncObject()
 		FALSE, 
 		NAME_MUTEX_OBJECT_CLIENT_WRITE_MESSAGE);
 
-	return hgNotifyClient == NULL ||
+	return hgSemaphoreNotifyClientNewMessage == NULL ||
+		hgNotifyClient == NULL ||
 		hgWriteObject == NULL || 
 		hgSyncRWObject == NULL || 
 		hgSyncSemaphoreRead == NULL || 
@@ -49,7 +59,10 @@ BOOL initSyncObject()
 
 void freeSyncObject()
 {
+	//Devemos tb fazer release dos semaforos
+
 	CloseHandle(hgSyncSemaphoreRead);
+	CloseHandle(hgSemaphoreNotifyClientNewMessage);
 	CloseHandle(hgNotifyClient);
 	CloseHandle(hgWriteObject);
 	CloseHandle(hgSyncRWObject);

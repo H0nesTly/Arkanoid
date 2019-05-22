@@ -91,8 +91,9 @@ static VOID  receiveBroadcastSharedMemory()
 static VOID receiveMessageSharedMemory(const PTCHAR UserName)
 {
 	MessageQueue* queue = (MessageQueue*)gClientConnection.SharedMem.lpMessage;
+	DWORD dwWait;
 
-	WaitForSingleObject(gClientConnection.SharedMem.hEventReadNewMessage, INFINITE);
+	dwWait = WaitForSingleObject(gClientConnection.SharedMem.hSemaphoreReadMessageFromServer, INFINITE);
 	//Critical section
 
 	if (_tcscmp(UserName, queue->circularBufferServerClient.queueOfMessage[queue->circularBufferServerClient.wTailIndex].tcDestination) == 0

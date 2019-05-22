@@ -34,6 +34,7 @@ VOID freeComponentsDLL(ClientConnection* ccArg)
 
 		freeSyncObjectsDLL(
 			ccArg->SharedMem.hSemaphoreWriteMessageToServer,
+			ccArg->SharedMem.hSemaphoreReadMessageFromServer,
 			ccArg->SharedMem.hEventReadNewMessage,
 			ccArg->SharedMem.hMutexWriteNewMessage);
 
@@ -52,9 +53,9 @@ VOID freeComponentsDLL(ClientConnection* ccArg)
 
 BOOL initSharedMemoryDLL(SharedMemory* shArg)
 {
-	return initClientGameMemDLL(&shArg->hGame, &shArg->lpGame) && 
+	return initClientGameMemDLL(&shArg->hGame, &shArg->lpGame) &&
 		initClientMessageMemDLL(&shArg->hMessage, &shArg->lpMessage) &&
-		initSyncObjectsDLL(&shArg->hEventReadNewMessage, &shArg->hSemaphoreWriteMessageToServer, &shArg->hMutexWriteNewMessage);
+		initSyncObjectsDLL(&shArg->hEventReadNewMessage, &shArg->hSemaphoreWriteMessageToServer, &shArg->hMutexWriteNewMessage, &shArg->hSemaphoreReadMessageFromServer);
 }
 
 BOOL initClientGameMemDLL(HANDLE* hMapObj, LPVOID* lpSharedMem)
@@ -140,7 +141,7 @@ VOID freeMappedMemoryDLL(HANDLE hMapObjGame, LPVOID lpSharedGame, HANDLE hMapObj
 	CloseHandle(hMapObjMessage);
 }
 
-BOOL initSyncObjectsDLL(HANDLE* hRObj, HANDLE* hwSemaphore, HANDLE* hMutex)
+BOOL initSyncObjectsDLL(HANDLE* hRObj, HANDLE* hwSemaphore, HANDLE* hMutex, HANDLE* hwSemaphoreFromServer)
 {
 	*hRObj = CreateEvent(
 		NULL,		//security attributes
@@ -158,6 +159,11 @@ BOOL initSyncObjectsDLL(HANDLE* hRObj, HANDLE* hwSemaphore, HANDLE* hMutex)
 		TRUE,		//Herança do handler
 		NAME_SEMAPHORE_OBJECT_SERVER_READ);
 
+	*hwSemaphoreFromServer = OpenSemaphore(
+		SEMAPHORE_ALL_ACCESS,
+		TRUE,
+		NAME_SEMAPHORE_OBJECT_SERVER_WRITE);
+
 	*hMutex = OpenMutex(
 		MUTEX_ALL_ACCESS,
 		TRUE,
@@ -165,12 +171,13 @@ BOOL initSyncObjectsDLL(HANDLE* hRObj, HANDLE* hwSemaphore, HANDLE* hMutex)
 
 	_tprintf(TEXT("Criou eventos \n"));
 
-	return *hRObj == NULL || *hwSemaphore == NULL || *hMutex == NULL ? FALSE : TRUE;
+	return *hRObj == NULL || *hwSemaphore == NULL || *hMutex == NULL || *hwSemaphoreFromServer == NULL ? FALSE : TRUE;
 }
 
-VOID freeSyncObjectsDLL(HANDLE hWObj, HANDLE hRObj, HANDLE hMutex)
+VOID freeSyncObjectsDLL(HANDLE hWObj, HANDLE hSObj, HANDLE hRObj, HANDLE hMutex)
 {
 	CloseHandle(hWObj);
+	CloseHandle(hSObj);
 	CloseHandle(hRObj);
 	CloseHandle(hMutex);
 }
@@ -190,25 +197,25 @@ BOOL initNamedPipeLocalDLL(PipeLocal* plArg)
 		0,			//atributos normais
 		NULL);				//template file
 
-	 if (plArg->hNamedPipe == INVALID_HANDLE_VALUE ||
+	if (plArg->hNamedPipe == INVALID_HANDLE_VALUE ||
 		GetLastError() == ERROR_PIPE_BUSY)
-	 {
-		 _tprintf(TEXT("Erro Criar PIPE %d"), GetLastError());
-		return  FALSE; 
-	 }
-	 // The pipe connected; change to message-read mode. 
-	 /*The client side of a named pipe starts out in byte mode, even if the server side is in message mode.
-	  * To avoid problems receiving data, set the client side to message mode as well. 
-	  * To change the mode of the pipe, the pipe client must open a read-only pipe with 
-	  * GENERIC_READ and FILE_WRITE_ATTRIBUTES access.
-	  */
+	{
+		_tprintf(TEXT("Erro Criar PIPE %d"), GetLastError());
+		return  FALSE;
+	}
+	// The pipe connected; change to message-read mode. 
+	/*The client side of a named pipe starts out in byte mode, even if the server side is in message mode.
+	 * To avoid problems receiving data, set the client side to message mode as well.
+	 * To change the mode of the pipe, the pipe client must open a read-only pipe with
+	 * GENERIC_READ and FILE_WRITE_ATTRIBUTES access.
+	 */
 	dwPipeMode = PIPE_READMODE_MESSAGE;
 	fReturn = SetNamedPipeHandleState(
 		plArg->hNamedPipe,	//handler
-		 &dwPipeMode,		//Modo do pipe
-		 NULL,				//Tamnanho em bytes 
-		 NULL				//timeout
-	 );
+		&dwPipeMode,		//Modo do pipe
+		NULL,				//Tamnanho em bytes 
+		NULL				//timeout
+	);
 
 	_tprintf(TEXT("\nPipe Criado com sucesso Eror: %d"), GetLastError());
 

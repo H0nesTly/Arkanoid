@@ -11,7 +11,9 @@ extern HANDLE hgNotifyClient;
 extern HANDLE hgWriteObject;
 extern HANDLE hgSyncRWObject;
 extern HANDLE hgSyncSemaphoreRead;
+
 extern HANDLE hgMutexReadNewMessage;
+extern HANDLE hgSemaphoreNotifyClientNewMessage;
 
 typedef struct serverThreadsHandlers ServerThreadsHandlers;
 

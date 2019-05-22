@@ -24,6 +24,8 @@ struct clientConnection
 			/*---Eventos e mecanismos de sincronização---*/
 			/*Semaforo para notificar que existe uma nova mensagem para o servidor ler*/
 			HANDLE hSemaphoreWriteMessageToServer;
+
+			HANDLE hSemaphoreReadMessageFromServer;
 			/*Evento para notificar aos clientes que existe uma nova mensagem*/
 			HANDLE hEventReadNewMessage;
 			/*Mutex's para a escrita de novas mensagens*/
@@ -66,9 +68,9 @@ BOOL initClientMessageMemDLL(HANDLE*, LPVOID*);
 
 VOID freeMappedMemoryDLL(HANDLE, LPVOID, HANDLE, LPVOID);
 
-BOOL initSyncObjectsDLL(HANDLE*, HANDLE*, HANDLE*);
+BOOL initSyncObjectsDLL(HANDLE*, HANDLE*, HANDLE*, HANDLE*);
 
-VOID freeSyncObjectsDLL(HANDLE, HANDLE, HANDLE);
+VOID freeSyncObjectsDLL(HANDLE, HANDLE, HANDLE, HANDLE);
 /*----------  FIM Funçoes de Bootstrapping para memoria partilhada ----------*/
 
 /*---------- Funçoes de Bootstrapping para NamedPipes ----------*/

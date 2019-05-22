@@ -72,6 +72,11 @@ struct scorePlayer
 struct playerInfo
 {
 	TCHAR tcUserName[MAX_LENGTH_NAME];
+	union
+	{
+		HANDLE hNamedPipe;
+		HANDLE hEventSharedMemory;
+	}typeOfConnection;
 };
 
 struct player

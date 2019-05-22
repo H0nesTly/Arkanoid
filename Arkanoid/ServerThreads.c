@@ -7,29 +7,17 @@ inline static VOID readNewMessageSharedMemory(MessageQueue* queue, Server* serve
 	//CRITICAL SECTION
 	WaitForSingleObject(hgMutexReadNewMessage, INFINITE);
 
-	for (; queue->circularBufferClientServer.wTailIndex != queue->circularBufferClientServer.wHeadIndex;//Erro aqui
+	for (; queue->circularBufferClientServer.wTailIndex != queue->circularBufferClientServer.wHeadIndex; 
 		queue->circularBufferClientServer.wTailIndex = (queue->circularBufferClientServer.wTailIndex + 1) % MESSAGE_QUEUE_SIZE)
 	{
-		_tprintf_s(TEXT("\n Valor da read %d e da Unread %d"), 
-			queue->circularBufferClientServer.wTailIndex, 
-			queue->circularBufferClientServer.wHeadIndex);
-
 		switch (queue->circularBufferClientServer.queueOfMessage[queue->circularBufferClientServer.wTailIndex].request)
 		{
 		case LoginMessage:
-			//Insere na lista de jogadore
+			//Insere na lista de jogadores
 			if (addUserNameToLobby(
 				queue->circularBufferClientServer.queueOfMessage[queue->circularBufferClientServer.wTailIndex].tcSender, 
 				&serverObj->gameInstance))
 			{
-				//FIX: Inserir 1 jogador a mais?
-				for (size_t i = 0; i < serverObj->gameInstance.lobbyGame.wPlayersInLobby; i++)
-				{
-					_tprintf(TEXT("\n Jogador : %s| Concectou-se %d"),
-						serverObj->gameInstance.lobbyGame.playersInLobby[i].tcUserName,
-						serverObj->gameInstance.lobbyGame.wPlayersInLobby);
-				}
-
 				//Escrevemos nova mensagem para o cliente 
 				writeMessageToClientSharedMemory(queue,
 					ResponseLoginSuccess,
@@ -44,20 +32,17 @@ inline static VOID readNewMessageSharedMemory(MessageQueue* queue, Server* serve
 					queue->circularBufferClientServer.queueOfMessage[queue->circularBufferClientServer.wTailIndex].tcSender);
 			}
 
-			//Apagar a mensagem indica que foi lida
-			ZeroMemory(&queue->circularBufferClientServer.queueOfMessage[queue->circularBufferClientServer.wTailIndex], sizeof(MessageProtocolDatagramRequest));
-
-			//notificamos todos os consumidores a dizer que a uma nova mensagem
-			SetEvent(hgNotifyClient);
-
-			//TODO: Esperamos X ms e damos reset no evento
-					//FIM DA CRITICAL SECTION
+			//FIM DA CRITICAL SECTION
 			if (!ReleaseMutex(hgMutexReadNewMessage))
 			{
-				//erro desbloquear mutex
+				_tprintf(TEXT("Erro a desbloquar Mutex %d"), GetLastError());
 			}
-			ResetEvent(hgNotifyClient);
 
+			//notificamos todos os consumidores a dizer que a uma nova mensagem
+			//SetEvent(hgNotifyClient);
+			//TODO: Modificar o valor de 4 para as pessas em lobby
+			ReleaseSemaphore(hgSemaphoreNotifyClientNewMessage, 4, NULL);
+			//TODO: set evento para ca cliente
 			break;
 		case TopPlayersMessage:
 			break;
