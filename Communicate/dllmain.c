@@ -2,7 +2,6 @@
 #include "stdafx.h"
 
 #include "DllSetup.h"
-#include <minwinbase.h>
 
 ClientConnection gClientConnection;
 

@@ -2,16 +2,18 @@
 #include "ClientThreads.h"
 #include "ClientStructures.h"
 
+BOOL bKeepRunning = TRUE;
 
 DWORD WINAPI readMessageThread(LPVOID lpArg)
 {
 	ClientStructure* clientInfo = (ClientStructure*) lpArg;
 
-	while (1)
+	while (bKeepRunning)
 	{
-		ReceiveMessage(clientInfo->tcUserName);
+		ReceiveMessage(clientInfo->tcUserName, &bKeepRunning);
 	}
 
+	_tprintf(TEXT("\nVou fechar!!"));
 	return 0;
 }
 

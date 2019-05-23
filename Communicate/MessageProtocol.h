@@ -28,7 +28,6 @@ typedef struct messageProtocolPipe MessageProtocolPipe;
 typedef struct messageQueue MessageQueue;
 typedef struct circularBuffer CircularBuffer;
 
-
 typedef enum responseOfMessage TypeOfResponseMessage;
 typedef enum requestOfMessage TypeOfRequestMessage;
 
@@ -130,13 +129,13 @@ extern "C" {          // we need to export the C interface
 	#endif
 
 	/*Enviamos mensagem ao servidor*/
-	DLL_API VOID __cdecl Login(PTCHAR, TypeOfClientConnection);
+	DLL_API VOID __cdecl Login(PTCHAR, TypeOfClientConnection );
 
-	DLL_API VOID __cdecl ReceiveBroadcast();
+	DLL_API VOID __cdecl ReceiveBroadcast(BOOL* );
 
-	DLL_API VOID __cdecl SendMessageDll();
+	DLL_API VOID __cdecl SendMessageDll(BOOL* );
 
-	DLL_API VOID __cdecl ReceiveMessage(const PTCHAR);
+	DLL_API VOID __cdecl ReceiveMessage(const PTCHAR, BOOL* );
 
 	#ifdef __cplusplus
 }

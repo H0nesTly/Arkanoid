@@ -4,6 +4,7 @@
 #include "CircularBuffer.h"
 
 extern ClientConnection gClientConnection;
+/*Variavel que continua o o programa a correr*/
 
 static VOID loginSharedMemory(const PTCHAR username)
 {
@@ -89,14 +90,14 @@ static VOID  receiveBroadcastSharedMemory()
 	_tprintf(TEXT("Posicaçao da bola %d\n"), game->ball.ballPosition.x);
 }
 
-static VOID receiveMessageSharedMemory(const PTCHAR UserName)
+static VOID receiveMessageSharedMemory(const PTCHAR UserName,BOOL* bKeepRunning)
 {
 	MessageQueue* queue = (MessageQueue*)gClientConnection.SharedMem.lpMessage;
 	DWORD dwWait, wCount = 0;
 
 	dwWait = WaitForSingleObject(gClientConnection.SharedMem.hSemaphoreReadMessageFromServer, INFINITE);
 	//Critical section
-	_tprintf(TEXT("\n%d|%d"), WAIT_OBJECT_0, dwWait);
+	_tprintf(TEXT("\nLi mensagem %d|%d"), WAIT_OBJECT_0, dwWait);
 	if (_tcscmp(UserName, queue->circularBufferServerClient.queueOfMessage[queue->circularBufferServerClient.wTailIndex].tcDestination) == 0 /*||
 		queue->queueOfMessageServerClient[queue->wTailIndex].messagePD.tcDestination[0] == '*'*/)
 	{
@@ -112,16 +113,16 @@ static VOID receiveMessageSharedMemory(const PTCHAR UserName)
 			{
 				_tprintf(TEXT("Login MAL Sucedido\n"));
 				advanceTail(&queue->circularBufferServerClient);
+				*bKeepRunning = FALSE;
 			}
 			break;
 		default:
 			break;
 		}
-		//ReleaseSemaphore()
 	}
 }
 
-static VOID	receiveMessageLocalPipe(const PTCHAR UserName)
+static VOID	receiveMessageLocalPipe(const PTCHAR UserName, BOOL* bKeepRunning)
 {
 	HANDLE hPipe = gClientConnection.PipeLocal.hNamedPipe;
 	MessageProtocolPipe messageToReceive;
@@ -146,10 +147,10 @@ static VOID	receiveMessageLocalPipe(const PTCHAR UserName)
 			{
 			case ResponseLoginFail:
 				_tprintf(TEXT("\n%s"), messageToReceive.messagePD.tcData);
+				*bKeepRunning = FALSE;
 				break;
 			case ResponseLoginSuccess:
 				_tprintf(TEXT("\n%s"), messageToReceive.messagePD.tcData);
-
 				break;
 			}
 		}
@@ -188,12 +189,12 @@ VOID __cdecl Login(PTCHAR username, TypeOfClientConnection arg)
 	}
 }
 
-VOID __cdecl ReceiveBroadcast()
+VOID __cdecl ReceiveBroadcast(BOOL* bKeepRunning)
 {
 	switch (gClientConnection.typeOfConnection)
 	{
 	case clientSharedMemoryConnection:
-		receiveBroadcastSharedMemory();
+		receiveBroadcastSharedMemory(bKeepRunning);
 		break;
 	case clientNamedPipeLocalConnection:
 		break;
@@ -204,7 +205,7 @@ VOID __cdecl ReceiveBroadcast()
 	}
 }
 
-VOID __cdecl SendMessageDll()
+VOID __cdecl SendMessageDll(BOOL* bKeepRunning)
 {
 	switch (gClientConnection.typeOfConnection)
 	{
@@ -219,15 +220,15 @@ VOID __cdecl SendMessageDll()
 	}
 }
 
-VOID __cdecl ReceiveMessage(const PTCHAR UserName)
+VOID __cdecl ReceiveMessage(const PTCHAR UserName,BOOL* bKeepRunning)
 {
 	switch (gClientConnection.typeOfConnection)
 	{
 	case clientSharedMemoryConnection:
-		receiveMessageSharedMemory(UserName);
+		receiveMessageSharedMemory(UserName, bKeepRunning);
 		break;
 	case clientNamedPipeLocalConnection:
-		receiveMessageLocalPipe(UserName);
+		receiveMessageLocalPipe(UserName, bKeepRunning);
 		break;
 	case clientNamedPipeRemoteConnection:
 		break;
