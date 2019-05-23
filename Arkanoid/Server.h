@@ -43,6 +43,8 @@ BOOL checkUserNameInLobby(PTCHAR, const ServerGameInstance *);
 
 BOOL addUserNameToLobby(PTCHAR, ServerGameInstance*);
 
+WORD getPlayersInLobby(const Lobby*);
+
 /*TODO: INCREMENTAR MENSAGENS POR LER*/
 VOID writeMessageToClientSharedMemory(MessageQueue*, TypeOfResponseMessage, const PTCHAR , const PTCHAR);
 

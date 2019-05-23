@@ -16,6 +16,7 @@ struct clientConnection
 	{
 		struct sharedMemory
 		{
+			BOOL bAlreadyAuthenticate;
 			//Ponteiros e handles para Memoria virtula
 			LPVOID lpMessage;
 			HANDLE hMessage;

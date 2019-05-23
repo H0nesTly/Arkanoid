@@ -2,7 +2,6 @@
 /*			ATUALMENTE NESTE TEMPLATE ESTÁ ATIVO A 
 		OPÇOA UNICODE LOGO ESTA A CORRER COM UTF-16*/	
 #include <windows.h>
-#include <windows.h>
 #include <tchar.h>
 #include <fcntl.h>
 #include <io.h>

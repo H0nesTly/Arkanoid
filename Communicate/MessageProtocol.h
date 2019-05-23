@@ -78,9 +78,9 @@ struct circularBuffer
 	//VARIAVEIS DE INDEX da primeira queue
 	WORD wHeadIndex;		//Está variável é usada no Cliente para saber onde colocar a mensagem 
 	WORD wTailIndex;		//Está variável é usada no lado do Servidor para saber que mensagens ainda não leu
+	BOOL bBufferFull;
 
 	MessageProtocolDatagram queueOfMessage[MESSAGE_QUEUE_SIZE];
-
 };
 
 // TailIndex

@@ -1,36 +1,51 @@
 #pragma once
 #include "stdafx.h"
 #include "MessageProtocol.h"
-#include <minwinbase.h>
 
 BOOL isEmpty(CircularBuffer * circularBufferHandler)
 {
-	return (circularBufferHandler->wHeadIndex == circularBufferHandler->wTailIndex);
+	return ((circularBufferHandler->wHeadIndex == circularBufferHandler->wTailIndex) && !circularBufferHandler->bBufferFull);
+}
+
+VOID advanceTail(CircularBuffer* circularBufferHandler)
+{
+	circularBufferHandler->bBufferFull = FALSE;
+	circularBufferHandler->wTailIndex = (circularBufferHandler->wTailIndex + 1) % MESSAGE_QUEUE_SIZE;
+}
+
+VOID advanceHead(CircularBuffer* circularBufferHandler)
+{
+	if (circularBufferHandler->bBufferFull)
+	{
+		circularBufferHandler->wTailIndex = (circularBufferHandler->wTailIndex + 1) % MESSAGE_QUEUE_SIZE;
+	}
+	circularBufferHandler->wHeadIndex = (circularBufferHandler->wHeadIndex + 1) % MESSAGE_QUEUE_SIZE;
+	circularBufferHandler->bBufferFull = (circularBufferHandler->wHeadIndex == circularBufferHandler->wTailIndex);
 }
 
 /*
  * Escrevemos por cima na possiçao seguinte.
  * Caso o buffer esteja cheio o utimo valor vai ser "overwritten".
  */
-VOID addItemToBuffer(CircularBuffer * circularBuffer, MessageProtocolDatagram* messageQueue)
+VOID addItemToBuffer(CircularBuffer * circularBufferHandler, MessageProtocolDatagram* messageQueue)
 {
 	ZeroMemory(
-		&circularBuffer->queueOfMessage[circularBuffer->wHeadIndex], 
+		&circularBufferHandler->queueOfMessage[circularBufferHandler->wHeadIndex],
 		sizeof(MessageProtocolDatagram));
 
-	CopyMemory (
-		&circularBuffer->queueOfMessage[circularBuffer->wHeadIndex], //destino
+	CopyMemory(
+		&circularBufferHandler->queueOfMessage[circularBufferHandler->wHeadIndex], //destino
 		messageQueue,		//fonte
 		sizeof(MessageProtocolDatagram));
 
-	circularBuffer->wHeadIndex = (circularBuffer->wHeadIndex + 1) % MESSAGE_QUEUE_SIZE;
+	advanceHead(circularBufferHandler);
 }
 
-VOID removeFirstItemOfBuffer(CircularBuffer* circularBuferHandler, MessageProtocolDatagram* message)
+VOID removeFirstItemOfBuffer(CircularBuffer* circularBufferHandler, MessageProtocolDatagram* message)
 {
-	if ( ! isEmpty(circularBuferHandler))
+	if (!isEmpty(circularBufferHandler))
 	{
-		*message = circularBuferHandler->queueOfMessage[circularBuferHandler->wTailIndex];
-		circularBuferHandler->wTailIndex = (circularBuferHandler->wTailIndex + 1) % MESSAGE_QUEUE_SIZE;
+		*message = circularBufferHandler->queueOfMessage[circularBufferHandler->wTailIndex];
+		advanceTail(circularBufferHandler);
 	}
 }

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "MessageProtocol.h"
 #include "GameStructures.h"
+#include "CircularBuffer.h"
 
 extern ClientConnection gClientConnection;
 
@@ -91,26 +92,32 @@ static VOID  receiveBroadcastSharedMemory()
 static VOID receiveMessageSharedMemory(const PTCHAR UserName)
 {
 	MessageQueue* queue = (MessageQueue*)gClientConnection.SharedMem.lpMessage;
-	DWORD dwWait;
+	DWORD dwWait, wCount = 0;
 
 	dwWait = WaitForSingleObject(gClientConnection.SharedMem.hSemaphoreReadMessageFromServer, INFINITE);
 	//Critical section
-
-	if (_tcscmp(UserName, queue->circularBufferServerClient.queueOfMessage[queue->circularBufferServerClient.wTailIndex].tcDestination) == 0
-		/*||
+	_tprintf(TEXT("\n%d|%d"), WAIT_OBJECT_0, dwWait);
+	if (_tcscmp(UserName, queue->circularBufferServerClient.queueOfMessage[queue->circularBufferServerClient.wTailIndex].tcDestination) == 0 /*||
 		queue->queueOfMessageServerClient[queue->wTailIndex].messagePD.tcDestination[0] == '*'*/)
 	{
 		switch (queue->circularBufferServerClient.queueOfMessage[queue->circularBufferServerClient.wTailIndex].request)
 		{
 		case ResponseLoginSuccess:
 			_tprintf(TEXT("Login Bem Sucedido\n"));
+			gClientConnection.SharedMem.bAlreadyAuthenticate = TRUE;
+			advanceTail(&queue->circularBufferServerClient);
 			break;
 		case ResponseLoginFail:
-			_tprintf(TEXT("Login MAL Sucedido\n"));
+			if (!gClientConnection.SharedMem.bAlreadyAuthenticate)
+			{
+				_tprintf(TEXT("Login MAL Sucedido\n"));
+				advanceTail(&queue->circularBufferServerClient);
+			}
 			break;
 		default:
 			break;
 		}
+		//ReleaseSemaphore()
 	}
 }
 

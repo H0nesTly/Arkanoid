@@ -1,4 +1,5 @@
 #include "Server.h"
+#include "../Communicate/CircularBuffer.h"
 
 BOOL intitServerGameMem(HANDLE* hMapObj, LPVOID* lpSharedMem)
 {
@@ -446,15 +447,25 @@ BOOL addUserNameToLobby(PTCHAR userName, ServerGameInstance* gameLobby)
 	return FALSE;
 }
 
-//TODO: passar para proxima mensagem
+WORD getPlayersInLobby(const Lobby* lobby)
+{
+	return lobby->wPlayersInLobby; 
+}
+
+
 VOID writeMessageToClientSharedMemory(MessageQueue* mqArg, TypeOfResponseMessage response, const PTCHAR pSender, const PTCHAR pDestination)
 {
-	mqArg->circularBufferServerClient.queueOfMessage[0].response = response;
+	MessageProtocolDatagram aux;
+	ZeroMemory(&aux, sizeof(MessageProtocolDatagram));
 
 	writeMessageToProtocolDatagram(
-		&mqArg->circularBufferServerClient.queueOfMessage[0],
+		&aux,
 		pSender,
 		pDestination);
+
+	aux.response = response;
+
+	addItemToBuffer(&mqArg->circularBufferServerClient, &aux);
 }
 
 VOID writeMessageToClientPipeResponse(MessageProtocolPipe* mppArg, TypeOfResponseMessage response, const PTCHAR pSender, const PTCHAR pDestination)

@@ -7,7 +7,7 @@ inline static VOID readNewMessageSharedMemory(MessageQueue* queue, Server* serve
 	//CRITICAL SECTION
 	WaitForSingleObject(hgMutexReadNewMessage, INFINITE);
 
-	for (; queue->circularBufferClientServer.wTailIndex != queue->circularBufferClientServer.wHeadIndex; 
+	for (; queue->circularBufferClientServer.wTailIndex != queue->circularBufferClientServer.wHeadIndex;
 		queue->circularBufferClientServer.wTailIndex = (queue->circularBufferClientServer.wTailIndex + 1) % MESSAGE_QUEUE_SIZE)
 	{
 		switch (queue->circularBufferClientServer.queueOfMessage[queue->circularBufferClientServer.wTailIndex].request)
@@ -15,7 +15,7 @@ inline static VOID readNewMessageSharedMemory(MessageQueue* queue, Server* serve
 		case LoginMessage:
 			//Insere na lista de jogadores
 			if (addUserNameToLobby(
-				queue->circularBufferClientServer.queueOfMessage[queue->circularBufferClientServer.wTailIndex].tcSender, 
+				queue->circularBufferClientServer.queueOfMessage[queue->circularBufferClientServer.wTailIndex].tcSender,
 				&serverObj->gameInstance))
 			{
 				//Escrevemos nova mensagem para o cliente 
@@ -32,17 +32,6 @@ inline static VOID readNewMessageSharedMemory(MessageQueue* queue, Server* serve
 					queue->circularBufferClientServer.queueOfMessage[queue->circularBufferClientServer.wTailIndex].tcSender);
 			}
 
-			//FIM DA CRITICAL SECTION
-			if (!ReleaseMutex(hgMutexReadNewMessage))
-			{
-				_tprintf(TEXT("Erro a desbloquar Mutex %d"), GetLastError());
-			}
-
-			//notificamos todos os consumidores a dizer que a uma nova mensagem
-			//SetEvent(hgNotifyClient);
-			//TODO: Modificar o valor de 4 para as pessas em lobby
-			ReleaseSemaphore(hgSemaphoreNotifyClientNewMessage, 4, NULL);
-			//TODO: set evento para ca cliente
 			break;
 		case TopPlayersMessage:
 			break;
@@ -51,6 +40,15 @@ inline static VOID readNewMessageSharedMemory(MessageQueue* queue, Server* serve
 		default:
 			break;
 		}
+	}
+	//notificamos todos os consumidores a dizer que a uma nova mensagem
+	//TODO: Modificar o valor de 4 para as pessas em lobby
+	ReleaseSemaphore(hgSemaphoreNotifyClientNewMessage, getPlayersInLobby(&serverObj->gameInstance.lobbyGame) + 1 ,NULL);
+
+	//FIM DA CRITICAL SECTION
+	if (!ReleaseMutex(hgMutexReadNewMessage))
+	{
+		_tprintf(TEXT("Erro a desbloquar Mutex %d"), GetLastError());
 	}
 }
 
