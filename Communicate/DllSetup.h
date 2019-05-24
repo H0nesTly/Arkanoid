@@ -11,7 +11,7 @@ typedef enum typeOfClientConnection TypeOfClientConnection;
 struct clientConnection
 {
 	TypeOfClientConnection typeOfConnection;
-
+	TCHAR tcUserName[MAX_LENGTH_NAME];
 	union 
 	{
 		struct sharedMemory

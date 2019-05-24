@@ -138,6 +138,62 @@ BOOL initServerPipeLocal(NamedPipeInstance npInstances[], WORD wInstances)
 	return TRUE;
 }
 
+VOID writeMessageToClientSharedMemory(MessageQueue* mqArg, TypeOfResponseMessage response, const PTCHAR pSender, const PTCHAR pDestination)
+{
+	MessageProtocolDatagram aux;
+	ZeroMemory(&aux, sizeof(MessageProtocolDatagram));
+
+	fillMessageToProtocolDatagram(
+		&aux,
+		pSender,
+		pDestination);
+
+	switch (response)
+	{
+	case ResponseTop10:
+		ScorePlayer list[NUM_TOP];
+		ZeroMemory(&list, sizeof(ScorePlayer) * NUM_TOP);
+
+		getTopTenRegistry(list);
+		CopyMemory(&aux.listOfHighScores, //destination
+					list,
+					sizeof(ScorePlayer) * NUM_TOP);
+
+		break;
+	case ResponseLoginFail:
+		break;
+	case ResponseLoginSuccess:
+		break;
+	}
+
+	aux.response = response;
+
+	addItemToBuffer(&mqArg->circularBufferServerClient, &aux);
+}
+
+VOID writeMessageToClientPipeResponse(MessageProtocolPipe* mppArg, TypeOfResponseMessage response, const PTCHAR pSender, const PTCHAR pDestination)
+{
+	mppArg->wTypeOfMessage = TYPE_OF_MESSAGE_RESPONSE;
+
+	mppArg->response = response;
+
+	fillMessageToProtocolDatagram(
+		&mppArg->messagePD,
+		pSender,
+		pDestination);
+}
+
+VOID fillMessageToProtocolDatagram(MessageProtocolDatagram* message_protocol_datagram, const PTCHAR pSender, const PTCHAR pDestination)
+{
+	_tcscpy_s(message_protocol_datagram->tcDestination,
+		_countof(message_protocol_datagram->tcDestination),
+		pDestination);
+
+	_tcscpy_s(message_protocol_datagram->tcSender,
+		_countof(message_protocol_datagram->tcSender),
+		pSender);
+}
+
 VOID freeMappedMemoryServer(ServerSharedMemoryHandlers* mapped)
 {
 	UnmapViewOfFile(mapped->lpSharedMemGame);
@@ -449,47 +505,9 @@ BOOL addUserNameToLobby(PTCHAR userName, ServerGameInstance* gameLobby)
 
 WORD getPlayersInLobby(const Lobby* lobby)
 {
-	return lobby->wPlayersInLobby; 
+	return lobby->wPlayersInLobby;
 }
 
-
-VOID writeMessageToClientSharedMemory(MessageQueue* mqArg, TypeOfResponseMessage response, const PTCHAR pSender, const PTCHAR pDestination)
-{
-	MessageProtocolDatagram aux;
-	ZeroMemory(&aux, sizeof(MessageProtocolDatagram));
-
-	writeMessageToProtocolDatagram(
-		&aux,
-		pSender,
-		pDestination);
-
-	aux.response = response;
-
-	addItemToBuffer(&mqArg->circularBufferServerClient, &aux);
-}
-
-VOID writeMessageToClientPipeResponse(MessageProtocolPipe* mppArg, TypeOfResponseMessage response, const PTCHAR pSender, const PTCHAR pDestination)
-{
-	mppArg->wTypeOfMessage = TYPE_OF_MESSAGE_RESPONSE;
-
-	mppArg->response = response;
-
-	writeMessageToProtocolDatagram(
-		&mppArg->messagePD,
-		pSender,
-		pDestination);
-}
-
-VOID writeMessageToProtocolDatagram(MessageProtocolDatagram* message_protocol_datagram, const PTCHAR pSender, const PTCHAR pDestination)
-{
-	_tcscpy_s(message_protocol_datagram->tcDestination,
-		_countof(message_protocol_datagram->tcDestination),
-		pDestination);
-
-	_tcscpy_s(message_protocol_datagram->tcSender,
-		_countof(message_protocol_datagram->tcSender),
-		pSender);
-}
 
 BOOL ConnectNewClientToNP(HANDLE hNamedipe, LPOVERLAPPED lpo)
 {

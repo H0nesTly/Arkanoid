@@ -21,4 +21,6 @@
 #include <minwinbase.h>
 #include <minwinbase.h>
 
+#define MAX_LENGTH_NAME 20
+
 // reference additional headers your program requires here

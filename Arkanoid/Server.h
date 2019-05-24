@@ -26,7 +26,7 @@ BOOL intitServerMessageMem(HANDLE*, LPVOID*);
 
 BOOL initServerPipeLocal(NamedPipeInstance[], WORD);
 
-void freeMappedMemoryServer(ServerSharedMemoryHandlers* );
+void freeMappedMemoryServer(ServerSharedMemoryHandlers*);
 
 BOOL loadGameConfiguration(TCHAR *nomeFicheiro, GameServerConfiguration *serverConfig);
 
@@ -38,19 +38,16 @@ VOID setScoreTopTen(ScorePlayer newScore, ScorePlayer scoreTopTen[]);
 
 BOOL verifyUserName(PTCHAR);
 
+VOID writeMessageToClientSharedMemory(MessageQueue*, TypeOfResponseMessage, const PTCHAR, const PTCHAR);
+
+VOID writeMessageToClientPipe(MessageProtocolPipe*, TypeOfResponseMessage, const PTCHAR, const PTCHAR);
+
 /*@return - true se não existir username ja no servidor*/
 BOOL checkUserNameInLobby(PTCHAR, const ServerGameInstance *);
 
 BOOL addUserNameToLobby(PTCHAR, ServerGameInstance*);
 
 WORD getPlayersInLobby(const Lobby*);
-
-/*TODO: INCREMENTAR MENSAGENS POR LER*/
-VOID writeMessageToClientSharedMemory(MessageQueue*, TypeOfResponseMessage, const PTCHAR , const PTCHAR);
-
-VOID writeMessageToClientPipe(MessageProtocolPipe* , TypeOfResponseMessage , const PTCHAR , const PTCHAR );
-
-VOID writeMessageToProtocolDatagram(MessageProtocolDatagram* , const PTCHAR , const PTCHAR );
 
 /*--------------- NAMED PIPES ---------------*/
 BOOL ConnectNewClientToNP(HANDLE, LPOVERLAPPED);

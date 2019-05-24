@@ -3,7 +3,6 @@
 #include "stdafx.h"
 #include "DllSetup.h"
 
-#define MAX_LENGTH_NAME 20
 #define MESSAGE_QUEUE_SIZE 20
 #define MESSAGE_QUEUE_READER_SIZE (MESSAGE_QUEUE_SIZE / 2)
 #define TYPE_OF_MESSAGE_RESPONSE 0
@@ -136,6 +135,7 @@ enum requestOfMessage
 #define DLL_API __declspec(dllimport)
 #endif
 
+
 #ifdef __cplusplus    // If used by C++ code, 
 extern "C" {          // we need to export the C interface
 	#endif
@@ -145,10 +145,16 @@ extern "C" {          // we need to export the C interface
 
 	DLL_API VOID __cdecl ReceiveBroadcast(BOOL*);
 
-	DLL_API VOID __cdecl SendMessageDll(BOOL*);
+	DLL_API VOID __cdecl SendMessageDll(BOOL*, TypeOfRequestMessage);
 
 	DLL_API VOID __cdecl ReceiveMessage(const PTCHAR, BOOL*);
 
+	VOID writeMessageToServerSharedMemory(MessageQueue* , TypeOfRequestMessage , const PTCHAR , const PTCHAR );
+
+	VOID writeMessageToServerPipeRequest(MessageProtocolPipe* , TypeOfRequestMessage , const PTCHAR pSender, const PTCHAR );
+	
 	#ifdef __cplusplus
 }
 #endif
+
+VOID fillMessageToProtocolDatagram(MessageProtocolDatagram*, const PTCHAR, const PTCHAR);

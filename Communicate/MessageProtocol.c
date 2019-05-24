@@ -10,36 +10,22 @@ static VOID loginSharedMemory(const PTCHAR username)
 {
 	MessageQueue* queue = (MessageQueue*)gClientConnection.SharedMem.lpMessage;
 	DWORD dwWaitMutex;
-	WORD wNextIndexMessage;
 
 	//MUTEX DEVE ESTAR BLOQUEADO
 	//CRITICAL SECTION
 	dwWaitMutex = WaitForSingleObject(gClientConnection.SharedMem.hMutexWriteNewMessage, INFINITE);
 
-	wNextIndexMessage = (queue->circularBufferClientServer.wHeadIndex + 1) % MESSAGE_QUEUE_SIZE;
-
 	//TODO :Se BUFFER ESTIVER CHEIO O QUE FAZER? TENTAR EM X ms apos tentativa??
 	/*Lista de mensagens está cheia*/
 		//Escrevemos mensagem
 
-	_tcscpy_s(queue->circularBufferClientServer.queueOfMessage[queue->circularBufferClientServer.wHeadIndex].tcSender,
-		_countof(queue->circularBufferClientServer.queueOfMessage[0].tcSender),
-		username);
+	writeMessageToServerSharedMemory(queue, LoginMessage, username, NAME_SERVER);
 
-	_tcscpy_s(queue->circularBufferClientServer.queueOfMessage[queue->circularBufferClientServer.wHeadIndex].tcDestination,
-		_countof(queue->circularBufferClientServer.queueOfMessage[0].tcDestination),
-		NAME_SERVER);
-
-	queue->circularBufferClientServer.queueOfMessage[queue->circularBufferClientServer.wHeadIndex].request = LoginMessage;
-
-	_tcscpy_s(queue->circularBufferClientServer.queueOfMessage[queue->circularBufferClientServer.wHeadIndex].tcData,
-		_countof(queue->circularBufferClientServer.queueOfMessage[0].tcData),
-		TEXT("Quero me conectar"));
-
-	queue->circularBufferClientServer.wHeadIndex = wNextIndexMessage;
+	//_tcscpy_s(queue->circularBufferClientServer.queueOfMessage[queue->circularBufferClientServer.wHeadIndex].tcData,
+	//	_countof(queue->circularBufferClientServer.queueOfMessage[0].tcData),
+	//	TEXT("Quero me conectar"));
 
 	//END CRITICAL SECTION	
-	//queue->wHeadIndex++;
 
 	if (!ReleaseSemaphore(gClientConnection.SharedMem.hSemaphoreWriteMessageToServer, 1, NULL) ||
 		!ReleaseMutex(gClientConnection.SharedMem.hMutexWriteNewMessage))
@@ -57,20 +43,7 @@ static VOID loginLocalPIPE(const PTCHAR username)
 
 	ZeroMemory(&messageToSend, sizeof(MessageProtocolPipe));
 
-	_tcscpy_s(messageToSend.messagePD.tcSender,
-		_countof(messageToSend.messagePD.tcSender),
-		username);
-
-	_tcscpy_s(messageToSend.messagePD.tcDestination,
-		_countof(messageToSend.messagePD.tcDestination),
-		NAME_SERVER);
-
-	messageToSend.wTypeOfMessage = TYPE_OF_MESSAGE_REQUEST;
-	messageToSend.request = LoginMessage;
-
-	_tcscpy_s(messageToSend.messagePD.tcData,
-		_countof(messageToSend.messagePD.tcData),
-		TEXT("Quero me conectar"));
+	writeMessageToServerPipeRequest(&messageToSend, LoginMessage, NAME_SERVER, username);
 
 	dwBytesToWrite = sizeof(MessageProtocolPipe);
 	if (WriteFile(hPipe,
@@ -83,14 +56,14 @@ static VOID loginLocalPIPE(const PTCHAR username)
 	}
 }
 
-static VOID  receiveBroadcastSharedMemory()
+static VOID receiveBroadcastSharedMemory()
 {
 	Game* game = (Game*)gClientConnection.SharedMem.lpGame;
 
 	_tprintf(TEXT("Posicaçao da bola %d\n"), game->ball.ballPosition.x);
 }
 
-static VOID receiveMessageSharedMemory(const PTCHAR UserName,BOOL* bKeepRunning)
+static VOID receiveMessageSharedMemory(const PTCHAR UserName, BOOL* bKeepRunning)
 {
 	MessageQueue* queue = (MessageQueue*)gClientConnection.SharedMem.lpMessage;
 	DWORD dwWait, wCount = 0;
@@ -115,6 +88,9 @@ static VOID receiveMessageSharedMemory(const PTCHAR UserName,BOOL* bKeepRunning)
 				advanceTail(&queue->circularBufferServerClient);
 				*bKeepRunning = FALSE;
 			}
+			break;
+		case TopPlayersMessage:
+			//TODO: COMO MOSTRAR NA INTERFACE GRÁFICA
 			break;
 		default:
 			break;
@@ -152,6 +128,9 @@ static VOID	receiveMessageLocalPipe(const PTCHAR UserName, BOOL* bKeepRunning)
 			case ResponseLoginSuccess:
 				_tprintf(TEXT("\n%s"), messageToReceive.messagePD.tcData);
 				break;
+			case ResponseTop10:
+				//TODO: COMO MOSTRAR NA INTERFACE GRÁFICA
+				break;
 			}
 		}
 
@@ -165,6 +144,25 @@ static VOID	receiveMessageLocalPipe(const PTCHAR UserName, BOOL* bKeepRunning)
 
 }
 
+static VOID sendMessageSharedMemory(const PTCHAR username, TypeOfRequestMessage tRequest)
+{
+	MessageQueue* queue = (MessageQueue*)gClientConnection.SharedMem.lpMessage;
+	DWORD dwWaitMutex;
+	//CRITICAL SECTION
+	dwWaitMutex = WaitForSingleObject(gClientConnection.SharedMem.hMutexWriteNewMessage, INFINITE);
+
+	writeMessageToServerSharedMemory(queue, tRequest, username, NAME_SERVER);
+
+	//END CRITICAL SECTION	
+
+	if (!ReleaseSemaphore(gClientConnection.SharedMem.hSemaphoreWriteMessageToServer, 1, NULL) ||
+		!ReleaseMutex(gClientConnection.SharedMem.hMutexWriteNewMessage))
+	{
+		_tprintf(TEXT("Release do mutex ou semafor FALHOU:(%d)\n"), GetLastError());
+		return;
+	}
+}
+
 VOID __cdecl Login(PTCHAR username, TypeOfClientConnection arg)
 {
 	gClientConnection.typeOfConnection = arg;
@@ -174,13 +172,17 @@ VOID __cdecl Login(PTCHAR username, TypeOfClientConnection arg)
 	 */
 	initComponetsDLL(&gClientConnection);
 
+	_tcscpy_s(gClientConnection.tcUserName,
+		_countof(gClientConnection.tcUserName),
+		username);
+
 	switch (gClientConnection.typeOfConnection)
 	{
 	case clientSharedMemoryConnection:
-		loginSharedMemory(username);
+		loginSharedMemory(gClientConnection.tcUserName);
 		break;
 	case clientNamedPipeLocalConnection:
-		loginLocalPIPE(username);
+		loginLocalPIPE(gClientConnection.tcUserName);
 		break;
 	case clientNamedPipeRemoteConnection:
 		break;
@@ -205,11 +207,12 @@ VOID __cdecl ReceiveBroadcast(BOOL* bKeepRunning)
 	}
 }
 
-VOID __cdecl SendMessageDll(BOOL* bKeepRunning)
+VOID __cdecl SendMessageDll(BOOL* bKeepRunning, TypeOfRequestMessage tRequest)
 {
 	switch (gClientConnection.typeOfConnection)
 	{
 	case clientSharedMemoryConnection:
+		sendMessageSharedMemory(gClientConnection.tcUserName, tRequest);
 		break;
 	case clientNamedPipeLocalConnection:
 		break;
@@ -220,23 +223,57 @@ VOID __cdecl SendMessageDll(BOOL* bKeepRunning)
 	}
 }
 
-VOID __cdecl ReceiveMessage(const PTCHAR UserName,BOOL* bKeepRunning)
+VOID __cdecl ReceiveMessage(const PTCHAR UserName, BOOL* bKeepRunning)
 {
 	switch (gClientConnection.typeOfConnection)
 	{
 	case clientSharedMemoryConnection:
-		receiveMessageSharedMemory(UserName, bKeepRunning);
+		receiveMessageSharedMemory(gClientConnection.tcUserName, bKeepRunning);
 		break;
 	case clientNamedPipeLocalConnection:
-		receiveMessageLocalPipe(UserName, bKeepRunning);
+		receiveMessageLocalPipe(gClientConnection.tcUserName, bKeepRunning);
 		break;
 	case clientNamedPipeRemoteConnection:
 		break;
 	default:
 		break;
 	}
+}
 
+VOID writeMessageToServerSharedMemory(MessageQueue* mqArg, TypeOfRequestMessage request, const PTCHAR pSender, const PTCHAR pDestination)
+{
+	MessageProtocolDatagram aux;
+	ZeroMemory(&aux, sizeof(MessageProtocolDatagram));
 
+	fillMessageToProtocolDatagram(
+		&aux,
+		pSender,
+		pDestination);
 
+	aux.request = request;
 
+	addItemToBuffer(&mqArg->circularBufferClientServer, &aux);
+}
+
+VOID writeMessageToServerPipeRequest(MessageProtocolPipe* mppArg, TypeOfRequestMessage request, const PTCHAR pSender, const PTCHAR pDestination)
+{
+	mppArg->wTypeOfMessage = TYPE_OF_MESSAGE_REQUEST;
+
+	mppArg->request = request;
+
+	fillMessageToProtocolDatagram(
+		&mppArg->messagePD,
+		pSender,
+		pDestination);
+}
+
+VOID fillMessageToProtocolDatagram(MessageProtocolDatagram* message_protocol_datagram, const PTCHAR pSender, const PTCHAR pDestination)
+{
+	_tcscpy_s(message_protocol_datagram->tcDestination,
+		_countof(message_protocol_datagram->tcDestination),
+		pDestination);
+
+	_tcscpy_s(message_protocol_datagram->tcSender,
+		_countof(message_protocol_datagram->tcSender),
+		pSender);
 }

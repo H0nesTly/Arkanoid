@@ -1,6 +1,7 @@
 #include "ServerThreads.h"
 #include "Server.h"
 #include "GameLogic.h"
+#include "../Communicate/MessageProtocol.h"
 
 inline static VOID readNewMessageSharedMemory(MessageQueue* queue, Server* serverObj)
 {
@@ -34,6 +35,12 @@ inline static VOID readNewMessageSharedMemory(MessageQueue* queue, Server* serve
 
 			break;
 		case TopPlayersMessage:
+
+			writeMessageToClientSharedMemory(queue,
+				ResponseTop10,
+				NAME_SERVER,
+				queue->circularBufferClientServer.queueOfMessage[queue->circularBufferClientServer.wTailIndex].tcSender);
+
 			break;
 		case QuitGameMessage:
 			break;
@@ -43,7 +50,7 @@ inline static VOID readNewMessageSharedMemory(MessageQueue* queue, Server* serve
 	}
 	//notificamos todos os consumidores a dizer que a uma nova mensagem
 	//TODO: Modificar o valor de 4 para as pessas em lobby
-	ReleaseSemaphore(hgSemaphoreNotifyClientNewMessage, getPlayersInLobby(&serverObj->gameInstance.lobbyGame) + 1 ,NULL);
+	ReleaseSemaphore(hgSemaphoreNotifyClientNewMessage, getPlayersInLobby(&serverObj->gameInstance.lobbyGame) + 1, NULL);
 
 	//FIM DA CRITICAL SECTION
 	if (!ReleaseMutex(hgMutexReadNewMessage))

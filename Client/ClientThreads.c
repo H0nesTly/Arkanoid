@@ -20,7 +20,8 @@ DWORD WINAPI readMessageThread(LPVOID lpArg)
 DWORD WINAPI readInputThread(LPVOID lpArg)
 {
 	UNREFERENCED_PARAMETER(lpArg);
-
+	Sleep(2000);
+	SendMessageDll(&bKeepRunning, TopPlayersMessage);
 	return 0;
 }
 
