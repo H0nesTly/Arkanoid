@@ -1,4 +1,5 @@
 #pragma once
+#pragma warning(disable: 4201)
 #include "stdafx.h"
 #include "DllSetup.h"
 
@@ -7,6 +8,7 @@
 #define MESSAGE_QUEUE_READER_SIZE (MESSAGE_QUEUE_SIZE / 2)
 #define TYPE_OF_MESSAGE_RESPONSE 0
 #define TYPE_OF_MESSAGE_REQUEST 1
+#define NUM_TOP 10
 
 
 #define NAME_EVENT_OBJECT_SERVER_READ TEXT("readEvent")
@@ -20,6 +22,7 @@
 
 #define NAME_SERVER TEXT("Server")
 
+typedef struct scorePlayer ScorePlayer;
 typedef struct messageProtocolDatagram MessageProtocolDatagram;
 typedef struct messageProtocolDatagramResponse MessageProtocolDatagramResponse;
 typedef struct messageProtocolDatagramRequest MessageProtocolDatagramRequest;
@@ -31,6 +34,11 @@ typedef struct circularBuffer CircularBuffer;
 typedef enum responseOfMessage TypeOfResponseMessage;
 typedef enum requestOfMessage TypeOfRequestMessage;
 
+struct scorePlayer
+{
+	TCHAR jogador[MAX_LENGTH_NAME];
+	double pontuacao;
+};
 
 //Estrutura da memoria partilhada "Zona de Mensagens"
 struct messageProtocolDatagram
@@ -46,7 +54,11 @@ struct messageProtocolDatagram
 	TCHAR tcDestination[MAX_LENGTH_NAME];
 
 	//Body|Data
-	TCHAR tcData[MAX_LENGTH_NAME];
+	union
+	{
+		TCHAR tcData[MAX_LENGTH_NAME];
+		ScorePlayer listOfHighScores[NUM_TOP];
+	};
 };
 
 struct messageProtocolDatagramResponse
@@ -129,13 +141,13 @@ extern "C" {          // we need to export the C interface
 	#endif
 
 	/*Enviamos mensagem ao servidor*/
-	DLL_API VOID __cdecl Login(PTCHAR, TypeOfClientConnection );
+	DLL_API VOID __cdecl Login(PTCHAR, TypeOfClientConnection);
 
-	DLL_API VOID __cdecl ReceiveBroadcast(BOOL* );
+	DLL_API VOID __cdecl ReceiveBroadcast(BOOL*);
 
-	DLL_API VOID __cdecl SendMessageDll(BOOL* );
+	DLL_API VOID __cdecl SendMessageDll(BOOL*);
 
-	DLL_API VOID __cdecl ReceiveMessage(const PTCHAR, BOOL* );
+	DLL_API VOID __cdecl ReceiveMessage(const PTCHAR, BOOL*);
 
 	#ifdef __cplusplus
 }

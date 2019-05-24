@@ -64,11 +64,7 @@ struct gameBoard
 	Coords gameBoardPosition;
 	WORD wWidth, wHeight;
 };
-struct scorePlayer
-{
-	TCHAR jogador[MAX_LENGTH_NAME];
-	double pontuacao;
-};
+
 struct playerInfo
 {
 	TCHAR tcUserName[MAX_LENGTH_NAME];
