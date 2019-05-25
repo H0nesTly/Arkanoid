@@ -36,7 +36,7 @@ static VOID loginSharedMemory(const PTCHAR username)
 
 static VOID loginLocalPIPE(const PTCHAR username)
 {
-	HANDLE hPipe = gClientConnection.PipeLocal.hNamedPipe;
+	HANDLE hPipe = gClientConnection.PipeLocal.hNamedPipeWriteToServer;
 	MessageProtocolPipe messageToSend;
 	DWORD dwBytesToWrite;
 
@@ -99,7 +99,7 @@ static VOID receiveMessageSharedMemory(const PTCHAR UserName, BOOL* bKeepRunning
 
 static VOID	receiveMessageLocalPipe(const PTCHAR UserName, BOOL* bKeepRunning)
 {
-	HANDLE hPipe = gClientConnection.PipeLocal.hNamedPipe;
+	HANDLE hPipe = gClientConnection.PipeLocal.hNamedPipeReadFromServer;
 	MessageProtocolPipe messageToReceive;
 
 	DWORD dwBytesToRead;
