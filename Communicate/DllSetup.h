@@ -35,7 +35,8 @@ struct clientConnection
 
 		struct pipeLocal
 		{
-			HANDLE hNamedPipe;
+			HANDLE hNamedPipeWriteToServer;
+			HANDLE hNamedPipeReadFromServer;
 			//Estado?
 		} PipeLocal;
 

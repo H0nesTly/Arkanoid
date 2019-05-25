@@ -15,7 +15,6 @@ static VOID loginSharedMemory(const PTCHAR username)
 	//CRITICAL SECTION
 	dwWaitMutex = WaitForSingleObject(gClientConnection.SharedMem.hMutexWriteNewMessage, INFINITE);
 
-	//TODO :Se BUFFER ESTIVER CHEIO O QUE FAZER? TENTAR EM X ms apos tentativa??
 	/*Lista de mensagens está cheia*/
 		//Escrevemos mensagem
 

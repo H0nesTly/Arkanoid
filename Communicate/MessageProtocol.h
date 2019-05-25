@@ -17,7 +17,8 @@
 #define NAME_MUTEX_OBJECT_CLIENT_WRITE_MESSAGE TEXT("writeMessageMutex")
 #define NAME_SHARED_MEMORY_MESSAGE TEXT("dllSharedMemMessage") //NOME da Mem Mapeada 
 
-#define NAME_NAMED_PIPE TEXT("\\\\.\\pipe\\namedPipePath")
+#define NAME_NAMED_PIPE_WRITE_TO_SERVER TEXT("\\\\.\\pipe\\namedPipeWrite")
+#define NAME_NAMED_PIPE_READ_FROM_SERVER TEXT("\\\\.\\pipe\\namedPipeRead")
 
 #define NAME_SERVER TEXT("Server")
 
