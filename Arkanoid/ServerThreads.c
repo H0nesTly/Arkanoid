@@ -67,8 +67,8 @@ inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Serv
 	if (npInstances->fPendigIO)
 	{
 		bOverLapped = GetOverlappedResult(
-			npInstances->hNPInstance,
-			&npInstances->oOverLap,
+			npInstances->hNamedPipeReadFromClient,
+			&npInstances->oOverLapReader,
 			&dwBytesReadAsync,
 			FALSE);
 
@@ -100,14 +100,6 @@ inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Serv
 			npInstances->State = ReadState;
 
 			break;
-		case WriteState:
-			if (!bOverLapped || dwBytesReadAsync != sizeof(MessageProtocolPipe))
-			{
-				DisconnectAndReconnect(npInstances);
-				return;
-			}
-			npInstances->State = ReadState;
-			break;
 		case ReadState:
 			if (!bOverLapped || dwBytesReadAsync == 0)
 			{
@@ -129,11 +121,11 @@ inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Serv
 	case ReadState:
 
 		bOperationReturn = ReadFile(
-			npInstances->hNPInstance, //handler de onde vai ler
+			npInstances->hNamedPipeReadFromClient, //handler de onde vai ler
 			&npInstances->message,			//destino
 			sizeof(MessageProtocolPipe), //tamanho da mensagem
 			&npInstances->dwNumberOfBytesRead,						//valor de onde vai guardar valores lidos
-			&npInstances->oOverLap);	//atualiza estado
+			&npInstances->oOverLapReader);	//atualiza estado
 
 
 		// The read operation completed successfully. 
@@ -160,7 +152,7 @@ inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Serv
 
 		if (npInstances->message.wTypeOfMessage == TYPE_OF_MESSAGE_REQUEST)
 		{
-			_tprintf(TEXT("\n Handle [%p] Nome %s Erro[%d]\n"), npInstances->hNPInstance, npInstances->message.messagePD.tcSender, GetLastError());
+			_tprintf(TEXT("\n Handle [] Nome %s Erro[%d]\n"), npInstances->message.messagePD.tcSender, GetLastError());
 
 			switch (npInstances->message.request)
 			{
@@ -200,17 +192,18 @@ inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Serv
 			}
 		}
 
+		ConnectNamedPipe(npInstances->hNamedPipeWriteToClient, NULL);
 
 		bOperationReturn = WriteFile(
-			npInstances->hNPInstance,		//File handler
+			npInstances->hNamedPipeWriteToClient,		//File handler
 			&npInstances->message,			//Destino
 			sizeof(MessageProtocolPipe),	//tamanho a ler
 			&dwBytesReadAsync,	//bytes lidos
-			&npInstances->oOverLap);
+			NULL);
 
 		// The write operation completed successfully. 
 
-		if (bOperationReturn && npInstances->dwNumberOfBytesWritten == sizeof(MessageProtocolPipe))
+		if (bOperationReturn && dwBytesReadAsync == sizeof(MessageProtocolPipe))
 		{
 			npInstances->fPendigIO = FALSE;
 			npInstances->State = ReadState;
@@ -219,7 +212,7 @@ inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Serv
 
 		// The write operation is still pending. 
 
-		if (!bOperationReturn && (GetLastError() == ERROR_IO_PENDING))
+		if (bOperationReturn && (GetLastError() == ERROR_IO_PENDING))
 		{
 			npInstances->fPendigIO = TRUE;
 			return;

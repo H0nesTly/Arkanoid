@@ -33,8 +33,10 @@ struct serverSharedMemoryHandlers
 
 struct namedPipeInstance
 {
-	OVERLAPPED oOverLap;
-	HANDLE hNPInstance;
+	OVERLAPPED oOverLapReader;
+	//OVERLAPPED oOverLapWriter;
+	HANDLE hNamedPipeWriteToClient;
+	HANDLE hNamedPipeReadFromClient;
 	HANDLE hMyEvent;
 	BOOL fPendigIO;
 	StateOfNamedPipe State;

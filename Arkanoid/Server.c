@@ -92,20 +92,20 @@ BOOL initServerPipeLocal(NamedPipeInstance npInstances[], WORD wInstances)
 			/*Functions such as GetOverlappedResult and the synchronization
 			 *wait functions reset auto-reset events to the nonsignaled state. Therefore,
 			 *you should use a manual reset event*/
-			TRUE,	//estado inicial- unsiganed
+			TRUE,	//estado inicial- unsigned
 			NULL);	//sem nome
-
+		
 		if (npInstances[i].hMyEvent == NULL)
 		{
 			_tprintf(TEXT("\nErro criar evento para overlapped ERRO: %d"), GetLastError());
 			return FALSE;
 		}
 
-		npInstances[i].oOverLap.hEvent = npInstances[i].hMyEvent;
+		npInstances[i].oOverLapReader.hEvent = npInstances[i].hMyEvent;
 
-		npInstances[i].hNPInstance = CreateNamedPipe(
-			NAME_NAMED_PIPE,		//Nome do pipe
-			PIPE_ACCESS_DUPLEX |	//Pipe read/write("duplex")
+		npInstances[i].hNamedPipeReadFromClient = CreateNamedPipe(
+			NAME_NAMED_PIPE_WRITE_TO_SERVER,		//Nome do pipe
+			PIPE_ACCESS_INBOUND |	//Pipe read
 			FILE_FLAG_OVERLAPPED,	//overlapped mode ON
 			PIPE_TYPE_MESSAGE |		//Vamos passar uma estrutura
 			PIPE_READMODE_MESSAGE |
@@ -117,19 +117,38 @@ BOOL initServerPipeLocal(NamedPipeInstance npInstances[], WORD wInstances)
 			wInstances,					//Número de named pipes a criar
 			sizeof(MessageProtocolPipe),	// Tamanho das mensagens que vai escrever
 			sizeof(MessageProtocolPipe),	//Tamanho das mensagens que vai ler
-			0,				//TimeOut
+			0,							//TimeOut
 			NULL							//Atributos de segurança
 		);
 
-		if (npInstances[i].hNPInstance == INVALID_HANDLE_VALUE)
+		
+		npInstances[i].hNamedPipeWriteToClient = CreateNamedPipe(
+			NAME_NAMED_PIPE_READ_FROM_SERVER,		//Nome do pipe
+			PIPE_ACCESS_OUTBOUND //|	//Pipe read
+/*			FILE_FLAG_OVERLAPPED*/,	//overlapped mode ON
+			PIPE_TYPE_MESSAGE |		//Vamos passar uma estrutura
+			PIPE_WAIT,				//MODO bloquante
+			/*The pipe server should not perform a blocking read operation until the pipe client has started.
+			 *Otherwise, a race condition can occur.
+			 * This typically occurs when initialization code,
+			 * such as the C run-time, needs to lock and examine inherited handles.*/
+			wInstances,					//Número de named pipes a criar
+			sizeof(MessageProtocolPipe),	// Tamanho das mensagens que vai escrever
+			sizeof(MessageProtocolPipe),	//Tamanho das mensagens que vai ler
+			0,							//TimeOut
+			NULL							//Atributos de segurança
+		);
+
+		if (npInstances[i].hNamedPipeReadFromClient == INVALID_HANDLE_VALUE || 
+			npInstances[i].hNamedPipeWriteToClient == INVALID_HANDLE_VALUE)
 		{
 			_tprintf(TEXT("CreateNamedPipe failed with %d.\n"), GetLastError());
 			return FALSE;
 		}
 
 		npInstances[i].fPendigIO = ConnectNewClientToNP(
-			npInstances[i].hNPInstance,
-			&npInstances[i].oOverLap);
+			npInstances[i].hNamedPipeReadFromClient,
+			&npInstances[i].oOverLapReader);
 
 		npInstances[i].State = npInstances[i].fPendigIO ? ConnectingState :
 			ReadState;
@@ -156,8 +175,8 @@ VOID writeMessageToClientSharedMemory(MessageQueue* mqArg, TypeOfResponseMessage
 
 		getTopTenRegistry(list);
 		CopyMemory(&aux.listOfHighScores, //destination
-					list,
-					sizeof(ScorePlayer) * NUM_TOP);
+			list,
+			sizeof(ScorePlayer) * NUM_TOP);
 
 		break;
 	case ResponseLoginFail:
@@ -539,14 +558,15 @@ BOOL ConnectNewClientToNP(HANDLE hNamedipe, LPOVERLAPPED lpo)
 
 VOID DisconnectAndReconnect(NamedPipeInstance* npToDisconect)
 {
-	if (!DisconnectNamedPipe(npToDisconect->hNPInstance))
+	if (!DisconnectNamedPipe(npToDisconect->hNamedPipeReadFromClient) ||
+		!DisconnectNamedPipe(npToDisconect->hNamedPipeWriteToClient))
 	{
 		_tprintf(TEXT("\nDisconeção do named pipe falhou com o erro %d"), GetLastError());
 	}
 
 	npToDisconect->fPendigIO = ConnectNewClientToNP(
-		npToDisconect->hNPInstance,
-		&npToDisconect->oOverLap);
+		npToDisconect->hNamedPipeReadFromClient,
+		&npToDisconect->oOverLapReader);
 
 	npToDisconect->State = npToDisconect->fPendigIO ?
 		ConnectingState :
