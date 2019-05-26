@@ -530,7 +530,6 @@ WORD getPlayersInLobby(const Lobby* lobby)
 	return lobby->wPlayersInLobby;
 }
 
-
 BOOL ConnectNewClientToNP(HANDLE hNamedipe, LPOVERLAPPED lpo)
 {
 	BOOL bPendingIO = FALSE;

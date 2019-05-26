@@ -15,6 +15,7 @@ typedef struct serverHandles ServerHandlers;
 typedef struct serverThreadsHandlers ServerThreadsHandlers;
 typedef struct gameServerConfiguration GameServerConfiguration;
 typedef struct lobby Lobby;
+typedef struct usersPlaying UsersPlaying;
 
 typedef struct playerInfo PlayerInfo;
 
@@ -76,11 +77,19 @@ struct lobby
 	WORD wPlayersInLobby;
 };
 
+
+struct usersPlaying
+{
+	PlayerInfo playersPlaying[MAX_PLAYER_INSTANCES];
+	WORD wPlayersPlaying;
+};
+
 struct serverGameInstance
 {
 	//jogadores a jogar/a ver
 	Lobby lobbyGame;
 	GameServerConfiguration GameConfiguration;
+	UsersPlaying usersInGame;
 	StateOfGame GameStates;
 };
 
