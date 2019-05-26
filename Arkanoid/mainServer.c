@@ -72,7 +72,7 @@ int _tmain(int argc, LPTSTR argv[])
 		0,
 		BallThread,	//nome da funçao
 		(LPVOID) serverInstance.serverHandlers.sharedMemHandlers.lpSharedMemGame,					//Argumento a ser passado
-		0,						//flag de ciração
+		CREATE_SUSPENDED,						//flag de criação - SUSPENDIDA
 		&serverInstance.serverHandlers.threadHandlers.dwThreadBall //idThread
 	);
 
@@ -85,9 +85,7 @@ int _tmain(int argc, LPTSTR argv[])
 
 	WaitForSingleObject(serverInstance.serverHandlers.threadHandlers.hThreadConsumer, INFINITE);
 	WaitForSingleObject(serverInstance.serverHandlers.threadHandlers.hThreadBall, INFINITE);
-
-
-
+	   
 	getTopTenRegistry(scoreTopTen);
 	
 	//setTopTenRegistry(scoreTopTen);

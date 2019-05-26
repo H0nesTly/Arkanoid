@@ -2,6 +2,8 @@
 #include "../Communicate/stdafx.h"
 #include  "../Communicate/MessageProtocol.h"
 
+#define NAME_OF_WINDOWS_PROGRAM TEXT("Cliente - Arkanoid")
+
 typedef struct clientStructure ClientStructure;
 
 struct clientStructure

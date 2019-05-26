@@ -45,7 +45,7 @@ VOID writeMessageToClientPipe(MessageProtocolPipe*, TypeOfResponseMessage, const
 /*@return - true se não existir username ja no servidor*/
 BOOL checkUserNameInLobby(PTCHAR, const ServerGameInstance *);
 
-BOOL addUserNameToLobby(PTCHAR, ServerGameInstance*);
+BOOL addUserNameToLobby(PTCHAR, Server*);
 
 WORD getPlayersInLobby(const Lobby*);
 

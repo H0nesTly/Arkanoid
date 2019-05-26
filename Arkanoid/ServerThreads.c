@@ -17,7 +17,7 @@ inline static VOID readNewMessageSharedMemory(MessageQueue* queue, Server* serve
 			//Insere na lista de jogadores
 			if (addUserNameToLobby(
 				queue->circularBufferClientServer.queueOfMessage[queue->circularBufferClientServer.wTailIndex].tcSender,
-				&serverObj->gameInstance))
+				serverObj))
 			{
 				//Escrevemos nova mensagem para o cliente 
 				writeMessageToClientSharedMemory(queue,
@@ -59,6 +59,7 @@ inline static VOID readNewMessageSharedMemory(MessageQueue* queue, Server* serve
 	}
 }
 
+//TODO: MELHORAR mecanismo
 inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Server* serverObj)
 {
 	DWORD dwBytesReadAsync;
@@ -79,7 +80,7 @@ inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Serv
 			{
 				switch (GetLastError())
 				{
-					//Pode acontecer quando existe muitos pedios de I/O Assincrono
+					//Pode acontecer quando existe muitos pedidos de I/O Assincrono
 				case ERROR_INVALID_USER_BUFFER:
 				case ERROR_NOT_ENOUGH_MEMORY:
 					_tprintf(TEXT("\nErro Critico [%d]"), GetLastError());
@@ -160,7 +161,7 @@ inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Serv
 
 				npInstances->message.wTypeOfMessage = TYPE_OF_MESSAGE_RESPONSE;
 
-				if (addUserNameToLobby(npInstances->message.messagePD.tcSender, &serverObj->gameInstance))
+				if (addUserNameToLobby(npInstances->message.messagePD.tcSender, serverObj))
 				{
 					//responde Sucesso
 					ZeroMemory(&npInstances->message, sizeof(MessageProtocolPipe));
@@ -208,6 +209,7 @@ inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Serv
 			npInstances->fPendigIO = FALSE;
 			npInstances->State = ReadState;
 			_tprintf(TEXT("\n Mensagem escrita com sucesso!!"));
+			return;
 		}
 
 		// The write operation is still pending. 
@@ -282,6 +284,39 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 DWORD WINAPI BallThread(LPVOID lpArg)
 {
 	Game* game = (Game*)lpArg;
+
+	HANDLE hTimerWaitForPlayersToConnect = NULL;
+	LARGE_INTEGER liDueTime;
+
+	liDueTime.QuadPart = -50000000LL; // 5 SEGUNDOS
+
+	hTimerWaitForPlayersToConnect = CreateWaitableTimer(NULL, TRUE, NULL);
+	if (hTimerWaitForPlayersToConnect == NULL)
+	{
+		_tprintf(TEXT("CreateWaitableTimer failed (%d)\n"), GetLastError());
+		return 1;
+	}
+
+	_tprintf(TEXT("\nVamos inicializar o Jogo em 5 segundos \n"));
+
+	// Set a timer to wait for 5 seconds.
+	if (! SetWaitableTimer(
+		hTimerWaitForPlayersToConnect, // Handle do timer
+		&liDueTime,			//Tempo
+		FALSE,				//não é periodico
+		NULL,				//Completion Ruoutime
+		NULL,				//Argumentos para routime
+		FALSE))		
+	{
+		printf("SetWaitableTimer failed (%d)\n", GetLastError());
+		return 2;
+	}
+
+	//enquanto espera por mais jogadores se conectarem carrega o jogo 
+
+	WaitForSingleObject(hTimerWaitForPlayersToConnect, INFINITE);
+
+	_tprintf(TEXT("\nBola x-%d"), game->ball.ballPosition.x);
 
 	//while (1)
 	//{

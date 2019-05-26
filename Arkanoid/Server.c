@@ -507,9 +507,10 @@ static BOOL checkUserNameInLobby(PTCHAR userName, const ServerGameInstance* game
 	return TRUE;
 }
 
-//TODO: VER A MEMORIA PARTILHADA SE ALGUM PLAYER EM JOGO
-BOOL addUserNameToLobby(PTCHAR userName, ServerGameInstance* gameLobby)
+//TODO: VER ALGUM PLAYER EM JOGO QUE SE QUUER CONNECTAR
+BOOL addUserNameToLobby(PTCHAR userName, Server* server)
 {
+	ServerGameInstance * gameLobby = (ServerGameInstance*) &server->gameInstance;
 	if (checkUserNameInLobby(userName, gameLobby))
 	{
 		_tcscpy_s(gameLobby->lobbyGame.playersInLobby[gameLobby->lobbyGame.wPlayersInLobby++].tcUserName,	//destino
@@ -517,6 +518,8 @@ BOOL addUserNameToLobby(PTCHAR userName, ServerGameInstance* gameLobby)
 			userName		//Origem
 		);
 
+		//Vamos inicializar a thread da bola
+		ResumeThread(server->serverHandlers.threadHandlers.hThreadBall);
 		return TRUE;
 	}
 	return FALSE;
