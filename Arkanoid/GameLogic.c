@@ -6,3 +6,9 @@ VOID moveBall(Ball* ballToMove)
 	ballToMove->ballPosition.x = i;
 	i++;
 }
+
+VOID createLevel(Game* game)
+{
+	//criar barras 
+	//
+}

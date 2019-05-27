@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <errno.h>      // for return values
 //#include <minwinbase.h>
+#include <aclapi.h>
 #include <strsafe.h>
 #include <minwinbase.h>
 #include <minwinbase.h>

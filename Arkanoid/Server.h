@@ -53,6 +53,10 @@ VOID addUsersToGame(Server*);
 
 VOID transferPlayersToGame(Server*);
 /*--------------- NAMED PIPES ---------------*/
+VOID initSecurityAtributes(SECURITY_ATTRIBUTES*);
+
+void Cleanup(PSID , PSID , PACL , PSECURITY_DESCRIPTOR );
+
 BOOL ConnectNewClientToNP(HANDLE, LPOVERLAPPED);
 
 VOID DisconnectAndReconnect(NamedPipeInstance*);

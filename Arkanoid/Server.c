@@ -82,6 +82,10 @@ BOOL intitServerMessageMem(HANDLE* hMapObj, LPVOID* lpSharedMem)
 BOOL initServerPipeLocal(NamedPipeInstance npInstances[], WORD wInstances)
 {
 	WORD i;
+	SECURITY_ATTRIBUTES sa_attributes;
+
+	initSecurityAtributes(&sa_attributes);
+
 	for (i = 0; i < wInstances; i++)
 	{
 		ZeroMemory(&npInstances[i], sizeof(OVERLAPPED));
@@ -105,20 +109,20 @@ BOOL initServerPipeLocal(NamedPipeInstance npInstances[], WORD wInstances)
 
 		npInstances[i].hNamedPipeReadFromClient = CreateNamedPipe(
 			NAME_NAMED_PIPE_WRITE_TO_SERVER,		//Nome do pipe
-			PIPE_ACCESS_INBOUND |	//Pipe read
-			FILE_FLAG_OVERLAPPED,	//overlapped mode ON
-			PIPE_TYPE_MESSAGE |		//Vamos passar uma estrutura
+			PIPE_ACCESS_INBOUND |			//Pipe read
+			FILE_FLAG_OVERLAPPED,			//overlapped mode ON
+			PIPE_TYPE_MESSAGE |				//Vamos passar uma estrutura
 			PIPE_READMODE_MESSAGE |
-			PIPE_WAIT,				//MODO bloquante
+			PIPE_WAIT,						//MODO bloquante
 			/*The pipe server should not perform a blocking read operation until the pipe client has started.
 			 *Otherwise, a race condition can occur.
 			 * This typically occurs when initialization code,
 			 * such as the C run-time, needs to lock and examine inherited handles.*/
-			wInstances,					//Número de named pipes a criar
+			wInstances,						//Número de named pipes a criar
 			sizeof(MessageProtocolPipe),	// Tamanho das mensagens que vai escrever
 			sizeof(MessageProtocolPipe),	//Tamanho das mensagens que vai ler
-			0,							//TimeOut
-			NULL							//Atributos de segurança
+			0,								//TimeOut
+			sa_attributes					//Atributos de segurança
 		);
 
 
@@ -503,7 +507,6 @@ static BOOL checkUserNameInLobby(PTCHAR userName, const ServerGameInstance* game
 	return TRUE;
 }
 
-
 static BOOL checkPlayerInGame(const PTCHAR userName, const ServerGameInstance* players)
 {
 	if (players->GameStates == GameInProgress)
@@ -548,9 +551,9 @@ VOID addUsersToGame(Server* serverObj)
 			serverObj->gameInstance.lobbyGame.playersInLobby[i].tcUserName		//Origem
 		);
 
-			CopyMemory(&playersInGame->playersPlaying[i], //destino
-				&serverObj->gameInstance.lobbyGame.playersInLobby[i], //origem
-				sizeof(PlayerInfo));		//Tamanho
+		CopyMemory(&playersInGame->playersPlaying[i], //destino
+			&serverObj->gameInstance.lobbyGame.playersInLobby[i], //origem
+			sizeof(PlayerInfo));		//Tamanho
 
 		ZeroMemory(&serverObj->gameInstance.lobbyGame.playersInLobby[i], sizeof(PlayerInfo));
 	}
@@ -568,6 +571,83 @@ VOID transferPlayersToGame(Server* serverObj)
 WORD getPlayersInLobby(const Lobby* lobby)
 {
 	return lobby->wPlayersInLobby;
+}
+
+VOID initSecurityAtributes(SECURITY_ATTRIBUTES* saArg)
+{
+	PSECURITY_ATTRIBUTES pSD;
+	PACL pACL;
+	EXPLICIT_ACCESS ea;
+	PSID pEveryonesSID = NULL, pAdminSD = NULL;
+	SID_IDENTIFIER_AUTHORITY sidAuthWorld = SECURITY_WORLD_SID_AUTHORITY; // represents the top-level authority of a security identifier (SID).
+	TCHAR str[256];
+
+	pSD = (PSECURITY_DESCRIPTOR)LocalAlloc(LPTR,
+		SECURITY_DESCRIPTOR_MIN_LENGTH);
+
+	if (pSD == NULL)
+	{
+		_tprintf(TEXT("Erro LocalAlloc!!!"));
+		return;
+	}
+	if (!InitializeSecurityDescriptor(pSD, SECURITY_DESCRIPTOR_REVISION))
+	{
+		_tprintf(TEXT("Erro IniSec!!!"));
+		return;
+	}
+
+	// Create a well-known SID for the Everyone group.
+	if (!AllocateAndInitializeSid(
+		&sidAuthWorld,			//This structure provides the top-level identifier authority value to set in the SID.
+		1,						//numero de sub authority
+		SECURITY_WORLD_RID,		//
+		0, 0, 0, 0, 0, 0, 0,	//sem sub authority
+		&pEveryonesSID))		//A pointer to a variable that receives the pointer to the allocated and initialized SID structure.
+	{
+		_stprintf_s(str, 256, TEXT("AllocateAndInitializeSid() error %u"), GetLastError());
+		_tprintf(str);
+		Cleanup(pEveryonesSID, pAdminSD, NULL, pSD);
+	}
+	else
+	{
+		_tprintf(TEXT("AllocateAndInitializeSid() for the Everyone group is OK"));
+	}
+
+	ZeroMemory(&ea, sizeof(EXPLICIT_ACCESS));
+
+	ea.grfAccessPermissions = GENERIC_READ | GENERIC_WRITE;
+	ea.grfAccessMode = SET_ACCESS;
+	ea.grfInheritance = SUB_CONTAINERS_AND_OBJECTS_INHERIT;
+	ea.Trustee.TrusteeForm = TRUSTEE_IS_SID;
+	ea.Trustee.TrusteeType = TRUSTEE_IS_WELL_KNOWN_GROUP;
+	ea.Trustee.ptstrName = (LPTSTR)pEveryonesSID;
+
+	if (SetEntriesInAcl(1, &ea, NULL, &pACL) != ERROR_SUCCESS) {
+		_tprintf(TEXT("Erro SetAcl!!!"));
+		return;
+	}
+
+	if (!SetSecurityDescriptorDacl(pSD, TRUE, pACL, FALSE)) {
+		_tprintf(TEXT("Erro IniSec!!!"));
+		return;
+	}
+
+	saArg->nLength = sizeof(*saArg);
+	saArg->lpSecurityDescriptor = pSD;
+	saArg->bInheritHandle = TRUE;
+}
+
+// Buffer clean up routine
+void Cleanup(PSID pEveryoneSID, PSID pAdminSID, PACL pACL, PSECURITY_DESCRIPTOR pSD)
+{
+	if(pEveryoneSID)
+		FreeSid(pEveryoneSID);
+	if(pAdminSID)
+		FreeSid(pAdminSID);
+	if(pACL)
+		LocalFree(pACL);
+	if(pSD)
+		LocalFree(pSD);
 }
 
 BOOL ConnectNewClientToNP(HANDLE hNamedipe, LPOVERLAPPED lpo)
