@@ -573,7 +573,6 @@ VOID startGame(Server* serverObj)
 	ResumeThread(serverObj->serverHandlers.threadHandlers.hThreadBall);
 }
 
-
 WORD getPlayersInLobby(const Lobby* lobby)
 {
 	return lobby->wPlayersInLobby;

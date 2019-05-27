@@ -4,6 +4,8 @@
 
 #define MAX_PLAYER_INSTANCES 20
 
+#define NUM_OF_OBJ_GAME 20
+
 #define NAME_SHARED_MEMORY_GAME TEXT("dllSharedMemGame")
 
 typedef struct coords Coords;
@@ -33,38 +35,6 @@ struct ball
 	float fVelocity;
 };
 
-struct playerBlock
-{
-	Coords playerBlockPosition;
-	WORD wWidth, wHeight;
-	float fVelocity;
-};
-
-struct block
-{
-	Coords blockPosition;
-	WORD wWidth, wHeight;
-	TypesOfBlock typeOfBlock;
-	TCHAR tcFigure;
-
-	WORD wNumberOfColisions;
-};
-
-struct bonus
-{
-	TypeOfBonus typeOfBonus;
-	Coords bonusCoords;
-	TCHAR tcFigure;
-	WORD wRadius;
-	float fVelocityDrop;
-};
-
-struct gameBoard
-{
-	Coords gameBoardPosition;
-	WORD wWidth, wHeight;
-};
-
 struct playerInfo
 {
 	TCHAR tcUserName[MAX_LENGTH_NAME];
@@ -77,17 +47,55 @@ struct playerInfo
 
 struct player
 {
-	WORD wLifes;
 	PlayerInfo playerInfo;
 	DWORD dwScore;
-	PlayerBlock myPlayerBlock;
 };
+
+struct playerBlock
+{
+	Coords playerBlockPosition;
+	Player playerOwnerOfBlock;
+	WORD wWidth, wHeight;
+	float fVelocity;
+};
+
+struct block
+{
+	Coords blockPosition;
+	WORD wWidth, wHeight;
+	TypesOfBlock typeOfBlock;
+	TCHAR tcFigure;//retirar
+
+	WORD wNumberOfColisions;
+};
+
+struct bonus
+{
+	TypeOfBonus typeOfBonus;
+	Coords bonusCoords;
+	TCHAR tcFigure; // retirar
+	WORD wRadius;
+	float fVelocityDrop;
+};
+
+struct gameBoard
+{
+	Coords gameBoardPosition;
+	WORD wWidth, wHeight;
+};
+
 
 struct game
 {
-	GameBoard myGameBoard;
-	Player playersConnected[MAX_PLAYER_INSTANCES];
+	BonusBlock bonusBlock[NUM_OF_OBJ_GAME];
+	Block blocks[NUM_OF_OBJ_GAME];
+	PlayerBlock playerBlocks[NUM_OF_OBJ_GAME];
 	Ball ball;
+
+	WORD wLifes;
+	GameBoard myGameBoard;
+
+	Player playersConnected[MAX_PLAYER_INSTANCES];
 };
 
 enum typesOfBlocks
