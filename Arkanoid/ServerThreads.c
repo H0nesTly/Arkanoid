@@ -283,12 +283,14 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 
 DWORD WINAPI BallThread(LPVOID lpArg)
 {
-	Game* game = (Game*)lpArg;
+	Server* serverObj = (Server*) lpArg;
+	Game* game = (Game*) serverObj->serverHandlers.sharedMemHandlers.lpSharedMemGame;
+
 
 	HANDLE hTimerWaitForPlayersToConnect = NULL;
 	LARGE_INTEGER liDueTime;
 
-	liDueTime.QuadPart = -50000000LL; // 5 SEGUNDOS
+	liDueTime.QuadPart = -100000000LL; // 5 SEGUNDOS
 
 	hTimerWaitForPlayersToConnect = CreateWaitableTimer(NULL, TRUE, NULL);
 	if (hTimerWaitForPlayersToConnect == NULL)
@@ -312,11 +314,13 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 		return 2;
 	}
 
+
 	//enquanto espera por mais jogadores se conectarem carrega o jogo 
 
 	WaitForSingleObject(hTimerWaitForPlayersToConnect, INFINITE);
 
-	_tprintf(TEXT("\nBola x-%d"), game->ball.ballPosition.x);
+	_tprintf(TEXT("\nTranferir playesrs"));
+	transferPlayersToGame(serverObj);
 
 	//while (1)
 	//{

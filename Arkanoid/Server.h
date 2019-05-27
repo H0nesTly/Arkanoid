@@ -49,6 +49,9 @@ BOOL addUserNameToLobby(PTCHAR, Server*);
 
 WORD getPlayersInLobby(const Lobby*);
 
+VOID addUsersToGame(Server*);
+
+VOID transferPlayersToGame(Server*);
 /*--------------- NAMED PIPES ---------------*/
 BOOL ConnectNewClientToNP(HANDLE, LPOVERLAPPED);
 

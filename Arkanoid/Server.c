@@ -94,7 +94,7 @@ BOOL initServerPipeLocal(NamedPipeInstance npInstances[], WORD wInstances)
 			 *you should use a manual reset event*/
 			TRUE,	//estado inicial- unsigned
 			NULL);	//sem nome
-		
+
 		if (npInstances[i].hMyEvent == NULL)
 		{
 			_tprintf(TEXT("\nErro criar evento para overlapped ERRO: %d"), GetLastError());
@@ -121,11 +121,11 @@ BOOL initServerPipeLocal(NamedPipeInstance npInstances[], WORD wInstances)
 			NULL							//Atributos de segurança
 		);
 
-		
+
 		npInstances[i].hNamedPipeWriteToClient = CreateNamedPipe(
 			NAME_NAMED_PIPE_READ_FROM_SERVER,		//Nome do pipe
 			PIPE_ACCESS_OUTBOUND //|	//Pipe read
-/*			FILE_FLAG_OVERLAPPED*/,	//overlapped mode ON
+			/*			FILE_FLAG_OVERLAPPED*/,	//overlapped mode ON
 			PIPE_TYPE_MESSAGE |		//Vamos passar uma estrutura
 			PIPE_WAIT,				//MODO bloquante
 			/*The pipe server should not perform a blocking read operation until the pipe client has started.
@@ -139,7 +139,7 @@ BOOL initServerPipeLocal(NamedPipeInstance npInstances[], WORD wInstances)
 			NULL							//Atributos de segurança
 		);
 
-		if (npInstances[i].hNamedPipeReadFromClient == INVALID_HANDLE_VALUE || 
+		if (npInstances[i].hNamedPipeReadFromClient == INVALID_HANDLE_VALUE ||
 			npInstances[i].hNamedPipeWriteToClient == INVALID_HANDLE_VALUE)
 		{
 			_tprintf(TEXT("CreateNamedPipe failed with %d.\n"), GetLastError());
@@ -493,12 +493,24 @@ BOOL getTopTenRegistry(ScorePlayer scoreTopTen[]) {
 
 static BOOL checkUserNameInLobby(PTCHAR userName, const ServerGameInstance* gameArg)
 {
-	//Vamos ver se nome no lobby
-	if (gameArg->GameStates == WaitingForPlayers)
+	for (size_t i = 0; i < gameArg->lobbyGame.wPlayersInLobby; i++)
 	{
-		for (size_t i = 0; i < gameArg->lobbyGame.wPlayersInLobby; i++)
+		if (_tcscmp(gameArg->lobbyGame.playersInLobby[i].tcUserName, userName) == 0)
 		{
-			if (_tcscmp(gameArg->lobbyGame.playersInLobby[i].tcUserName, userName) == 0)
+			return FALSE;
+		}
+	}
+	return TRUE;
+}
+
+
+static BOOL checkPlayerInGame(const PTCHAR userName, const ServerGameInstance* players)
+{
+	if (players->GameStates == GameInProgress)
+	{
+		for (size_t i = 0; i < players->usersInGame.wPlayersPlaying; i++)
+		{
+			if (_tcscmp(players->usersInGame.playersPlaying[i].tcUserName, userName) == 0)
 			{
 				return FALSE;
 			}
@@ -510,8 +522,8 @@ static BOOL checkUserNameInLobby(PTCHAR userName, const ServerGameInstance* game
 //TODO: VER ALGUM PLAYER EM JOGO QUE SE QUUER CONNECTAR
 BOOL addUserNameToLobby(PTCHAR userName, Server* server)
 {
-	ServerGameInstance * gameLobby = (ServerGameInstance*) &server->gameInstance;
-	if (checkUserNameInLobby(userName, gameLobby))
+	ServerGameInstance * gameLobby = (ServerGameInstance*)&server->gameInstance;
+	if (checkUserNameInLobby(userName, gameLobby) && checkPlayerInGame(userName, &server->gameInstance))
 	{
 		_tcscpy_s(gameLobby->lobbyGame.playersInLobby[gameLobby->lobbyGame.wPlayersInLobby++].tcUserName,	//destino
 			_countof(gameLobby->lobbyGame.playersInLobby[gameLobby->lobbyGame.wPlayersInLobby].tcUserName),	//tamanho que o destino suporta
@@ -523,6 +535,34 @@ BOOL addUserNameToLobby(PTCHAR userName, Server* server)
 		return TRUE;
 	}
 	return FALSE;
+}
+
+VOID addUsersToGame(Server* serverObj)
+{
+	UsersPlaying* playersInGame = (UsersPlaying*)&serverObj->gameInstance.usersInGame;
+
+	for (size_t i = 0; i < serverObj->gameInstance.lobbyGame.wPlayersInLobby; i++)
+	{
+		_tcscpy_s(playersInGame->playersPlaying[i].tcUserName,	//destino
+			_countof(playersInGame->playersPlaying[i].tcUserName),	//tamanho que o destino suporta
+			serverObj->gameInstance.lobbyGame.playersInLobby[i].tcUserName		//Origem
+		);
+
+			CopyMemory(&playersInGame->playersPlaying[i], //destino
+				&serverObj->gameInstance.lobbyGame.playersInLobby[i], //origem
+				sizeof(PlayerInfo));		//Tamanho
+
+		ZeroMemory(&serverObj->gameInstance.lobbyGame.playersInLobby[i], sizeof(PlayerInfo));
+	}
+	playersInGame->wPlayersPlaying = serverObj->gameInstance.lobbyGame.wPlayersInLobby;
+	serverObj->gameInstance.lobbyGame.wPlayersInLobby = 0;
+
+}
+
+VOID transferPlayersToGame(Server* serverObj)
+{
+	addUsersToGame(serverObj);
+	serverObj->gameInstance.GameStates = GameInProgress;
 }
 
 WORD getPlayersInLobby(const Lobby* lobby)

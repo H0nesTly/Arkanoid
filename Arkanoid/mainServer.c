@@ -71,7 +71,7 @@ int _tmain(int argc, LPTSTR argv[])
 		NULL,
 		0,
 		BallThread,	//nome da funçao
-		(LPVOID) serverInstance.serverHandlers.sharedMemHandlers.lpSharedMemGame,					//Argumento a ser passado
+		(LPVOID) &serverInstance,					//Argumento a ser passado
 		CREATE_SUSPENDED,						//flag de criação - SUSPENDIDA
 		&serverInstance.serverHandlers.threadHandlers.dwThreadBall //idThread
 	);
