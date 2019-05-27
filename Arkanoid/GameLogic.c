@@ -101,6 +101,14 @@ VOID createBonus(WORD wCoordX, WORD wCoordY, WORD wHeigth, WORD wWidth, TypeOfBo
 	gameObj->bonusBlock[wIndex].typeOfBonus = toBonus;
 }
 
+VOID destroyBlock(WORD wIndex, Game* gameObj)
+{
+	if (wIndex >= 0 && wIndex < NUM_OF_OBJ_GAME)
+	{
+		ZeroMemory(&gameObj->blocks[wIndex], sizeof(Block));
+	}
+}
+
 VOID destroyBonus(WORD wIndex, Game* gameObj)
 {
 	if (wIndex >= 0 && wIndex < NUM_OF_OBJ_GAME)
@@ -109,29 +117,50 @@ VOID destroyBonus(WORD wIndex, Game* gameObj)
 	}
 }
 
+VOID destroyPlayerBlock(const PTCHAR username, WORD wNumberOfPlayers, Game* gameObj)
+{
+
+}
+
+//TODO: Apagar com index
+VOID destroyBall(WORD wIndex, Game* gameObj)
+{
+	ZeroMemory(&gameObj->ball, sizeof(Ball));
+}
+
 VOID catchBonus(WORD wIndex, Game* gameObj)
 {
 	if (wIndex >= 0 && wIndex < NUM_OF_OBJ_GAME)
 	{
-		switch (gameObj->blocks[wIndex].)
+		switch (gameObj->blocks[wIndex].typeOfBlock)
 		{
-			case SpeedUp:
+		case SpeedUp:
 			break;
-			case SlowDown:
+		case SlowDown:
 			//diminiu a velocidade da bola
 			break;
-			case ExtraHealth:
+		case ExtraHealth:
 			//adiciona vida
+			incrementHealth(gameObj);
 			break;
-			case Triple:
-				//cria duas bolas
+		case Triple:
+			//cria duas bolas
 			break;
 			//Nao faz nada
-			case None:
-			default:
+		case None:
+		default:
 			break;
 		}
 		destroyBonus(wIndex, gameObj);
 	}
+}
 
+VOID incrementHealth(Game* gameObj)
+{
+	gameObj->wLifes++;
+}
+
+BOOL decrementHealth(Game* gameObj)
+{
+	return gameObj->wLifes > 0 ? gameObj->wLifes-- : FALSE; 
 }

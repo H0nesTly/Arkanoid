@@ -18,4 +18,14 @@ VOID createBonus(WORD, WORD, WORD, WORD, TypeOfBonus, Game*);
 
 VOID destroyBonus(WORD, Game*);
 
+VOID destroyBlock(WORD, Game*);
+
+VOID destroyBall(WORD, Game*);
+
+VOID destroyPlayerBlock(const PTCHAR username, WORD wNumberOfPlayers, Game* gameObj);
+
 VOID catchBonus(WORD, Game*);
+
+VOID incrementHealth(Game*);
+
+BOOL decrementHealth(Game*);
