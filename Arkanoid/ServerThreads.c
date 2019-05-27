@@ -314,7 +314,7 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 		return 2;
 	}
 
-
+	createLevel(serverObj->serverHandlers.sharedMemHandlers.lpSharedMemGame);
 	//enquanto espera por mais jogadores se conectarem carrega o jogo 
 
 	WaitForSingleObject(hTimerWaitForPlayersToConnect, INFINITE);

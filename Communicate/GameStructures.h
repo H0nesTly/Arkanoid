@@ -107,6 +107,7 @@ enum typesOfBlocks
 
 enum typeOfBonus
 {
+	None = 0,
 	SpeedUp,
 	SlowDown,
 	ExtraHealth,

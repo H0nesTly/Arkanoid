@@ -16,4 +16,6 @@ VOID createBlocks(WORD, WORD, WORD, WORD, TypesOfBlock, Game*);
 
 VOID createBonus(WORD, WORD, WORD, WORD, TypeOfBonus, Game*);
 
+VOID destroyBonus(WORD, Game*);
 
+VOID catchBonus(WORD, Game*);
