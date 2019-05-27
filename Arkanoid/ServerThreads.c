@@ -315,8 +315,6 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 	}
 
 
-
-
 	//enquanto espera por mais jogadores se conectarem carrega o jogo 
 
 	WaitForSingleObject(hTimerWaitForPlayersToConnect, INFINITE);

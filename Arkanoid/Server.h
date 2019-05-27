@@ -52,6 +52,8 @@ WORD getPlayersInLobby(const Lobby*);
 VOID addUsersToGame(Server*);
 
 VOID transferPlayersToGame(Server*);
+
+VOID startGame(Server* );
 /*--------------- NAMED PIPES ---------------*/
 VOID initSecurityAtributes(SECURITY_ATTRIBUTES*);
 

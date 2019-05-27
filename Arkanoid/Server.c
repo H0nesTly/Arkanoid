@@ -356,7 +356,6 @@ BOOL setTopTenRegistry(ScorePlayer scoreTopTen[]) {
 			break;
 
 
-
 		//_stprintf(jogador, TEXT("%s"), scoreTopTen[i].jogador);
 		//_tcscat_s(jogadores, _countof(jogadores), TEXT("Joao\0"));
 		_tcscat_s(jogadores, _countof(jogadores), scoreTopTen[i].jogador);
@@ -533,8 +532,8 @@ BOOL addUserNameToLobby(PTCHAR userName, Server* server)
 			userName		//Origem
 		);
 
-		//Vamos inicializar a thread da bola
-		ResumeThread(server->serverHandlers.threadHandlers.hThreadBall);
+		startGame(server);
+
 		return TRUE;
 	}
 	return FALSE;
@@ -567,6 +566,13 @@ VOID transferPlayersToGame(Server* serverObj)
 	addUsersToGame(serverObj);
 	serverObj->gameInstance.GameStates = GameInProgress;
 }
+
+VOID startGame(Server* serverObj)
+{
+	//Vamos inicializar a thread da bola
+	ResumeThread(serverObj->serverHandlers.threadHandlers.hThreadBall);
+}
+
 
 WORD getPlayersInLobby(const Lobby* lobby)
 {
@@ -640,13 +646,13 @@ VOID initSecurityAtributes(SECURITY_ATTRIBUTES* saArg)
 // Buffer clean up routine
 void Cleanup(PSID pEveryoneSID, PSID pAdminSID, PACL pACL, PSECURITY_DESCRIPTOR pSD)
 {
-	if(pEveryoneSID)
+	if (pEveryoneSID)
 		FreeSid(pEveryoneSID);
-	if(pAdminSID)
+	if (pAdminSID)
 		FreeSid(pAdminSID);
-	if(pACL)
+	if (pACL)
 		LocalFree(pACL);
-	if(pSD)
+	if (pSD)
 		LocalFree(pSD);
 }
 
