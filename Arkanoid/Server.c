@@ -104,7 +104,7 @@ BOOL initServerPipeLocal(NamedPipeInstance npInstances[], WORD wInstances)
 			_tprintf(TEXT("\nErro criar evento para overlapped ERRO: %d"), GetLastError());
 			return FALSE;
 		}
-
+		//TODO MUDAR NOME
 		npInstances[i].oOverLapReader.hEvent = npInstances[i].hMyEvent;
 
 		npInstances[i].hNamedPipeReadFromClient = CreateNamedPipe(
@@ -122,7 +122,7 @@ BOOL initServerPipeLocal(NamedPipeInstance npInstances[], WORD wInstances)
 			sizeof(MessageProtocolPipe),	// Tamanho das mensagens que vai escrever
 			sizeof(MessageProtocolPipe),	//Tamanho das mensagens que vai ler
 			0,								//TimeOut
-			sa_attributes					//Atributos de segurança
+			NULL					//Atributos de segurança
 		);
 
 
