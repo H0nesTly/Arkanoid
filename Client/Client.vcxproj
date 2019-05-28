@@ -132,10 +132,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Canvas.cpp" />
     <ClCompile Include="ClientThreads.c" />
     <ClCompile Include="mainClient.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Canvas.h" />
     <ClInclude Include="ClientStructures.h" />
     <ClInclude Include="ClientThreads.h" />
     <ClInclude Include="resource1.h" />
