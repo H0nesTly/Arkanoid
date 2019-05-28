@@ -23,75 +23,6 @@ LRESULT CALLBACK TrataEventos(HWND, UINT, WPARAM, LPARAM);
 BOOL CALLBACK manageDialogEvents(HWND, UINT, WPARAM, LPARAM);
 
 ClientStructure gClientInfo;
-//FIM - Modo de Inicio
-
-//int _tmain(int argc, LPTSTR argv[])
-//{
-//	UNREFERENCED_PARAMETER(argc);
-//	UNREFERENCED_PARAMETER(argv);
-//
-//	HANDLE hThreads[NUMBER_OF_CLIENT_THREADS];
-//	DWORD dwThreadsIds[NUMBER_OF_CLIENT_THREADS];
-//
-//	ZeroMemory(&ClientInfo, sizeof(ClientStructure));
-//
-//	//UNICODE: Por defeito, a consola Windows não processa caracteres wide.
-//	//A maneira mais fácil para ter esta funcionalidade é chamar _setmode:
-//	#ifdef UNICODE
-//	_setmode(_fileno(stdin), _O_WTEXT);
-//	_setmode(_fileno(stdout), _O_WTEXT);
-//	#endif
-//
-//	getUserName(&ClientInfo);
-//	switch (getLoginMethod())
-//	{
-//	case 1:
-//		Login(ClientInfo.tcUserName, clientSharedMemoryConnection);
-//		break;
-//	case 2:
-//		Login(ClientInfo.tcUserName, clientNamedPipeLocalConnection);
-//		break;
-//	case 3:
-//		break;
-//	case 0:
-//	default:
-//		exit(EXIT_SUCCESS);
-//	}
-//
-//	hThreads[0] = CreateThread(
-//		NULL,
-//		0,
-//		readInputThread,
-//		NULL,
-//		0,
-//		&dwThreadsIds[0]
-//	);
-//
-//	hThreads[1] = CreateThread(
-//		NULL,
-//		0,
-//		readMessageThread,
-//		(LPVOID)&ClientInfo,
-//		0,
-//		&dwThreadsIds[1]
-//	);
-//
-//	hThreads[2] = CreateThread(
-//		NULL,
-//		0,
-//		readGameDataThread,
-//		NULL,
-//		0,
-//		&dwThreadsIds[2]
-//	);
-//
-//	WaitForMultipleObjects(NUMBER_OF_CLIENT_THREADS, hThreads, TRUE, INFINITE);
-//
-//
-//	freeThreads(hThreads);
-//	system("PAUSE");
-//	return 0;
-//}
 
 // ============================================================================
 // FUNÇÃO DE INÍCIO DO PROGRAMA: WinMain()
@@ -101,6 +32,11 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 {
 	UNREFERENCED_PARAMETER(hPrevInst);
 	UNREFERENCED_PARAMETER(lpCmdLine);
+
+	HANDLE hThreads[NUMBER_OF_CLIENT_THREADS];
+	DWORD dwThreadsIds[NUMBER_OF_CLIENT_THREADS];
+
+	ZeroMemory(&ClientInfo, sizeof(ClientStructure));
 
 	HWND hWnd; // hWnd é o handler da janela, gerado mais abaixo por CreateWindow()
 	MSG lpMsg; // MSG é uma estrutura definida no Windows para as mensagens
@@ -170,6 +106,38 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 		MAKEINTRESOURCE(IDD_DIALOGLOGIN),
 		hWnd,
 		manageDialogEvents);
+
+	hThreads[0] = CreateThread(
+		NULL,
+		0,
+		readInputThread,
+		NULL,
+		0,
+		&dwThreadsIds[0]
+	);
+
+	hThreads[1] = CreateThread(
+		NULL,
+		0,
+		readMessageThread,
+		(LPVOID)&ClientInfo,
+		0,
+		&dwThreadsIds[1]
+	);
+
+	hThreads[2] = CreateThread(
+		NULL,
+		0,
+		readGameDataThread,
+		NULL,
+		0,
+		&dwThreadsIds[2]
+	);
+
+	WaitForMultipleObjects(NUMBER_OF_CLIENT_THREADS, hThreads, TRUE, INFINITE);
+
+	freeThreads(hThreads);
+
 	// ============================================================================
 	// 5. Loop de Mensagens
 	// ============================================================================
