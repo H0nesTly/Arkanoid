@@ -138,11 +138,15 @@
   <ItemGroup>
     <ClInclude Include="ClientStructures.h" />
     <ClInclude Include="ClientThreads.h" />
+    <ClInclude Include="resource1.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Communicate\Communicate.vcxproj">
       <Project>{d6559272-bfba-40da-a5fb-9ff75f089d63}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Client.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -9,42 +9,26 @@
 
 #include "ClientStructures.h"
 #include "ClientThreads.h"
+#include "resource1.h"
 #include "..\Communicate\MessageProtocol.h"
 #include "..\Communicate\DllSetup.h"
+#include <winuser.h>
+#include <winuser.h>
+#include <stdlib.h>
 
 LPVOID lpgcSharedMemGame = NULL;
 LPVOID lpgcSharedMemMessage = NULL;
 
 LRESULT CALLBACK TrataEventos(HWND, UINT, WPARAM, LPARAM);
+BOOL CALLBACK manageDialogEvents(HWND, UINT, WPARAM, LPARAM);
 
-//Modo de Inicio
-int getLoginMethod()
-{
-	int Input;
-
-	_tprintf(TEXT("\nInsira Opção de comunicação:"));
-	_tprintf(TEXT("\n\t 1 - Memoria Partilhada"));
-	_tprintf(TEXT("\n\t 2 - Pipe"));
-	_tprintf(TEXT("\n\t 3 - Remoto"));
-	_tprintf(TEXT("\n\t 0 - Sair"));
-	_tprintf(TEXT("\n\t > "));
-	_tscanf_s(TEXT(" %d"), &Input);
-
-	return Input;
-}
-
-void getUserName(ClientStructure* dest)
-{
-	_tprintf(TEXT("\n Insira username(ate 20) :"));
-	_tscanf_s(TEXT("%19s"), dest->tcUserName, (unsigned)_countof(dest->tcUserName));
-}
+ClientStructure gClientInfo;
 //FIM - Modo de Inicio
 
 //int _tmain(int argc, LPTSTR argv[])
 //{
 //	UNREFERENCED_PARAMETER(argc);
 //	UNREFERENCED_PARAMETER(argv);
-//	ClientStructure ClientInfo;
 //
 //	HANDLE hThreads[NUMBER_OF_CLIENT_THREADS];
 //	DWORD dwThreadsIds[NUMBER_OF_CLIENT_THREADS];
@@ -178,8 +162,14 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	ShowWindow(hWnd, nCmdShow); // "hWnd"= handler da janela, devolvido por
 	// "CreateWindow"; "nCmdShow"= modo de exibição (p.e.
 	// normal/modal); é passado como parâmetro de WinMain()
+
+
 	UpdateWindow(hWnd); // Refrescar a janela (Windows envia à janela uma
 	// mensagem para pintar, mostrar dados, (refrescar)…
+	DialogBox(NULL,
+		MAKEINTRESOURCE(IDD_DIALOGLOGIN),
+		hWnd,
+		manageDialogEvents);
 	// ============================================================================
 	// 5. Loop de Mensagens
 	// ============================================================================
@@ -213,6 +203,32 @@ LRESULT CALLBACK TrataEventos(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lPara
 	default:
 		// Neste exemplo, para qualquer outra mensagem (p.e. "minimizar","maximizar","restaurar") // não é efectuado nenhum processamento, apenas se segue o "default" do Windows
 		return DefWindowProc(hWnd, messg, wParam, lParam);
+		break;
+	}
+	return(0);
+}
+
+BOOL CALLBACK manageDialogEvents(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
+{
+	switch (messg)
+	{
+	case WM_COMMAND:
+		if (LOWORD(wParam) == IDC_SENDLOGIN)
+		{
+			if (GetDlgItemText(hWnd, IDC_USERNAME, gClientInfo.tcUserName, _countof(gClientInfo.tcUserName)) &&
+				(IsDlgButtonChecked(hWnd, IDC_RADIOSHAREDMEMORY) == BST_CHECKED || IsDlgButtonChecked(hWnd, IDC_RADIONAMEDPIPE) == BST_CHECKED))
+			{
+				if (IsDlgButtonChecked(hWnd, IDC_RADIOSHAREDMEMORY) == BST_CHECKED)
+				{
+					Login(gClientInfo.tcUserName, clientSharedMemoryConnection);
+				}
+				else if (IsDlgButtonChecked(hWnd, IDC_RADIONAMEDPIPE) == BST_CHECKED)
+				{
+					Login(gClientInfo.tcUserName, clientNamedPipeLocalConnection);
+				}
+				EndDialog(hWnd, 0);
+			}
+		}
 		break;
 	}
 	return(0);
