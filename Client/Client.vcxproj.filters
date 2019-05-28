@@ -35,7 +35,7 @@
     <ClCompile Include="ClientThreads.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Canvas.cpp">
+    <ClCompile Include="Canvas.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

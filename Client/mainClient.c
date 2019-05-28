@@ -22,6 +22,7 @@ LPVOID lpgcSharedMemMessage = NULL;
 LRESULT CALLBACK TrataEventos(HWND, UINT, WPARAM, LPARAM);
 BOOL CALLBACK manageDialogEvents(HWND, UINT, WPARAM, LPARAM);
 
+extern BOOL bKeepRunning;
 ClientStructure gClientInfo;
 
 // ============================================================================
@@ -36,7 +37,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	HANDLE hThreads[NUMBER_OF_CLIENT_THREADS];
 	DWORD dwThreadsIds[NUMBER_OF_CLIENT_THREADS];
 
-	ZeroMemory(&ClientInfo, sizeof(ClientStructure));
+	ZeroMemory(&gClientInfo, sizeof(ClientStructure));
 
 	HWND hWnd; // hWnd é o handler da janela, gerado mais abaixo por CreateWindow()
 	MSG lpMsg; // MSG é uma estrutura definida no Windows para as mensagens
@@ -120,7 +121,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 		NULL,
 		0,
 		readMessageThread,
-		(LPVOID)&ClientInfo,
+		(LPVOID)&gClientInfo,
 		0,
 		&dwThreadsIds[1]
 	);
@@ -134,10 +135,6 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 		&dwThreadsIds[2]
 	);
 
-	WaitForMultipleObjects(NUMBER_OF_CLIENT_THREADS, hThreads, TRUE, INFINITE);
-
-	freeThreads(hThreads);
-
 	// ============================================================================
 	// 5. Loop de Mensagens
 	// ============================================================================
@@ -149,6 +146,10 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 		// aguarda até que a possa reenviar à função de
 		// tratamento da janela, CALLBACK TrataEventos (abaixo)
 	}
+
+	WaitForMultipleObjects(NUMBER_OF_CLIENT_THREADS, hThreads, TRUE, INFINITE);
+
+	freeThreads(hThreads);
 	// ============================================================================
 	// 6. Fim do programa
 	// ============================================================================
@@ -164,6 +165,21 @@ LRESULT CALLBACK TrataEventos(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lPara
 {
 	switch (messg)
 	{
+	case WM_CLOSE:
+		switch (MessageBox(hWnd, 
+			TEXT("Tens certeza que quer mesmo fechar?"),
+			TEXT("Sair - Janela"),
+			MB_YESNO | MB_ICONINFORMATION))
+		{
+		case IDYES:
+			SendMessageDll(&bKeepRunning, QuitGameMessage);
+			DestroyWindow(hWnd);
+			break;
+		case IDNO:
+			//não faz nada
+			break;
+		}
+		break;
 	case WM_DESTROY: // Destruir a janela e terminar o programa
 	// "PostQuitMessage(Exit Status)"
 		PostQuitMessage(0);
@@ -178,6 +194,7 @@ LRESULT CALLBACK TrataEventos(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lPara
 
 BOOL CALLBACK manageDialogEvents(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 {
+	UNREFERENCED_PARAMETER(lParam);
 	switch (messg)
 	{
 	case WM_COMMAND:

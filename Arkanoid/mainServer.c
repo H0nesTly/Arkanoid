@@ -95,8 +95,6 @@ int _tmain(int argc, LPTSTR argv[])
 	freeMappedMemoryServer(&serverInstance.serverHandlers.sharedMemHandlers);
 	freeThreads(serverInstance.serverHandlers.threadHandlers);
 
-
-
 	_gettchar();
 	return 0;
 }

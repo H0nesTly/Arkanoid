@@ -43,6 +43,8 @@ inline static VOID readNewMessageSharedMemory(MessageQueue* queue, Server* serve
 
 			break;
 		case QuitGameMessage:
+			//Retirar cliente do lobby/lista de jogadores
+			_tprintf(TEXT("fechar"));
 			break;
 		default:
 			break;
