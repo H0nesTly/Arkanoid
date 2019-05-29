@@ -248,7 +248,6 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 
 	hAllHandlers[INDEX_OF_HANDLERS_WAIT_MESSAGE] = hgSyncSemaphoreRead;
 
-
 	while (1)
 	{
 		_tprintf_s(TEXT("\nA espera de Clientes para se conectar ... [%d]"), GetLastError());
@@ -285,9 +284,8 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 
 DWORD WINAPI BallThread(LPVOID lpArg)
 {
-	Server* serverObj = (Server*) lpArg;
-	Game* game = (Game*) serverObj->serverHandlers.sharedMemHandlers.lpSharedMemGame;
-
+	Server* serverObj = (Server*)lpArg;
+	Game* game = (Game*)serverObj->serverHandlers.sharedMemHandlers.lpSharedMemGame;
 
 	HANDLE hTimerWaitForPlayersToConnect = NULL;
 	LARGE_INTEGER liDueTime;
@@ -304,13 +302,13 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 	_tprintf(TEXT("\nVamos inicializar o Jogo em 5 segundos \n"));
 
 	// Set a timer to wait for 5 seconds.
-	if (! SetWaitableTimer(
+	if (!SetWaitableTimer(
 		hTimerWaitForPlayersToConnect, // Handle do timer
 		&liDueTime,			//Tempo
 		FALSE,				//não é periodico
 		NULL,				//Completion Ruoutime
 		NULL,				//Argumentos para routime
-		FALSE))		
+		FALSE))
 	{
 		printf("SetWaitableTimer failed (%d)\n", GetLastError());
 		return 2;
@@ -323,13 +321,14 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 
 	_tprintf(TEXT("\nTranferir playesrs"));
 	transferPlayersToGame(serverObj);
+	SetEvent(hgGameObject);
 
-	//while (1)
-	//{
-	//	Sleep(1000); //Remover apenas para exemplo
-	//	moveBall(&game->ball);
-	//	_tprintf(TEXT("\nBola x-%d"), game->ball.ballPosition.x);
-	//}
+	while (1)
+	{
+		Sleep(1000); //Remover apenas para exemplo
+		moveBall(&game->ball);
+		SetEvent(hgGameObject);
+	}
 
 	return 0;
 }

@@ -9,6 +9,7 @@
 
 extern HANDLE hgNotifyClient;
 extern HANDLE hgWriteObject;
+extern HANDLE hgGameObject;
 extern HANDLE hgSyncRWObject;
 extern HANDLE hgSyncSemaphoreRead;
 

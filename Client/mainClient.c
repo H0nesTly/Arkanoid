@@ -19,7 +19,9 @@
 LPVOID lpgcSharedMemGame = NULL;
 LPVOID lpgcSharedMemMessage = NULL;
 
-LRESULT CALLBACK TrataEventos(HWND, UINT, WPARAM, LPARAM);
+HDC memDC = NULL; //double buffering matrix
+
+LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 BOOL CALLBACK manageDialogEvents(HWND, UINT, WPARAM, LPARAM);
 
 extern BOOL bKeepRunning;
@@ -52,7 +54,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	// ("hInst" é parâmetro de WinMain e vem
 	// inicializada daí)
 	wcApp.lpszClassName = NAME_OF_WINDOWS_PROGRAM; // Nome da janela (neste caso = nome do programa)
-	wcApp.lpfnWndProc = TrataEventos; // Endereço da função de processamento da janela // ("TrataEventos" foi declarada no início e // encontra-se mais abaixo)
+	wcApp.lpfnWndProc = WndProc; // Endereço da função de processamento da janela // ("TrataEventos" foi declarada no início e // encontra-se mais abaixo)
 	wcApp.style = CS_HREDRAW | CS_VREDRAW;// Estilo da janela: Fazer o redraw se for // modificada horizontal ou verticalmente
 
 	// "hIcon" = handler do ícon normal
@@ -161,7 +163,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 //
 // A função EndProc é sempre do tipo "switch..." com "cases" que descriminam a mensagem // recebida e a tratar. Estas mensagens são identificadas por constantes (p.e.
 // WM_DESTROY, WM_CHAR, WM_KEYDOWN, WM_PAINT...) definidas em windows.h ============================================================================
-LRESULT CALLBACK TrataEventos(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 {
 	switch (messg)
 	{

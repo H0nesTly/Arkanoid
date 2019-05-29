@@ -59,7 +59,6 @@ static VOID receiveBroadcastSharedMemory()
 {
 	Game* game = (Game*)gClientConnection.SharedMem.lpGame;
 
-	_tprintf(TEXT("Posicaçao da bola %d\n"), game->ball.ballPosition.x);
 }
 
 static VOID receiveMessageSharedMemory(const PTCHAR UserName, BOOL* bKeepRunning)

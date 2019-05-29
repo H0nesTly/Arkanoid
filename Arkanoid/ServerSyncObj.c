@@ -1,6 +1,7 @@
 #include "ServerSyncObj.h"
 
 HANDLE hgWriteObject = NULL;
+HANDLE hgGameObject = NULL;
 HANDLE hgNotifyClient = NULL;
 HANDLE hgSyncRWObject = NULL;
 HANDLE hgSyncSemaphoreRead = NULL; 
@@ -44,6 +45,12 @@ BOOL initSyncObject()
 		FALSE,		//inital states as nonsignaled
 		NULL);
 	
+	hgGameObject = CreateEvent(
+		NULL,		//security attributes
+		TRUE,		//manual reset
+		FALSE,		//inital states as nonsignaled
+		NAME_EVENT_OBJECT_GAME);
+	
 	hgMutexReadNewMessage = CreateMutex(
 		NULL, 
 		FALSE, 
@@ -51,6 +58,7 @@ BOOL initSyncObject()
 
 	return hgSemaphoreNotifyClientNewMessage == NULL ||
 		hgNotifyClient == NULL ||
+		hgGameObject == NULL ||
 		hgWriteObject == NULL || 
 		hgSyncRWObject == NULL || 
 		hgSyncSemaphoreRead == NULL || 
@@ -65,5 +73,6 @@ void freeSyncObject()
 	CloseHandle(hgSemaphoreNotifyClientNewMessage);
 	CloseHandle(hgNotifyClient);
 	CloseHandle(hgWriteObject);
+	CloseHandle(hgGameObject);
 	CloseHandle(hgSyncRWObject);
 }

@@ -30,11 +30,18 @@ DWORD WINAPI readGameDataThread(LPVOID lpArg)
 {
 	UNREFERENCED_PARAMETER(lpArg);
 
-	//while (1)
-	//{
-	//	ReceiveBroadcast();
-	//	Sleep(2000);
-	//}
+	HANDLE hEvent = CreateEvent(
+		NULL,
+		TRUE,
+		FALSE,
+		NAME_EVENT_OBJECT_GAME
+	);
+
+	while (bKeepRunning)
+	{
+		WaitForSingleObject(hEvent, INFINITE);
+		ReceiveBroadcast(&bKeepRunning);
+	}
 
 	return 0;
 }
