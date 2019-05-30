@@ -105,6 +105,8 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 
 	UpdateWindow(hWnd); // Refrescar a janela (Windows envia à janela uma
 	// mensagem para pintar, mostrar dados, (refrescar)…
+
+	gClientInfo.hWndWindow = hWnd;
 	DialogBox(NULL,
 		MAKEINTRESOURCE(IDD_DIALOGLOGIN),
 		hWnd,
@@ -168,7 +170,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 	switch (messg)
 	{
 	case WM_CLOSE:
-		switch (MessageBox(hWnd, 
+		switch (MessageBox(hWnd,
 			TEXT("Tens certeza que quer mesmo fechar?"),
 			TEXT("Sair - Janela"),
 			MB_YESNO | MB_ICONINFORMATION))
@@ -207,11 +209,11 @@ BOOL CALLBACK manageDialogEvents(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lP
 			{
 				if (IsDlgButtonChecked(hWnd, IDC_RADIOSHAREDMEMORY) == BST_CHECKED)
 				{
-					Login(gClientInfo.tcUserName, clientSharedMemoryConnection);
+					Login(gClientInfo.tcUserName, gClientInfo.hWndWindow, clientSharedMemoryConnection);
 				}
 				else if (IsDlgButtonChecked(hWnd, IDC_RADIONAMEDPIPE) == BST_CHECKED)
 				{
-					Login(gClientInfo.tcUserName, clientNamedPipeLocalConnection);
+					Login(gClientInfo.tcUserName, gClientInfo.hWndWindow, clientNamedPipeLocalConnection);
 				}
 				EndDialog(hWnd, 0);
 			}

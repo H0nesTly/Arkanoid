@@ -10,6 +10,7 @@ typedef enum typeOfClientConnection TypeOfClientConnection;
 
 struct clientConnection
 {
+	HWND hWndMain;
 	TypeOfClientConnection typeOfConnection;
 	TCHAR tcUserName[MAX_LENGTH_NAME];
 	union 

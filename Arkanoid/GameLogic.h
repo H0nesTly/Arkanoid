@@ -2,11 +2,14 @@
 #include "..\Communicate\stdafx.h"
 #include "..\Communicate\GameStructures.h"
 
+#define DEFAULT_WIDTH_OF_GAMEBOARD 400
+#define DEFAULT_HEIGTH_OF_GAMEBOARD 200
+
 VOID moveBall(Ball*);
 
 VOID createLevel(Game*);
 
-VOID createGameBoard(WORD, WORD, WORD, WORD, Game*);
+VOID createGameBoard(WORD, WORD, WORD, WORD, GameBoard*);
 
 VOID createBall(WORD, WORD, Game*);
 

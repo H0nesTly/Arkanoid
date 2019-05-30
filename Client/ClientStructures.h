@@ -9,6 +9,7 @@ typedef struct clientStructure ClientStructure;
 struct clientStructure
 {
 	TCHAR tcUserName[MAX_LENGTH_NAME];
+	HWND hWndWindow;
 };
 //
 //struct configKey

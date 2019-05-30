@@ -11,6 +11,8 @@ VOID moveBall(Ball* ballToMove)
 //TESTAA
 VOID createLevel(Game*gameObj)
 {
+	createGameBoard(0, 0, DEFAULT_HEIGTH_OF_GAMEBOARD, DEFAULT_WIDTH_OF_GAMEBOARD, &gameObj->myGameBoard);
+
 	createBlocks(5, 6, 30, 10, Magic, gameObj);
 	createBlocks(2, 4, 30, 10, Rigid, gameObj);
 	createBlocks(2, 3, 30, 10, Normal, gameObj);
@@ -18,13 +20,13 @@ VOID createLevel(Game*gameObj)
 
 }
 
-VOID createGameBoard(WORD wCoordX, WORD wCoordY, WORD wHeigth, WORD wWidth, Game* gameObj)
+VOID createGameBoard(WORD wCoordX, WORD wCoordY, WORD wHeigth, WORD wWidth, GameBoard* gameObj)
 {
-	gameObj->myGameBoard.gameBoardPosition.x = wCoordX;
-	gameObj->myGameBoard.gameBoardPosition.y = wCoordY;
+	gameObj->gameBoardPosition.x = wCoordX;
+	gameObj->gameBoardPosition.y = wCoordY;
 
-	gameObj->myGameBoard.wHeight = wHeigth;
-	gameObj->myGameBoard.wWidth = wWidth;
+	gameObj->wHeight = wHeigth;
+	gameObj->wWidth = wWidth;
 }
 
 VOID createBall(WORD wCoordX, WORD wCoordY, Game* gameObj)
@@ -162,5 +164,5 @@ VOID incrementHealth(Game* gameObj)
 
 BOOL decrementHealth(Game* gameObj)
 {
-	return gameObj->wLifes > 0 ? gameObj->wLifes-- : FALSE; 
+	return gameObj->wLifes > 0 ? gameObj->wLifes-- : FALSE;
 }

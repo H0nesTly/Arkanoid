@@ -59,6 +59,8 @@ static VOID receiveBroadcastSharedMemory()
 {
 	Game* game = (Game*)gClientConnection.SharedMem.lpGame;
 
+
+
 }
 
 static VOID receiveMessageSharedMemory(const PTCHAR UserName, BOOL* bKeepRunning)
@@ -161,7 +163,7 @@ static VOID sendMessageSharedMemory(const PTCHAR username, TypeOfRequestMessage 
 	}
 }
 
-VOID __cdecl Login(PTCHAR username, TypeOfClientConnection arg)
+VOID __cdecl Login(const PTCHAR username, HWND hWndArg, TypeOfClientConnection arg)
 {
 	gClientConnection.typeOfConnection = arg;
 
@@ -173,6 +175,8 @@ VOID __cdecl Login(PTCHAR username, TypeOfClientConnection arg)
 	_tcscpy_s(gClientConnection.tcUserName,
 		_countof(gClientConnection.tcUserName),
 		username);
+
+	gClientConnection.hWndMain = hWndArg;
 
 	switch (gClientConnection.typeOfConnection)
 	{

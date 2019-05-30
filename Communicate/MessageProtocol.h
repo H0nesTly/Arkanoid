@@ -143,7 +143,7 @@ extern "C" {          // we need to export the C interface
 	#endif
 
 	/*Enviamos mensagem ao servidor*/
-	DLL_API VOID __cdecl Login(PTCHAR, TypeOfClientConnection);
+	DLL_API VOID __cdecl Login(const PTCHAR, HWND, TypeOfClientConnection);
 
 	DLL_API VOID __cdecl ReceiveBroadcast(BOOL*);
 
@@ -151,10 +151,10 @@ extern "C" {          // we need to export the C interface
 
 	DLL_API VOID __cdecl ReceiveMessage(const PTCHAR, BOOL*);
 
-	VOID writeMessageToServerSharedMemory(MessageQueue* , TypeOfRequestMessage , const PTCHAR , const PTCHAR );
+	VOID writeMessageToServerSharedMemory(MessageQueue*, TypeOfRequestMessage, const PTCHAR, const PTCHAR);
 
-	VOID writeMessageToServerPipeRequest(MessageProtocolPipe* , TypeOfRequestMessage , const PTCHAR pSender, const PTCHAR );
-	
+	VOID writeMessageToServerPipeRequest(MessageProtocolPipe*, TypeOfRequestMessage, const PTCHAR pSender, const PTCHAR);
+
 	#ifdef __cplusplus
 }
 #endif
