@@ -1,8 +1,30 @@
 #include "Canvas.h"
+#include "resource1.h"
 
 extern HWND gWnd;
 extern RECT rectWindowProp;
 RECT rectOffsetGameBoard;
+
+VOID drawBalls(const Ball* ballObj, HDC memDC)
+{
+	HBITMAP hBmp = NULL;
+	BITMAP bmp;
+	HDC tempDC = CreateCompatibleDC(memDC);
+
+	hBmp = (HBITMAP)LoadImage(GetModuleHandle(NULL),
+		MAKEINTRESOURCE(IDB_BITMAP4),
+		IMAGE_BITMAP,
+		0, 0,
+		LR_DEFAULTSIZE
+	);
+	GetObject(hBmp, sizeof(bmp), &bmp);
+
+	SelectObject(tempDC, hBmp);
+
+	BitBlt(memDC, 100, 50, bmp.bmWidth, bmp.bmHeight, tempDC, 0, 0, SRCCOPY);
+
+	DeleteDC(tempDC);
+}
 
 VOID drawBlocks(const Block* blocksObj, HDC memDc)
 {
@@ -75,6 +97,8 @@ VOID drawGame(const Game* gameObj, HDC memDC)
 		drawBlocks(&gameObj->blocks[0], memDC);
 		drawBlocks(&gameObj->blocks[1], memDC);
 		drawBlocks(&gameObj->blocks[2], memDC);
+
+		drawBalls(&gameObj->ball, memDC);
 	}
 	else
 	{

@@ -191,13 +191,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 
 		memDC = CreateCompatibleDC(hDC);
 
-		gClientInfo.doubleBufferingDC = memDC;
-
 		hBit = CreateCompatibleBitmap(hDC, rectWindowProp.right, rectWindowProp.bottom);
-
+		
 		SelectObject(memDC, hBit);
 
 		DeleteObject(hBit);
+
+		gClientInfo.doubleBufferingDC = memDC;
 
 		hBrush = CreateSolidBrush(RGB(170, 15, 70));
 

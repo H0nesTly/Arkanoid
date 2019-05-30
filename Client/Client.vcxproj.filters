@@ -45,7 +45,7 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="bitmap1.bmp">
+    <Image Include="bitmap4.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
