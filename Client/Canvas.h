@@ -13,9 +13,9 @@
 
 #define COLOR_GAMEBOARD RGB(0, 233, 0)
 
-VOID drawBlocks(Block*, HDC);
+VOID drawBlocks(const Block*, HDC);
 
-VOID drawBalls(Ball*, HDC);
+VOID drawBalls(const Ball*, HDC);
 
 VOID drawBonus(BonusBlock*, HDC);
 

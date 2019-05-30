@@ -13,9 +13,9 @@ VOID createLevel(Game*gameObj)
 {
 	createGameBoard(0, 0, DEFAULT_HEIGTH_OF_GAMEBOARD, DEFAULT_WIDTH_OF_GAMEBOARD, &gameObj->myGameBoard);
 
-	createBlocks(5, 6, 30, 10, Magic, gameObj);
-	createBlocks(2, 4, 30, 10, Rigid, gameObj);
-	createBlocks(2, 3, 30, 10, Normal, gameObj);
+	createBlocks(5, 6, 10, 30, Magic, gameObj);
+	createBlocks(15, 30, 10, 30, Rigid, gameObj);
+	createBlocks(30, 10, 10, 30, Normal, gameObj);
 	createBall(1, 1, gameObj);
 
 }
