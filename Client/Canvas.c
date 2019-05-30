@@ -4,28 +4,6 @@
 extern HWND gWnd;
 extern RECT rectWindowProp;
 RECT rectOffsetGameBoard;
-
-VOID drawBalls(const Ball* ballObj, HDC memDC)
-{
-	HBITMAP hBmp = NULL;
-	BITMAP bmp;
-	HDC tempDC = CreateCompatibleDC(memDC);
-
-	hBmp = (HBITMAP)LoadImage(GetModuleHandle(NULL),
-		MAKEINTRESOURCE(IDB_BITMAP4),
-		IMAGE_BITMAP,
-		0, 0,
-		LR_DEFAULTSIZE
-	);
-	GetObject(hBmp, sizeof(bmp), &bmp);
-
-	SelectObject(tempDC, hBmp);
-
-	BitBlt(memDC, 100, 50, bmp.bmWidth, bmp.bmHeight, tempDC, 0, 0, SRCCOPY);
-
-	DeleteDC(tempDC);
-}
-
 VOID drawBlocks(const Block* blocksObj, HDC memDc)
 {
 	HBRUSH hBrush = NULL;
@@ -63,7 +41,51 @@ VOID drawBlocks(const Block* blocksObj, HDC memDc)
 	DeleteDC(tempDC);
 }
 
+VOID drawBalls(const Ball* ballObj, HDC memDC)
+{
+	RECT rect;
+	HBITMAP hBmp = NULL;
+	BITMAP bmp;
+	HDC tempDC = CreateCompatibleDC(memDC);
 
+	ZeroMemory(&rect, sizeof(RECT));
+
+	hBmp = (HBITMAP)LoadImage(GetModuleHandle(NULL),
+		MAKEINTRESOURCE(IDB_BITMAP4),
+		IMAGE_BITMAP,
+		0, 0,
+		LR_DEFAULTSIZE
+	);
+	GetObject(hBmp, sizeof(bmp), &bmp);
+
+	SelectObject(tempDC, hBmp);
+
+	rect.left = ballObj->ballPosition.x + rectOffsetGameBoard.left;
+	rect.top = ballObj->ballPosition.y + rectOffsetGameBoard.top;
+
+	BitBlt(memDC, rect.left, rect.top, bmp.bmWidth, bmp.bmHeight, tempDC, 0, 0, SRCCOPY);
+
+	DeleteDC(tempDC);
+}
+
+
+VOID drawPlayerBlocks(const PlayerBlock* playerBlockObj, HDC memDC)
+{
+	RECT rect;
+	HBRUSH hBrush = NULL;
+
+	rect.left = rectOffsetGameBoard.left + playerBlockObj->playerBlockPosition.x;
+	rect.top = rectOffsetGameBoard.top + playerBlockObj->playerBlockPosition.y;
+
+	rect.right = rect.left + playerBlockObj->wWidth;
+	rect.bottom = rect.top + playerBlockObj->wHeight;
+
+	hBrush = CreateSolidBrush(COLOR_PLAYERBLOCK_ENEMY);
+
+	FillRect(memDC, &rect, hBrush);
+
+	DeleteObject(hBrush);
+}
 
 VOID drawGameBoard(const GameBoard* gameBoardObj, HDC memDC)
 {
@@ -99,6 +121,8 @@ VOID drawGame(const Game* gameObj, HDC memDC)
 		drawBlocks(&gameObj->blocks[2], memDC);
 
 		drawBalls(&gameObj->ball, memDC);
+
+		drawPlayerBlocks(&gameObj->playerBlocks[0], memDC);
 	}
 	else
 	{
