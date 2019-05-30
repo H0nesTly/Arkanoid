@@ -32,6 +32,7 @@ struct ball
 	Coords ballPosition;
 	TCHAR tcFigure;
 	WORD wRadius;
+	Coords MovementVector;  
 	float fVelocity;
 };
 

@@ -2,6 +2,7 @@
 #include "MessageProtocol.h"
 #include "GameStructures.h"
 #include "CircularBuffer.h"
+#include "Canvas.h"
 
 extern ClientConnection gClientConnection;
 /*Variavel que continua o o programa a correr*/
@@ -59,7 +60,7 @@ static VOID receiveBroadcastSharedMemory()
 {
 	Game* game = (Game*)gClientConnection.SharedMem.lpGame;
 
-
+	//drawGame(game, NULL);
 
 }
 

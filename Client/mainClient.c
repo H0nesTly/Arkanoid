@@ -19,7 +19,20 @@
 LPVOID lpgcSharedMemGame = NULL;
 LPVOID lpgcSharedMemMessage = NULL;
 
-HDC memDC = NULL; //double buffering matrix
+//HDC memDC = NULL;
+//HDC tempDC = NULL;
+//HBITMAP hBit = NULL;
+//HBRUSH hBrush = NULL;
+
+TCHAR frase[200];
+
+RECT rectWindowProp;
+HDC memDC = NULL;  //double buffering matrix
+HBITMAP hBit = NULL;
+HBRUSH hBrush = NULL;
+HDC tempDC = NULL;
+HBITMAP hBmp = NULL;
+BITMAP bmp;
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 BOOL CALLBACK manageDialogEvents(HWND, UINT, WPARAM, LPARAM);
@@ -167,8 +180,42 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 // WM_DESTROY, WM_CHAR, WM_KEYDOWN, WM_PAINT...) definidas em windows.h ============================================================================
 LRESULT CALLBACK WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 {
+	PAINTSTRUCT ps;
+	HDC hDC;
+
 	switch (messg)
 	{
+	case WM_CREATE:
+		
+		GetClientRect(hWnd, &rectWindowProp);
+
+		hDC = GetDC(hWnd);
+
+		memDC = CreateCompatibleDC(hDC);
+
+		hBit = CreateCompatibleBitmap(hDC, rectWindowProp.right, rectWindowProp.bottom);
+
+		SelectObject(memDC, hBit);
+
+		DeleteObject(hBit);
+
+		hBrush = CreateSolidBrush(RGB(170, 15, 70));
+
+		SelectObject(memDC, hBrush);
+
+		PatBlt(memDC, 0, 0, rectWindowProp.right, rectWindowProp.bottom, PATCOPY);
+
+		ReleaseDC(hWnd, hDC);
+		break;
+	case  WM_PAINT:
+		PatBlt(memDC, 0, 0, rectWindowProp.right, rectWindowProp.bottom, PATCOPY);
+
+		hDC = BeginPaint(hWnd, &ps);
+
+		BitBlt(hDC, 0, 0, rectWindowProp.right, rectWindowProp.bottom, memDC, 0, 0, SRCCOPY);
+
+		EndPaint(hWnd, &ps);
+		break;
 	case WM_CLOSE:
 		switch (MessageBox(hWnd,
 			TEXT("Tens certeza que quer mesmo fechar?"),
