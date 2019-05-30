@@ -1,8 +1,10 @@
 #include "..\Communicate\stdafx.h"
 #include "ClientThreads.h"
 #include "ClientStructures.h"
+#include "Canvas.h"
 
 BOOL bKeepRunning = TRUE;
+extern HDC memDC;
 
 DWORD WINAPI readMessageThread(LPVOID lpArg)
 {
@@ -41,6 +43,8 @@ DWORD WINAPI readGameDataThread(LPVOID lpArg)
 	{
 		WaitForSingleObject(hEvent, INFINITE);
 		ReceiveBroadcast(&bKeepRunning);
+		drawGame(NULL, memDC);
+		ResetEvent(hEvent);
 	}
 
 	return 0;

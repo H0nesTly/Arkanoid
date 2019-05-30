@@ -14,9 +14,12 @@
 #include "resource1.h"
 #include "..\Communicate\MessageProtocol.h"
 #include "..\Communicate\DllSetup.h"
+#include "Canvas.h"
 
 LPVOID lpgcSharedMemGame = NULL;
 LPVOID lpgcSharedMemMessage = NULL;
+
+HWND gWnd = NULL;
 
 RECT rectWindowProp;
 HDC memDC = NULL;  //double buffering matrix
@@ -174,11 +177,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 {
 	PAINTSTRUCT ps;
 	HDC hDC;
+	//HBRUSH hBrush = NULL;
 
+	gWnd = hWnd;
 	switch (messg)
 	{
 	case WM_CREATE:
-		
+
 		GetClientRect(hWnd, &rectWindowProp);
 
 		hDC = GetDC(hWnd);
@@ -202,12 +207,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 		ReleaseDC(hWnd, hDC);
 		break;
 	case  WM_PAINT:
+
 		PatBlt(memDC, 0, 0, rectWindowProp.right, rectWindowProp.bottom, PATCOPY);
+
+		drawGame(NULL, memDC);
 
 		hDC = BeginPaint(hWnd, &ps);
 
 		BitBlt(hDC, 0, 0, rectWindowProp.right, rectWindowProp.bottom, memDC, 0, 0, SRCCOPY);
-
 		EndPaint(hWnd, &ps);
 		break;
 	case WM_CLOSE:

@@ -23,7 +23,6 @@ typedef enum stateOfNamedPipe StateOfNamedPipe;
 typedef enum stateOfGame StateOfGame;
 
 
-
 struct serverSharedMemoryHandlers
 {
 	LPVOID	lpSharedMemGame;

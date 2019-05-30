@@ -147,7 +147,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Canvas.h" />
     <ClInclude Include="CircularBuffer.h" />
     <ClInclude Include="DllSetup.h" />
     <ClInclude Include="GameStructures.h" />

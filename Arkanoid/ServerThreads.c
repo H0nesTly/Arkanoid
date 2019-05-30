@@ -290,7 +290,7 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 	HANDLE hTimerWaitForPlayersToConnect = NULL;
 	LARGE_INTEGER liDueTime;
 
-	liDueTime.QuadPart = -100000000LL; // 5 SEGUNDOS
+	liDueTime.QuadPart = -50000000LL; // 5 SEGUNDOS
 
 	hTimerWaitForPlayersToConnect = CreateWaitableTimer(NULL, TRUE, NULL);
 	if (hTimerWaitForPlayersToConnect == NULL)
