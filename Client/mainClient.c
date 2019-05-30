@@ -6,25 +6,17 @@
 #include <fcntl.h>
 #include <io.h>
 #include <stdio.h>
+#include <winuser.h>
+#include <stdlib.h>
 
 #include "ClientStructures.h"
 #include "ClientThreads.h"
 #include "resource1.h"
 #include "..\Communicate\MessageProtocol.h"
 #include "..\Communicate\DllSetup.h"
-#include <winuser.h>
-#include <winuser.h>
-#include <stdlib.h>
 
 LPVOID lpgcSharedMemGame = NULL;
 LPVOID lpgcSharedMemMessage = NULL;
-
-//HDC memDC = NULL;
-//HDC tempDC = NULL;
-//HBITMAP hBit = NULL;
-//HBRUSH hBrush = NULL;
-
-TCHAR frase[200];
 
 RECT rectWindowProp;
 HDC memDC = NULL;  //double buffering matrix
@@ -193,6 +185,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 
 		memDC = CreateCompatibleDC(hDC);
 
+		gClientInfo.doubleBufferingDC = memDC;
+
 		hBit = CreateCompatibleBitmap(hDC, rectWindowProp.right, rectWindowProp.bottom);
 
 		SelectObject(memDC, hBit);
@@ -256,11 +250,11 @@ BOOL CALLBACK manageDialogEvents(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lP
 			{
 				if (IsDlgButtonChecked(hWnd, IDC_RADIOSHAREDMEMORY) == BST_CHECKED)
 				{
-					Login(gClientInfo.tcUserName, gClientInfo.hWndWindow, clientSharedMemoryConnection);
+					Login(gClientInfo.tcUserName, gClientInfo.hWndWindow, gClientInfo.doubleBufferingDC, clientSharedMemoryConnection);
 				}
 				else if (IsDlgButtonChecked(hWnd, IDC_RADIONAMEDPIPE) == BST_CHECKED)
 				{
-					Login(gClientInfo.tcUserName, gClientInfo.hWndWindow, clientNamedPipeLocalConnection);
+					Login(gClientInfo.tcUserName, gClientInfo.hWndWindow, gClientInfo.doubleBufferingDC, clientNamedPipeLocalConnection);
 				}
 				EndDialog(hWnd, 0);
 			}

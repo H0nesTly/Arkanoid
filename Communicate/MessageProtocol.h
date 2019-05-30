@@ -143,7 +143,7 @@ extern "C" {          // we need to export the C interface
 	#endif
 
 	/*Enviamos mensagem ao servidor*/
-	DLL_API VOID __cdecl Login(const PTCHAR, HWND, TypeOfClientConnection);
+	DLL_API VOID __cdecl Login(const PTCHAR, HWND, HDC, TypeOfClientConnection);
 
 	DLL_API VOID __cdecl ReceiveBroadcast(BOOL*);
 

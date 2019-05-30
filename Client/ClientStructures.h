@@ -10,6 +10,7 @@ struct clientStructure
 {
 	TCHAR tcUserName[MAX_LENGTH_NAME];
 	HWND hWndWindow;
+	HDC doubleBufferingDC;
 };
 //
 //struct configKey

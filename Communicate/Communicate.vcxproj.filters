@@ -47,8 +47,5 @@
     <ClCompile Include="DllSetup.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Canvas.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>

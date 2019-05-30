@@ -2,6 +2,7 @@
 #include "stdafx.h"
 
 typedef struct clientConnection ClientConnection;
+typedef struct windowhandlers Windowhandlers;
 typedef struct sharedMemory SharedMemory;
 typedef struct pipeLocal PipeLocal;
 typedef struct pipeRemote PipeRemote;
@@ -10,10 +11,15 @@ typedef enum typeOfClientConnection TypeOfClientConnection;
 
 struct clientConnection
 {
-	HWND hWndMain;
+	struct windowhandlers
+	{
+		HWND hWndMain;
+		HDC memDC;
+	} wndHandlers;
+
 	TypeOfClientConnection typeOfConnection;
 	TCHAR tcUserName[MAX_LENGTH_NAME];
-	union 
+	union
 	{
 		struct sharedMemory
 		{
@@ -56,7 +62,7 @@ enum typeOfClientConnection
 };
 
 
-BOOL initComponetsDLL(ClientConnection* );
+BOOL initComponetsDLL(ClientConnection*);
 
 VOID freeComponentsDLL(ClientConnection*);
 /*---------- Funçoes de Bootstrapping para memoria partilhada ----------*/

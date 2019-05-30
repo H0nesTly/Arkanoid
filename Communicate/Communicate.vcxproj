@@ -155,7 +155,6 @@
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Canvas.c" />
     <ClCompile Include="dllmain.c" />
     <ClCompile Include="MessageProtocol.c" />
     <ClCompile Include="DllSetup.c" />

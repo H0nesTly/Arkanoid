@@ -60,7 +60,7 @@ static VOID receiveBroadcastSharedMemory()
 {
 	Game* game = (Game*)gClientConnection.SharedMem.lpGame;
 
-	//drawGame(game, NULL);
+	drawGame(game, &gClientConnection.wndHandlers);
 
 }
 
@@ -164,7 +164,7 @@ static VOID sendMessageSharedMemory(const PTCHAR username, TypeOfRequestMessage 
 	}
 }
 
-VOID __cdecl Login(const PTCHAR username, HWND hWndArg, TypeOfClientConnection arg)
+VOID __cdecl Login(const PTCHAR username, HWND hWndArg, HDC memDC,TypeOfClientConnection arg)
 {
 	gClientConnection.typeOfConnection = arg;
 
@@ -177,7 +177,8 @@ VOID __cdecl Login(const PTCHAR username, HWND hWndArg, TypeOfClientConnection a
 		_countof(gClientConnection.tcUserName),
 		username);
 
-	gClientConnection.hWndMain = hWndArg;
+	gClientConnection.wndHandlers.hWndMain = hWndArg;
+	gClientConnection.wndHandlers.memDC = memDC;
 
 	switch (gClientConnection.typeOfConnection)
 	{
