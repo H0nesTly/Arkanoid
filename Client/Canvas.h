@@ -1,13 +1,26 @@
 #pragma once
-#include "../Communicate/GameStructures.h"
+//#include "../Communicate/GameStructures.h"
+//#pragma once
+//#include "GameStructures.h"
+//
+//#define COLOR_PLAYERBLOCK_ENEMY RGB(255, 0, 0)
+//#define COLOR_MYPLAYERBLOCK_ENEMY RGB(0, 255, 0)
+//
+//#define COLOR_BALL RGB(255, 255, 255)
+//
+//#define COLOR_BLOCK_MAGIC RGB(255, 204, 255)
+//#define COLOR_BLOCK_NORMAL RGB(178, 102, 255)
+//#define COLOR_BLOCK_RIGID_UNDAMAGED RGB(0, 0, 153)
+//#define COLOR_BLOCK_RIGID_DAMAGED RGB(51, 51, 255)
+//
+//VOID drawGame(Game*, HDC);
+//
+//VOID drawBlocks(Block*,HDC);
+//
+//VOID drawBalls(Ball*,HDC);
+//
+//VOID drawBonus(BonusBlock*,HDC);
+//
+//VOID drawGameBoard(GameBoard*,HDC);
 
-VOID drawGame(Game*);
-
-VOID drawBlocks(Block*;
-
-VOID drawBalls(Ball*);
-
-VOID drawBonus(BonusBlock*);
-
-VOID drawGameBoard(GameBoard*);
 
