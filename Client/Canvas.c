@@ -1,6 +1,7 @@
 #include "Canvas.h"
 
 extern HWND gWnd;
+extern RECT rectWindowProp;
 
 VOID drawGame(const Game* gameObj, HDC memDC)
 {
@@ -13,34 +14,25 @@ VOID drawGame(const Game* gameObj, HDC memDC)
 
 VOID drawGameBoard(const GameBoard* gameBoardObj, HDC memDC)
 {
-	HDC tempDC = NULL;
 	HBRUSH hBrush = NULL;
 	RECT rect;
+	HDC tempDC = CreateCompatibleDC(memDC);
 
+	//alinhar
+	rect.left = (rectWindowProp.right - gameBoardObj->wWidth) / 2;
+	rect.top = (rectWindowProp.bottom - gameBoardObj->wHeight) / 2;
 
-	rect.top = rect.left = 0;
-
-	rect.right = rect.bottom = 100;
-
-	//tempDC = CreateCompatibleDC(wndH->memDC);
+	rect.right = gameBoardObj->wWidth + rect.left;
+	rect.bottom = gameBoardObj->wHeight + rect.top;
 
 	hBrush = CreateSolidBrush(COLOR_GAMEBOARD);
-
-	SelectObject(memDC, hBrush);
-
-	//Rectangle(memDC, 
-	   // gameBoardObj->gameBoardPosition.x,
-	   // gameBoardObj->gameBoardPosition.y,
-	   // gameBoardObj->gameBoardPosition.x + gameBoardObj->wWidth,
-	   // gameBoardObj->gameBoardPosition.y + gameBoardObj->wHeight
-	//);
-	//Rectangle(memDC,
-	//	0,
-	//	0,
-	//	40,
-	//	90
-	//);
+	
+	SelectObject(tempDC, hBrush);
 
 	FrameRect(memDC, &rect, hBrush);
+
+	DeleteObject(hBrush);
+
+	DeleteDC(tempDC);
 }
 

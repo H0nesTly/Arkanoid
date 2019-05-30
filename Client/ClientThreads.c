@@ -46,8 +46,9 @@ DWORD WINAPI readGameDataThread(LPVOID lpArg)
 		WaitForSingleObject(hEvent, INFINITE);
 		ReceiveBroadcast(&bKeepRunning, &gameObj);
 
-		//bitblt
-		InvalidateRect(gWnd, NULL, TRUE);
+		//InvalidateRect(gWnd, NULL, TRUE);
+
+		RedrawWindow(gWnd,0, 0,RDW_INVALIDATE | RDW_UPDATENOW);
 
 		ResetEvent(hEvent);
 	}
