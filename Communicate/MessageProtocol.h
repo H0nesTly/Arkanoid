@@ -35,6 +35,8 @@ typedef struct circularBuffer CircularBuffer;
 typedef enum responseOfMessage TypeOfResponseMessage;
 typedef enum requestOfMessage TypeOfRequestMessage;
 
+typedef struct game Game;
+
 struct scorePlayer
 {
 	TCHAR jogador[MAX_LENGTH_NAME];
@@ -145,7 +147,7 @@ extern "C" {          // we need to export the C interface
 	/*Enviamos mensagem ao servidor*/
 	DLL_API VOID __cdecl Login(const PTCHAR, HWND, HDC, TypeOfClientConnection);
 
-	DLL_API VOID __cdecl ReceiveBroadcast(BOOL*);
+	DLL_API VOID __cdecl ReceiveBroadcast(BOOL*, Game**);
 
 	DLL_API VOID __cdecl SendMessageDll(BOOL*, TypeOfRequestMessage);
 

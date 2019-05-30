@@ -12,14 +12,15 @@
 #include "ClientStructures.h"
 #include "ClientThreads.h"
 #include "resource1.h"
+#include "Canvas.h"
 #include "..\Communicate\MessageProtocol.h"
 #include "..\Communicate\DllSetup.h"
-#include "Canvas.h"
 
 LPVOID lpgcSharedMemGame = NULL;
 LPVOID lpgcSharedMemMessage = NULL;
 
 HWND gWnd = NULL;
+Game* gameObj = NULL;
 
 RECT rectWindowProp;
 HDC memDC = NULL;  //double buffering matrix
@@ -210,11 +211,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 
 		PatBlt(memDC, 0, 0, rectWindowProp.right, rectWindowProp.bottom, PATCOPY);
 
-		drawGame(NULL, memDC);
+		drawGame(gameObj, memDC);
 
 		hDC = BeginPaint(hWnd, &ps);
 
 		BitBlt(hDC, 0, 0, rectWindowProp.right, rectWindowProp.bottom, memDC, 0, 0, SRCCOPY);
+
 		EndPaint(hWnd, &ps);
 		break;
 	case WM_CLOSE:

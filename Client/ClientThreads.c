@@ -4,11 +4,13 @@
 #include "Canvas.h"
 
 BOOL bKeepRunning = TRUE;
+extern Game* gameObj;
 extern HDC memDC;
+extern HWND gWnd;
 
 DWORD WINAPI readMessageThread(LPVOID lpArg)
 {
-	ClientStructure* clientInfo = (ClientStructure*) lpArg;
+	ClientStructure* clientInfo = (ClientStructure*)lpArg;
 
 	//Bug Aqui forçar o felho 
 	while (bKeepRunning)
@@ -42,8 +44,11 @@ DWORD WINAPI readGameDataThread(LPVOID lpArg)
 	while (bKeepRunning)
 	{
 		WaitForSingleObject(hEvent, INFINITE);
-		ReceiveBroadcast(&bKeepRunning);
-		drawGame(NULL, memDC);
+		ReceiveBroadcast(&bKeepRunning, &gameObj);
+
+		//bitblt
+		InvalidateRect(gWnd, NULL, TRUE);
+
 		ResetEvent(hEvent);
 	}
 

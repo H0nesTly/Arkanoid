@@ -55,11 +55,11 @@ static VOID loginLocalPIPE(const PTCHAR username)
 	}
 }
 
-static VOID receiveBroadcastSharedMemory()
+static Game* receiveBroadcastSharedMemory()
 {
 	Game* game = (Game*)gClientConnection.SharedMem.lpGame;
 
-
+	return game;
 }
 
 static VOID receiveMessageSharedMemory(const PTCHAR UserName, BOOL* bKeepRunning)
@@ -193,12 +193,12 @@ VOID __cdecl Login(const PTCHAR username, HWND hWndArg, HDC memDC,TypeOfClientCo
 	}
 }
 
-VOID __cdecl ReceiveBroadcast(BOOL* bKeepRunning)
+VOID __cdecl ReceiveBroadcast(BOOL* bKeepRunning, Game** gameObj)
 {
 	switch (gClientConnection.typeOfConnection)
 	{
 	case clientSharedMemoryConnection:
-		receiveBroadcastSharedMemory(bKeepRunning);
+		*gameObj = receiveBroadcastSharedMemory(bKeepRunning);
 		break;
 	case clientNamedPipeLocalConnection:
 		break;
