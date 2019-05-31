@@ -121,7 +121,6 @@ VOID drawGame(const Game* gameObj, HDC memDC)
 			drawBlocks(&gameObj->blocks[i], memDC);
 		}
 
-
 		drawBalls(&gameObj->ball, memDC);
 
 		drawPlayerBlocks(&gameObj->playerBlocks[0], memDC);
