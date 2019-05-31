@@ -2,7 +2,7 @@
 #include "..\Communicate\stdafx.h"
 #include "..\Communicate\GameStructures.h"
 
-#define DEFAULT_WIDTH_OF_GAMEBOARD 300
+#define DEFAULT_WIDTH_OF_GAMEBOARD 400
 #define DEFAULT_HEIGTH_OF_GAMEBOARD 600
 
 VOID moveBall(Ball*);

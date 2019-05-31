@@ -288,12 +288,18 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 	Game* game = (Game*)serverObj->serverHandlers.sharedMemHandlers.lpSharedMemGame;
 
 	HANDLE hTimerWaitForPlayersToConnect = NULL;
+	HANDLE hTimerWaitUpdateBall = NULL;
 	LARGE_INTEGER liDueTime;
+	LARGE_INTEGER liDueTimeBall;
 
 	liDueTime.QuadPart = -50000000LL; // 5 SEGUNDOS
+	liDueTimeBall.QuadPart = -25000LL;//250 ms
 
-	hTimerWaitForPlayersToConnect = CreateWaitableTimer(NULL, TRUE, NULL);
-	if (hTimerWaitForPlayersToConnect == NULL)
+
+		hTimerWaitForPlayersToConnect = CreateWaitableTimer(NULL, TRUE, NULL);
+	hTimerWaitUpdateBall = CreateWaitableTimer(NULL, TRUE, NULL);
+
+	if (hTimerWaitForPlayersToConnect == NULL || hTimerWaitUpdateBall == NULL)
 	{
 		_tprintf(TEXT("CreateWaitableTimer failed (%d)\n"), GetLastError());
 		return 1;
@@ -314,6 +320,7 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 		return 2;
 	}
 
+
 	createLevel(serverObj->serverHandlers.sharedMemHandlers.lpSharedMemGame);
 	//enquanto espera por mais jogadores se conectarem carrega o jogo 
 
@@ -323,9 +330,16 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 	transferPlayersToGame(serverObj);
 	SetEvent(hgGameObject);
 
+	SetWaitableTimer(hTimerWaitUpdateBall,
+		&liDueTimeBall,
+		TRUE,	//PERIOICO
+		NULL,
+		NULL,
+		FALSE);
+
 	while (1)
 	{
-		Sleep(1000); //Remover apenas para exemplo
+		WaitForSingleObject(hTimerWaitUpdateBall, INFINITE);
 		moveBall(&game->ball);
 		SetEvent(hgGameObject);
 	}

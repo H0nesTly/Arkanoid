@@ -13,9 +13,47 @@ VOID createLevel(Game*gameObj)
 {
 	createGameBoard(0, 0, DEFAULT_HEIGTH_OF_GAMEBOARD, DEFAULT_WIDTH_OF_GAMEBOARD, &gameObj->myGameBoard);
 
-	createBlocks(5, 200, 10, 30, Magic, gameObj);
-	createBlocks(15, 30, 10, 30, Rigid, gameObj);
-	createBlocks(30, 10, 10, 30, Normal, gameObj);
+
+	createBlocks(35, 40, 10, 30, Magic, gameObj);
+	createBlocks(66, 40, 10, 30, Magic, gameObj);
+	createBlocks(97, 40, 10, 30, Magic, gameObj);
+	//+50
+	createBlocks(147, 40, 10, 30, Magic, gameObj);
+	createBlocks(178, 40, 10, 30, Magic, gameObj);
+	createBlocks(209, 40, 10, 30, Magic, gameObj);
+	//+50
+	createBlocks(259, 40, 10, 30, Magic, gameObj);
+	createBlocks(290, 40, 10, 30, Magic, gameObj);
+	createBlocks(321, 40, 10, 30, Magic, gameObj);
+	//LINHA	
+	createBlocks(35, 51, 10, 30, Rigid, gameObj);
+	createBlocks(66, 51, 10, 30, Rigid, gameObj);
+	createBlocks(97, 51, 10, 30, Rigid, gameObj);
+	//+50
+	createBlocks(147, 51, 10, 30, Rigid, gameObj);
+	createBlocks(178, 51, 10, 30, Rigid, gameObj);
+	createBlocks(209, 51, 10, 30, Rigid, gameObj);
+	//+50
+	createBlocks(259, 51, 10, 30, Rigid, gameObj);
+	createBlocks(290, 51, 10, 30, Rigid, gameObj);
+	createBlocks(321, 51, 10, 30, Rigid, gameObj);
+
+	//LINHA	
+	createBlocks(35, 61, 10, 30, Normal, gameObj);
+	createBlocks(66, 61, 10, 30, Normal, gameObj);
+	createBlocks(97, 61, 10, 30, Normal, gameObj);
+	//+50				  
+	createBlocks(147, 61, 10, 30, Normal, gameObj);
+	createBlocks(178, 61, 10, 30, Normal, gameObj);
+	createBlocks(209, 61, 10, 30, Normal, gameObj);
+	//+50				  
+	createBlocks(259, 61, 10, 30, Normal, gameObj);
+	createBlocks(290, 61, 10, 30, Normal, gameObj);
+	createBlocks(321, 61, 10, 30, Normal, gameObj);
+
+
+	createBlocks(25, 60, 10, 30, Normal, gameObj);
+
 	createBall(20, 500, gameObj);
 
 }
@@ -57,12 +95,7 @@ VOID createPlayerBlock(WORD wCoordX, WORD wCoordY, WORD wHeigth, WORD wWidth, co
 
 VOID createBlocks(WORD wCoordX, WORD wCoordY, WORD wHeigth, WORD wWidth, TypesOfBlock toBlock, Game* gameObj)
 {
-	WORD wIndex = 0;
-
-	while (gameObj->blocks[wIndex].wWidth != 0)
-	{
-		wIndex++;
-	}
+	WORD wIndex = gameObj->wNumberOfBlocks++;
 
 	gameObj->blocks[wIndex].blockPosition.x = wCoordX;
 	gameObj->blocks[wIndex].blockPosition.y = wCoordY;

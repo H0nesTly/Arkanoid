@@ -116,9 +116,11 @@ VOID drawGame(const Game* gameObj, HDC memDC)
 	{
 		drawGameBoard(&gameObj->myGameBoard, memDC);
 
-		drawBlocks(&gameObj->blocks[0], memDC);
-		drawBlocks(&gameObj->blocks[1], memDC);
-		drawBlocks(&gameObj->blocks[2], memDC);
+		for (int i = 0; i < gameObj->wNumberOfBlocks; ++i)
+		{
+			drawBlocks(&gameObj->blocks[i], memDC);
+		}
+
 
 		drawBalls(&gameObj->ball, memDC);
 

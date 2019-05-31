@@ -88,8 +88,9 @@ struct gameBoard
 
 struct game
 {
+	WORD wNumberOfBlocks;
 	BonusBlock bonusBlock[NUM_OF_OBJ_GAME];
-	Block blocks[NUM_OF_OBJ_GAME];
+	Block blocks[NUM_OF_OBJ_GAME * 2];
 	PlayerBlock playerBlocks[NUM_OF_OBJ_GAME];
 	Ball ball;
 
