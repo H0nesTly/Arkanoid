@@ -32,3 +32,6 @@ VOID catchBonus(WORD, Game*);
 VOID incrementHealth(Game*);
 
 BOOL decrementHealth(Game*);
+
+//Retorna 1 caso seja detetada colisao
+BOOL checkColission(const Coords*, const WORD, const WORD, const Coords*, const WORD, const WORD);

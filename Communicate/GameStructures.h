@@ -5,15 +5,16 @@
 #define MAX_PLAYER_INSTANCES 20
 
 #define NUM_OF_OBJ_GAME 20
+#define DEFAULT_BALL_VELOCITY 10
 
 #define NAME_SHARED_MEMORY_GAME TEXT("dllSharedMemGame")
 
 typedef struct coords Coords;
 typedef struct ball Ball;
 typedef struct playerBlock PlayerBlock;
-typedef struct block Block; 
+typedef struct block Block;
 typedef struct bonus BonusBlock;
-typedef struct player Player; 
+typedef struct player Player;
 typedef struct scorePlayer ScorePlayer;
 typedef struct gameBoard GameBoard;
 typedef struct game Game;
@@ -32,8 +33,13 @@ struct ball
 	Coords ballPosition;
 	TCHAR tcFigure;
 	WORD wRadius;
-	Coords MovementVector;  
-	float fVelocity;
+
+	WORD wWitdh;
+	WORD wHeigth;
+
+	int nMovementVectorX, nMovementVectorY;
+
+	WORD wVelocity;
 };
 
 struct playerInfo

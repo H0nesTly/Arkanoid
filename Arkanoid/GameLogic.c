@@ -3,16 +3,49 @@
 
 VOID moveBall(Ball* ballToMove)
 {
-	static WORD i = 0;
-	ballToMove->ballPosition.x = i;
-	i++;
+	//if (ballToMove->ballPosition.y < 550)
+	//{
+	//	//perde uma vida 
+	//}
+
+
+	if ((ballToMove->ballPosition.x + (ballToMove->nMovementVectorX * ballToMove->wVelocity)) < 0)
+	{
+		ballToMove->nMovementVectorX = ballToMove->nMovementVectorX * -1;
+		ballToMove->ballPosition.x = 1;
+	}
+	else
+	{
+		if ((ballToMove->ballPosition.x + ballToMove->wWitdh + (ballToMove->nMovementVectorX * ballToMove->wVelocity)) >= DEFAULT_WIDTH_OF_GAMEBOARD)
+		{
+			ballToMove->nMovementVectorX = ballToMove->nMovementVectorX * -1;
+			ballToMove->ballPosition.x = DEFAULT_WIDTH_OF_GAMEBOARD - 1;
+		}
+	}
+
+
+	if ((ballToMove->ballPosition.y + (ballToMove->nMovementVectorY * ballToMove->wVelocity)) < 0)
+	{
+		ballToMove->nMovementVectorY = ballToMove->nMovementVectorY * -1;
+		ballToMove->ballPosition.y = 1;
+	}
+	else
+	{
+		if (ballToMove->ballPosition.y + ballToMove->wHeigth + (ballToMove->nMovementVectorX * ballToMove->wVelocity) > DEFAULT_HEIGTH_OF_GAMEBOARD -20)
+		{
+			//perdeu!!
+		}
+	}
+
+	ballToMove->ballPosition.x += ballToMove->nMovementVectorX * ballToMove->wVelocity;
+	ballToMove->ballPosition.y += ballToMove->nMovementVectorY * ballToMove->wVelocity;
+
 }
 
 //TESTAA
 VOID createLevel(Game*gameObj)
 {
 	createGameBoard(0, 0, DEFAULT_HEIGTH_OF_GAMEBOARD, DEFAULT_WIDTH_OF_GAMEBOARD, &gameObj->myGameBoard);
-
 
 	createBlocks(35, 40, 10, 30, Magic, gameObj);
 	createBlocks(66, 40, 10, 30, Magic, gameObj);
@@ -51,10 +84,7 @@ VOID createLevel(Game*gameObj)
 	createBlocks(290, 61, 10, 30, Normal, gameObj);
 	createBlocks(321, 61, 10, 30, Normal, gameObj);
 
-
-	createBlocks(25, 60, 10, 30, Normal, gameObj);
-
-	createBall(20, 500, gameObj);
+	createBall(370, 500, gameObj);
 
 }
 
@@ -65,12 +95,18 @@ VOID createGameBoard(WORD wCoordX, WORD wCoordY, WORD wHeigth, WORD wWidth, Game
 
 	gameObj->wHeight = wHeigth;
 	gameObj->wWidth = wWidth;
+
 }
 
 VOID createBall(WORD wCoordX, WORD wCoordY, Game* gameObj)
 {
 	gameObj->ball.ballPosition.x = wCoordX;
 	gameObj->ball.ballPosition.y = wCoordY;
+
+	gameObj->ball.nMovementVectorX = 1;
+	gameObj->ball.nMovementVectorY = -1;
+
+	gameObj->ball.wVelocity = DEFAULT_BALL_VELOCITY;
 }
 
 VOID createPlayerBlock(WORD wCoordX, WORD wCoordY, WORD wHeigth, WORD wWidth, const PTCHAR OwnerUserName, Game* gameObj)
@@ -198,4 +234,26 @@ VOID incrementHealth(Game* gameObj)
 BOOL decrementHealth(Game* gameObj)
 {
 	return gameObj->wLifes > 0 ? gameObj->wLifes-- : FALSE;
+}
+
+BOOL checkColission(const Coords* objCoords1, const WORD object1Width, const WORD object1Heigth, const Coords* objCoords2, const WORD object2Width, const WORD object2Heigth)
+{
+	WORD wObject1Rigth, wObject1Bottom;
+	WORD wObject2Rigth, wObject2Bottom;
+
+	wObject1Rigth = objCoords1->x + object1Width;
+	wObject1Bottom = objCoords1->y + object1Heigth;
+
+	wObject2Rigth = objCoords2->x + object2Width;
+	wObject2Bottom = objCoords2->y + object2Heigth;
+
+	if (objCoords1->x > wObject2Rigth ||
+		wObject1Rigth < objCoords2->x ||
+		objCoords1->y > wObject2Bottom ||
+		wObject1Bottom < objCoords2->y)
+	{
+		return FALSE;
+	}
+	return TRUE;
+
 }
