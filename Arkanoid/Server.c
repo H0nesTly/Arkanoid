@@ -539,9 +539,13 @@ BOOL addUserNameToLobby(PTCHAR userName, Server* server)
 	return FALSE;
 }
 
+//Vamos criar os blocos
+//TODO: CRIAR BLOCOS COM ALTURAS E COORDENADAS
 VOID addUsersToGame(Server* serverObj)
 {
 	UsersPlaying* playersInGame = (UsersPlaying*)&serverObj->gameInstance.usersInGame;
+
+	WORD wWidthPaddle = 70;
 
 	for (size_t i = 0; i < serverObj->gameInstance.lobbyGame.wPlayersInLobby; i++)
 	{
@@ -553,6 +557,11 @@ VOID addUsersToGame(Server* serverObj)
 		CopyMemory(&playersInGame->playersPlaying[i], //destino
 			&serverObj->gameInstance.lobbyGame.playersInLobby[i], //origem
 			sizeof(PlayerInfo));		//Tamanho
+
+		createPlayerPaddle(200, DEFAULT_POS_Y_PLAYER_PADDLE, //coords
+			HEIGTH_OF_PLAYER_PADDLE, wWidthPaddle,  //dimensoes
+			playersInGame->playersPlaying[i].tcUserName, //owner
+			(Game*)serverObj->serverHandlers.sharedMemHandlers.lpSharedMemGame); //ponteiro
 
 		ZeroMemory(&serverObj->gameInstance.lobbyGame.playersInLobby[i], sizeof(PlayerInfo));
 	}

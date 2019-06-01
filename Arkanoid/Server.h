@@ -1,5 +1,6 @@
 #pragma once
 #include "ServerStructures.h"
+#include "GameLogic.h"
 
 #include "..\Communicate\stdafx.h"
 #include "..\Communicate\GameStructures.h"
