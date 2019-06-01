@@ -1,5 +1,6 @@
 #include "GameLogic.h"
 #include <stdlib.h>
+#include <minwinbase.h>
 
 VOID moveBall(Game* gameObj)
 {
@@ -41,7 +42,10 @@ VOID moveBall(Game* gameObj)
 
 	for (size_t i = 0; i < gameObj->wNumberOfBlocks; i++)
 	{
+		//if (ballToMove->ballPosition.x * ballToMove->nMovementVectorX > gameObj->blocks[i].blockPosition.x)
+		//{
 		checkColissionBallObject(ballToMove, &gameObj->blocks[i].blockPosition, gameObj->blocks[i].wWidth, gameObj->blocks[i].wHeight);
+		//}
 	}
 
 	ballToMove->ballPosition.x += ballToMove->nMovementVectorX * ballToMove->wVelocity;
@@ -91,7 +95,6 @@ VOID createLevel(Game*gameObj)
 	createBlocks(321, 61, 10, 30, Normal, gameObj);
 
 	createBall(10, 15, gameObj);
-
 }
 
 VOID createGameBoard(WORD wCoordX, WORD wCoordY, WORD wHeigth, WORD wWidth, GameBoard* gameObj)
@@ -116,14 +119,9 @@ VOID createBall(WORD wCoordX, WORD wCoordY, Game* gameObj)
 	gameObj->ball.wVelocity = DEFAULT_BALL_VELOCITY;
 }
 
-VOID createPlayerBlock(WORD wCoordX, WORD wCoordY, WORD wHeigth, WORD wWidth, const PTCHAR OwnerUserName, Game* gameObj)
+VOID createPlayerPaddle(WORD wCoordX, WORD wCoordY, WORD wHeigth, WORD wWidth, const PTCHAR OwnerUserName, Game* gameObj)
 {
-	WORD wIndex = 0;
-
-	while (gameObj->PlayerPaddles[wIndex].wWidth != 0)
-	{
-		wIndex++;
-	}
+	WORD wIndex = gameObj->wNumberOfPlayerPaddles++;
 
 	gameObj->PlayerPaddles[wIndex].playerBlockPosition.x = wCoordX;
 	gameObj->PlayerPaddles[wIndex].playerBlockPosition.y = wCoordY;
@@ -195,9 +193,25 @@ VOID destroyBonus(WORD wIndex, Game* gameObj)
 	}
 }
 
-VOID destroyPlayerBlock(const PTCHAR username, WORD wNumberOfPlayers, Game* gameObj)
+VOID destroyPlayerPaddle(const PTCHAR username, Game* gameObj)
 {
+	for (size_t i = 0; i < gameObj->wNumberOfPlayerPaddles; i++)
+	{
+		if (_tcscmp(username, gameObj->PlayerPaddles->playerOwnerOfBlock.playerInfo.tcUserName) == 0)
+		{
+			ZeroMemory(&gameObj->PlayerPaddles[i], sizeof(Paddle));
+			for (size_t j = i; j + 1 < gameObj->wNumberOfPlayerPaddles; j++)
+			{
+				CopyMemory(&gameObj->PlayerPaddles[j],
+					&gameObj->PlayerPaddles[j + 1],
+					sizeof(Paddle));
 
+				ZeroMemory(&gameObj->PlayerPaddles[j + 1], sizeof(Paddle));
+			}
+			gameObj->wNumberOfPlayerPaddles--;
+			break;
+		}
+	}
 }
 
 //TODO: Apagar com index

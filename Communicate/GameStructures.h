@@ -99,7 +99,7 @@ struct game
 	WORD wNumberOfBlocks;
 	Block blocks[NUM_OF_OBJ_GAME * 2];
 
-	WORD wNumerOfPlayerPaddles;
+	WORD wNumberOfPlayerPaddles;
 	Paddle PlayerPaddles[NUM_OF_OBJ_GAME];
 	Ball ball;
 
