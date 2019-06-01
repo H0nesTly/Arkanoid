@@ -188,7 +188,9 @@ inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Serv
 				break;
 			case TopPlayersMessage:
 				break;
-			case KeyPressedMessage:
+			case KeyPressedLeftMessage:
+				break;
+			case KeyPressedRigthMessage:
 				break;
 			case QuitGameMessage:
 				break;

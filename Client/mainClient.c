@@ -192,7 +192,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 		memDC = CreateCompatibleDC(hDC);
 
 		hBit = CreateCompatibleBitmap(hDC, rectWindowProp.right, rectWindowProp.bottom);
-		
+
 		SelectObject(memDC, hBit);
 
 		DeleteObject(hBit);
@@ -219,6 +219,26 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 
 		EndPaint(hWnd, &ps);
 		break;
+	case WM_ERASEBKGND:
+		return(1); // Prevent erasing the background to reduce flickering
+		break;
+	case WM_KEYDOWN:
+
+		switch (wParam)
+		{
+		case VK_LEFT:
+			//xBitMap = xBitMap > 0 ? xBitMap - 10 : 0;
+			SendMessageDll(&bKeepRunning,KeyPressedLeftMessage);
+			break;
+		case VK_RIGHT:
+			SendMessageDll(&bKeepRunning,KeyPressedRigthMessage);
+			break;
+		case VK_DOWN:
+			//yBitMap = yBitMap < rect.top - bmp.bmWidth ? yBitMap + 10 : rect.bottom - bmp.bmHeight;
+			break;
+		}
+		break;
+
 	case WM_CLOSE:
 		switch (MessageBox(hWnd,
 			TEXT("Tens certeza que quer mesmo fechar?"),

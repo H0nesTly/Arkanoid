@@ -127,7 +127,8 @@ enum responseOfMessage
 enum requestOfMessage
 {
 	LoginMessage = 0,	//User quer fazer login 
-	KeyPressedMessage,	//user introduziu uma tecla 
+	KeyPressedLeftMessage,	//user introduziu uma tecla 
+	KeyPressedRigthMessage,	//user introduziu uma tecla 
 	TopPlayersMessage,	//Foi pedido o top 10
 	QuitGameMessage		//User que fazer exitgame
 };
