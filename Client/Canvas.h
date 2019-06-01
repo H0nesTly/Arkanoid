@@ -15,7 +15,7 @@
 
 VOID drawBlocks(const Block*, HDC);
 
-VOID drawPlayerBlocks(const PlayerBlock*, HDC);
+VOID drawPlayerPaddles(const Paddle*, HDC);
 
 VOID drawBalls(const Ball*, HDC);
 

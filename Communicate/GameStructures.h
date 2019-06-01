@@ -11,7 +11,7 @@
 
 typedef struct coords Coords;
 typedef struct ball Ball;
-typedef struct playerBlock PlayerBlock;
+typedef struct paddle Paddle;
 typedef struct block Block;
 typedef struct bonus BonusBlock;
 typedef struct player Player;
@@ -58,7 +58,7 @@ struct player
 	DWORD dwScore;
 };
 
-struct playerBlock
+struct paddle
 {
 	Coords playerBlockPosition;
 	Player playerOwnerOfBlock;
@@ -94,10 +94,13 @@ struct gameBoard
 
 struct game
 {
-	WORD wNumberOfBlocks;
 	BonusBlock bonusBlock[NUM_OF_OBJ_GAME];
+
+	WORD wNumberOfBlocks;
 	Block blocks[NUM_OF_OBJ_GAME * 2];
-	PlayerBlock playerBlocks[NUM_OF_OBJ_GAME];
+
+	WORD wNumerOfPlayerPaddles;
+	Paddle PlayerPaddles[NUM_OF_OBJ_GAME];
 	Ball ball;
 
 	WORD wLifes;

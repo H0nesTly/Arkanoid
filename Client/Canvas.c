@@ -69,8 +69,7 @@ VOID drawBalls(const Ball* ballObj, HDC memDC)
 	DeleteDC(tempDC);
 }
 
-
-VOID drawPlayerBlocks(const PlayerBlock* playerBlockObj, HDC memDC)
+VOID drawPlayerPaddles(const Paddle* playerBlockObj, HDC memDC)
 {
 	RECT rect;
 	HBRUSH hBrush = NULL;
@@ -124,7 +123,7 @@ VOID drawGame(const Game* gameObj, HDC memDC)
 
 		drawBalls(&gameObj->ball, memDC);
 
-		drawPlayerBlocks(&gameObj->playerBlocks[0], memDC);
+		drawPlayerPaddles(&gameObj->PlayerPaddles[0], memDC);
 	}
 	else
 	{

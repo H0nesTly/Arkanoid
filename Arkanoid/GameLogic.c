@@ -120,19 +120,19 @@ VOID createPlayerBlock(WORD wCoordX, WORD wCoordY, WORD wHeigth, WORD wWidth, co
 {
 	WORD wIndex = 0;
 
-	while (gameObj->playerBlocks[wIndex].wWidth != 0)
+	while (gameObj->PlayerPaddles[wIndex].wWidth != 0)
 	{
 		wIndex++;
 	}
 
-	gameObj->playerBlocks[wIndex].playerBlockPosition.x = wCoordX;
-	gameObj->playerBlocks[wIndex].playerBlockPosition.y = wCoordY;
+	gameObj->PlayerPaddles[wIndex].playerBlockPosition.x = wCoordX;
+	gameObj->PlayerPaddles[wIndex].playerBlockPosition.y = wCoordY;
 
-	gameObj->playerBlocks[wIndex].wHeight = wHeigth;
-	gameObj->playerBlocks[wIndex].wWidth = wWidth;
+	gameObj->PlayerPaddles[wIndex].wHeight = wHeigth;
+	gameObj->PlayerPaddles[wIndex].wWidth = wWidth;
 
-	_tcscpy_s(gameObj->playerBlocks[wIndex].playerOwnerOfBlock.playerInfo.tcUserName,
-		_countof(gameObj->playerBlocks[wIndex].playerOwnerOfBlock.playerInfo.tcUserName),
+	_tcscpy_s(gameObj->PlayerPaddles[wIndex].playerOwnerOfBlock.playerInfo.tcUserName,
+		_countof(gameObj->PlayerPaddles[wIndex].playerOwnerOfBlock.playerInfo.tcUserName),
 		OwnerUserName);
 }
 
