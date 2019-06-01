@@ -1,13 +1,14 @@
 #include "GameLogic.h"
 #include <stdlib.h>
 
-VOID moveBall(Ball* ballToMove)
+VOID moveBall(Game* gameObj)
 {
 	//if (ballToMove->ballPosition.y < 550)
 	//{
 	//	//perde uma vida 
 	//}
 
+	Ball * ballToMove = &gameObj->ball;
 
 	if ((ballToMove->ballPosition.x + (ballToMove->nMovementVectorX * ballToMove->wVelocity)) < 0)
 	{
@@ -31,10 +32,16 @@ VOID moveBall(Ball* ballToMove)
 	}
 	else
 	{
-		if (ballToMove->ballPosition.y + ballToMove->wHeigth + (ballToMove->nMovementVectorX * ballToMove->wVelocity) > DEFAULT_HEIGTH_OF_GAMEBOARD -20)
+		if (ballToMove->ballPosition.y + ballToMove->wHeigth + (ballToMove->nMovementVectorX * ballToMove->wVelocity) > DEFAULT_HEIGTH_OF_GAMEBOARD - 20)
 		{
 			//perdeu!!
 		}
+	}
+
+
+	for (size_t i = 0; i < gameObj->wNumberOfBlocks; i++)
+	{
+		checkColissionBallObject(ballToMove, &gameObj->blocks[i].blockPosition, gameObj->blocks[i].wWidth, gameObj->blocks[i].wHeight);
 	}
 
 	ballToMove->ballPosition.x += ballToMove->nMovementVectorX * ballToMove->wVelocity;
@@ -42,7 +49,6 @@ VOID moveBall(Ball* ballToMove)
 
 }
 
-//TESTAA
 VOID createLevel(Game*gameObj)
 {
 	createGameBoard(0, 0, DEFAULT_HEIGTH_OF_GAMEBOARD, DEFAULT_WIDTH_OF_GAMEBOARD, &gameObj->myGameBoard);
@@ -84,7 +90,7 @@ VOID createLevel(Game*gameObj)
 	createBlocks(290, 61, 10, 30, Normal, gameObj);
 	createBlocks(321, 61, 10, 30, Normal, gameObj);
 
-	createBall(370, 500, gameObj);
+	createBall(10, 15, gameObj);
 
 }
 
@@ -95,13 +101,14 @@ VOID createGameBoard(WORD wCoordX, WORD wCoordY, WORD wHeigth, WORD wWidth, Game
 
 	gameObj->wHeight = wHeigth;
 	gameObj->wWidth = wWidth;
-
 }
 
 VOID createBall(WORD wCoordX, WORD wCoordY, Game* gameObj)
 {
 	gameObj->ball.ballPosition.x = wCoordX;
 	gameObj->ball.ballPosition.y = wCoordY;
+
+	gameObj->ball.wHeigth = gameObj->ball.wWitdh = 8;
 
 	gameObj->ball.nMovementVectorX = 1;
 	gameObj->ball.nMovementVectorY = -1;
@@ -236,24 +243,37 @@ BOOL decrementHealth(Game* gameObj)
 	return gameObj->wLifes > 0 ? gameObj->wLifes-- : FALSE;
 }
 
-BOOL checkColission(const Coords* objCoords1, const WORD object1Width, const WORD object1Heigth, const Coords* objCoords2, const WORD object2Width, const WORD object2Heigth)
+
+//TODO melhor a velociadae muito grande
+BOOL checkColissionBallObject(Ball* ballObject, const Coords* coordsObj2, const WORD wWidthObj2, const WORD wHeigthObj2)
 {
-	WORD wObject1Rigth, wObject1Bottom;
+	WORD wObjectBallRigth, wObjectBallBottom;
 	WORD wObject2Rigth, wObject2Bottom;
 
-	wObject1Rigth = objCoords1->x + object1Width;
-	wObject1Bottom = objCoords1->y + object1Heigth;
+	wObjectBallRigth = ballObject->ballPosition.x + ballObject->wWitdh;
+	wObjectBallBottom = ballObject->ballPosition.y + ballObject->wHeigth;
 
-	wObject2Rigth = objCoords2->x + object2Width;
-	wObject2Bottom = objCoords2->y + object2Heigth;
+	wObject2Rigth = coordsObj2->x + wWidthObj2;
+	wObject2Bottom = coordsObj2->y + wHeigthObj2;
 
-	if (objCoords1->x > wObject2Rigth ||
-		wObject1Rigth < objCoords2->x ||
-		objCoords1->y > wObject2Bottom ||
-		wObject1Bottom < objCoords2->y)
+	if (wObjectBallRigth > coordsObj2->x &&
+		ballObject->ballPosition.x < wObjectBallRigth &&
+		wObjectBallBottom + ballObject->nMovementVectorY * ballObject->wVelocity> coordsObj2->y &&
+		ballObject->ballPosition.y + ballObject->nMovementVectorY  * ballObject->wVelocity < wObject2Bottom)
 	{
-		return FALSE;
+		ballObject->nMovementVectorY = ballObject->nMovementVectorY * -1;
+		return TRUE;
 	}
-	return TRUE;
+
+	if (wObjectBallRigth + ballObject->nMovementVectorX  * ballObject->wVelocity > coordsObj2->x &&
+		ballObject->ballPosition.x + ballObject->nMovementVectorX  * ballObject->wVelocity < wObjectBallRigth &&
+		wObjectBallBottom > coordsObj2->y &&
+		ballObject->ballPosition.y < wObject2Bottom)
+	{
+		ballObject->nMovementVectorX = ballObject->nMovementVectorX * -1;
+		return TRUE;
+	}
+
+	return  FALSE;
 
 }

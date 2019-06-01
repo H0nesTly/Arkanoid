@@ -293,7 +293,7 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 	LARGE_INTEGER liDueTimeBall;
 
 	liDueTime.QuadPart = -20000000LL; // 5 SEGUNDOS
-	liDueTimeBall.QuadPart = -5000000LL;//500 ms
+	liDueTimeBall.QuadPart = -2500000LL;//500 ms
 
 
 	hTimerWaitForPlayersToConnect = CreateWaitableTimer(NULL, TRUE, NULL);
@@ -344,7 +344,7 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 			FALSE);
 
 		WaitForSingleObject(hTimerWaitUpdateBall, INFINITE);
-		moveBall(&game->ball);
+		moveBall(game);
 		SetEvent(hgGameObject);
 	}
 

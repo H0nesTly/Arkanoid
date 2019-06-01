@@ -4,6 +4,7 @@
 extern HWND gWnd;
 extern RECT rectWindowProp;
 RECT rectOffsetGameBoard;
+
 VOID drawBlocks(const Block* blocksObj, HDC memDc)
 {
 	HBRUSH hBrush = NULL;
@@ -63,7 +64,7 @@ VOID drawBalls(const Ball* ballObj, HDC memDC)
 	rect.left = ballObj->ballPosition.x + rectOffsetGameBoard.left;
 	rect.top = ballObj->ballPosition.y + rectOffsetGameBoard.top;
 
-	BitBlt(memDC, rect.left, rect.top, bmp.bmWidth, bmp.bmHeight, tempDC, 0, 0, SRCCOPY);
+	BitBlt(memDC, rect.left, rect.top, ballObj->wWitdh, ballObj->wHeigth, tempDC, 0, 0, SRCCOPY);
 
 	DeleteDC(tempDC);
 }

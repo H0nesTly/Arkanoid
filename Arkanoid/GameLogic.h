@@ -5,7 +5,7 @@
 #define DEFAULT_WIDTH_OF_GAMEBOARD 400
 #define DEFAULT_HEIGTH_OF_GAMEBOARD 600
 
-VOID moveBall(Ball*);
+VOID moveBall(Game*);
 
 VOID createLevel(Game*);
 
@@ -34,4 +34,4 @@ VOID incrementHealth(Game*);
 BOOL decrementHealth(Game*);
 
 //Retorna 1 caso seja detetada colisao
-BOOL checkColission(const Coords*, const WORD, const WORD, const Coords*, const WORD, const WORD);
+BOOL checkColissionBallObject(Ball*, const Coords*, const WORD, const WORD );
