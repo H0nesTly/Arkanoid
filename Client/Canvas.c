@@ -26,7 +26,7 @@ VOID drawBlocks(const Block* blocksObj, HDC memDc)
 		hBrush = CreateSolidBrush(COLOR_BLOCK_MAGIC);
 		break;
 	case Rigid:
-		if (blocksObj->wNumberOfColisions > 2)
+		if (blocksObj->wNumberOfColisions == 1)
 			hBrush = CreateSolidBrush(COLOR_BLOCK_RIGID_DAMAGED);
 		else
 			hBrush = CreateSolidBrush(COLOR_BLOCK_RIGID_UNDAMAGED);

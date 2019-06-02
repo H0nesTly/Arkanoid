@@ -96,13 +96,13 @@ VOID createLevel(Game*gameObj)
 	createBlocks(66, 61, 10, 30, Normal, gameObj);
 	createBlocks(97, 61, 10, 30, Normal, gameObj);
 	//+50				  
-	createBlocks(147, 61, 10, 30, Normal, gameObj);
+	createBlocks(147, 61, 10, 30, Rigid, gameObj);
 	createBlocks(178, 61, 10, 30, Normal, gameObj);
-	createBlocks(209, 61, 10, 30, Normal, gameObj);
+	createBlocks(209, 61, 10, 30, Rigid, gameObj);
 	//+50				  
-	createBlocks(259, 61, 10, 30, Normal, gameObj);
+	createBlocks(259, 61, 10, 30, Rigid, gameObj);
 	createBlocks(290, 61, 10, 30, Normal, gameObj);
-	createBlocks(321, 61, 10, 30, Normal, gameObj);
+	createBlocks(321, 61, 10, 30, Rigid, gameObj);
 
 	createBall(50, 300, gameObj);
 }
@@ -194,6 +194,24 @@ VOID destroyBlock(WORD wIndex, Game* gameObj)
 {
 	if (wIndex >= 0 && wIndex < NUM_OF_BLOCK_OBJ_GAME)
 	{
+		switch (gameObj->blocks[wIndex].typeOfBlock)
+		{
+			case Magic:
+			//gerar bonus
+			break;
+			case Normal:
+			break;
+			case  Rigid:
+				if (gameObj->blocks[wIndex].wNumberOfColisions > 1)
+				{
+					gameObj->blocks[wIndex].wNumberOfColisions--;
+					return;
+				}
+			break;
+			default:
+			break;
+		}
+
 		ZeroMemory(&gameObj->blocks[wIndex], sizeof(Block));
 
 		for (size_t i = wIndex; i + 1 < gameObj->wNumberOfBlocks; i++)
