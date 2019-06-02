@@ -195,8 +195,10 @@ inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Serv
 			case TopPlayersMessage:
 				break;
 			case KeyPressedLeftMessage:
+				tryToMovePaddle(npInstances->message.messagePD.tcSender, serverObj, -1);
 				break;
 			case KeyPressedRigthMessage:
+				tryToMovePaddle(npInstances->message.messagePD.tcSender, serverObj, 1);
 				break;
 			case QuitGameMessage:
 				break;
@@ -258,7 +260,7 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 
 	while (1)
 	{
-		_tprintf_s(TEXT("\nA espera de Clientes para se conectar ... [%d]"), GetLastError());
+		//_tprintf_s(TEXT("\nA espera de Clientes para se conectar ... [%d]"), GetLastError());
 
 		dwWaitEvent = WaitForMultipleObjects(
 			SIZE_OF_HANDLERS_READ, //Numero de handlers
@@ -301,7 +303,7 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 	LARGE_INTEGER liDueTimeBall;
 
 	liDueTime.QuadPart = -20000000LL; // 5 SEGUNDOS
-	liDueTimeBall.QuadPart = -2500000LL;//500 ms
+	liDueTimeBall.QuadPart = -1100000LL;//500 ms
 
 
 	hTimerWaitForPlayersToConnect = CreateWaitableTimer(NULL, TRUE, NULL);

@@ -35,7 +35,7 @@ VOID moveBall(Game* gameObj)
 	{
 		if (ballToMove->ballPosition.y + ballToMove->wHeigth + (ballToMove->nMovementVectorX * ballToMove->wVelocity) > DEFAULT_HEIGTH_LOSE_BALL)
 		{
-			//perdeu!!
+			_tprintf(TEXT("\n Perdeste uma vida"));
 		}
 	}
 
@@ -45,13 +45,16 @@ VOID moveBall(Game* gameObj)
 			bCheckMore = !bCheckMore;
 	}
 
-	for (size_t i = 0; i < gameObj->wNumberOfBlocks && bCheckMore; i++)
+	for (WORD i = 0; i < gameObj->wNumberOfBlocks && bCheckMore; i++)
 	{
 		//se a bola estiver debaixo não pode colidir poupamos algum tempo TODO: X Axis
 		if (ballToMove->ballPosition.y + ballToMove->nMovementVectorY * ballToMove->wVelocity <= gameObj->blocks[i].blockPosition.y + gameObj->blocks[i].wHeight)
 		{
 			if (checkColissionBallObject(ballToMove, &gameObj->blocks[i].blockPosition, gameObj->blocks[i].wWidth, gameObj->blocks[i].wHeight))
+			{
+				destroyBlock(i, gameObj);
 				bCheckMore = !bCheckMore;
+			}
 		}
 	}
 
@@ -101,7 +104,7 @@ VOID createLevel(Game*gameObj)
 	createBlocks(290, 61, 10, 30, Normal, gameObj);
 	createBlocks(321, 61, 10, 30, Normal, gameObj);
 
-	createBall(10, 15, gameObj);
+	createBall(50, 300, gameObj);
 }
 
 VOID createGameBoard(WORD wCoordX, WORD wCoordY, WORD wHeigth, WORD wWidth, GameBoard* gameObj)
@@ -189,9 +192,19 @@ VOID createBonus(WORD wCoordX, WORD wCoordY, WORD wHeigth, WORD wWidth, TypeOfBo
 
 VOID destroyBlock(WORD wIndex, Game* gameObj)
 {
-	if (wIndex >= 0 && wIndex < NUM_OF_OBJ_GAME)
+	if (wIndex >= 0 && wIndex < NUM_OF_BLOCK_OBJ_GAME)
 	{
 		ZeroMemory(&gameObj->blocks[wIndex], sizeof(Block));
+
+		for (size_t i = wIndex; i + 1 < gameObj->wNumberOfBlocks; i++)
+		{
+			CopyMemory(&gameObj->blocks[i],
+				&gameObj->blocks[i + 1],
+				sizeof(Block));
+
+			ZeroMemory(&gameObj->blocks[i + 1], sizeof(Block));
+		}
+		gameObj->wNumberOfBlocks--;
 	}
 }
 
@@ -280,26 +293,27 @@ BOOL checkColissionBallObject(Ball* ballObject, const Coords* coordsObj2, const 
 	wObject2Rigth = coordsObj2->x + wWidthObj2;
 	wObject2Bottom = coordsObj2->y + wHeigthObj2;
 
-	if (wObjectBallRigth > coordsObj2->x &&
-		ballObject->ballPosition.x < wObjectBallRigth &&
-		wObjectBallBottom + ballObject->nMovementVectorY * ballObject->wVelocity> coordsObj2->y &&
-		ballObject->ballPosition.y + ballObject->nMovementVectorY  * ballObject->wVelocity < wObject2Bottom)
-	{
-		ballObject->nMovementVectorY = ballObject->nMovementVectorY * -1;
-		return TRUE;
-	}
-
-	if (wObjectBallBottom > coordsObj2->y &&
-		ballObject->ballPosition.y < wObject2Bottom &&
-		wObjectBallRigth + ballObject->nMovementVectorX * ballObject->wVelocity > coordsObj2->x &&
-		ballObject->ballPosition.x + ballObject->nMovementVectorX  * ballObject->wVelocity < wObjectBallRigth)
+	//Se o vetor X estive a andar colide com alguem?
+	if (ballObject->ballPosition.x + (ballObject->nMovementVectorX * ballObject->wVelocity) < wObjectBallRigth &&
+		wObjectBallRigth + (ballObject->nMovementVectorX * ballObject->wVelocity) > coordsObj2->x && //lados 
+		ballObject->ballPosition.y < wObject2Bottom  &&
+		wObjectBallBottom > coordsObj2->y)
 	{
 		ballObject->nMovementVectorX = ballObject->nMovementVectorX * -1;
 		return TRUE;
 	}
 
-	return  FALSE;
+	//Se o vetor y estive a andar colide com alguem?
+	if (ballObject->ballPosition.y + (ballObject->nMovementVectorY  * ballObject->wVelocity) < wObject2Bottom &&
+		wObjectBallBottom + (ballObject->nMovementVectorY * ballObject->wVelocity) > coordsObj2->y &&
+		ballObject->ballPosition.x < wObject2Rigth &&
+		wObjectBallRigth > coordsObj2->x)
+	{
+		ballObject->nMovementVectorY = ballObject->nMovementVectorY * -1;
+		return TRUE;
+	}
 
+	return  FALSE;
 }
 
 int getPaddleOwnerByName(const PTCHAR UserName, Game* gameObj)
