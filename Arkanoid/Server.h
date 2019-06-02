@@ -55,6 +55,8 @@ VOID addUsersToGame(Server*);
 VOID transferPlayersToGame(Server*);
 
 VOID startGame(Server* );
+
+VOID tryToMovePaddle(const PTCHAR, Server*,const short);
 /*--------------- NAMED PIPES ---------------*/
 VOID initSecurityAtributes(SECURITY_ATTRIBUTES*);
 

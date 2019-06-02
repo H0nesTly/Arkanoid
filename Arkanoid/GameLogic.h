@@ -41,3 +41,7 @@ BOOL decrementHealth(Game*);
 
 //Retorna 1 caso seja detetada colisao
 BOOL checkColissionBallObject(Ball*, const Coords*, const WORD, const WORD );
+
+int getPaddleOwnerByName(const PTCHAR, Game*);
+
+VOID movePaddle(const PTCHAR, Game*, const short);

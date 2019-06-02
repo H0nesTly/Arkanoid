@@ -6,6 +6,7 @@
 
 #define NUM_OF_OBJ_GAME 20
 #define DEFAULT_BALL_VELOCITY 15
+#define DEFAULT_PADDLE_VELOCITY 10
 
 #define NAME_SHARED_MEMORY_GAME TEXT("dllSharedMemGame")
 
@@ -63,7 +64,7 @@ struct paddle
 	Coords playerBlockPosition;
 	Player playerOwnerOfBlock;
 	WORD wWidth, wHeight;
-	float fVelocity;
+	WORD wVelocity;
 };
 
 struct block

@@ -587,6 +587,20 @@ WORD getPlayersInLobby(const Lobby* lobby)
 	return lobby->wPlayersInLobby;
 }
 
+
+VOID tryToMovePaddle(const PTCHAR username, Server* serverObj, const short nSideToMove)
+{
+	if (serverObj->gameInstance.GameStates != GameInProgress)
+	{
+				_tprintf(TEXT("\nComportamento nao esperado NENHUM JOGO A CORRER1!!"));
+		return;
+	}
+	else
+	{
+		movePaddle(username, (Game*)serverObj->serverHandlers.sharedMemHandlers.lpSharedMemGame, nSideToMove);
+	}
+}
+
 VOID initSecurityAtributes(SECURITY_ATTRIBUTES* saArg)
 {
 	PSECURITY_ATTRIBUTES pSD;

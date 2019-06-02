@@ -1,9 +1,9 @@
 #include "GameLogic.h"
 #include <stdlib.h>
-#include <minwinbase.h>
 
 VOID moveBall(Game* gameObj)
 {
+	BOOL bCheckMore = TRUE;
 	//if (ballToMove->ballPosition.y < 550)
 	//{
 	//	//perde uma vida 
@@ -21,7 +21,7 @@ VOID moveBall(Game* gameObj)
 		if ((ballToMove->ballPosition.x + ballToMove->wWitdh + (ballToMove->nMovementVectorX * ballToMove->wVelocity)) >= DEFAULT_WIDTH_OF_GAMEBOARD)
 		{
 			ballToMove->nMovementVectorX = ballToMove->nMovementVectorX * -1;
-			ballToMove->ballPosition.x = DEFAULT_WIDTH_OF_GAMEBOARD - 1;
+			ballToMove->ballPosition.x = DEFAULT_WIDTH_OF_GAMEBOARD - ballToMove->wWitdh - 1;
 		}
 	}
 
@@ -33,19 +33,26 @@ VOID moveBall(Game* gameObj)
 	}
 	else
 	{
-		if (ballToMove->ballPosition.y + ballToMove->wHeigth + (ballToMove->nMovementVectorX * ballToMove->wVelocity) > DEFAULT_HEIGTH_OF_GAMEBOARD - 20)
+		if (ballToMove->ballPosition.y + ballToMove->wHeigth + (ballToMove->nMovementVectorX * ballToMove->wVelocity) > DEFAULT_HEIGTH_LOSE_BALL)
 		{
 			//perdeu!!
 		}
 	}
 
-
-	for (size_t i = 0; i < gameObj->wNumberOfBlocks; i++)
+	for (size_t i = 0; i < gameObj->wNumberOfPlayerPaddles && bCheckMore; i++)
 	{
-		//if (ballToMove->ballPosition.x * ballToMove->nMovementVectorX > gameObj->blocks[i].blockPosition.x)
-		//{
-		checkColissionBallObject(ballToMove, &gameObj->blocks[i].blockPosition, gameObj->blocks[i].wWidth, gameObj->blocks[i].wHeight);
-		//}
+		if (checkColissionBallObject(ballToMove, &gameObj->PlayerPaddles[i].playerBlockPosition, gameObj->PlayerPaddles[i].wWidth, gameObj->PlayerPaddles[i].wHeight))
+			bCheckMore = !bCheckMore;
+	}
+
+	for (size_t i = 0; i < gameObj->wNumberOfBlocks && bCheckMore; i++)
+	{
+		//se a bola estiver debaixo não pode colidir poupamos algum tempo TODO: X Axis
+		if (ballToMove->ballPosition.y + ballToMove->nMovementVectorY * ballToMove->wVelocity <= gameObj->blocks[i].blockPosition.y + gameObj->blocks[i].wHeight)
+		{
+			if (checkColissionBallObject(ballToMove, &gameObj->blocks[i].blockPosition, gameObj->blocks[i].wWidth, gameObj->blocks[i].wHeight))
+				bCheckMore = !bCheckMore;
+		}
 	}
 
 	ballToMove->ballPosition.x += ballToMove->nMovementVectorX * ballToMove->wVelocity;
@@ -128,6 +135,9 @@ VOID createPlayerPaddle(WORD wCoordX, WORD wCoordY, WORD wHeigth, WORD wWidth, c
 
 	gameObj->PlayerPaddles[wIndex].wHeight = wHeigth;
 	gameObj->PlayerPaddles[wIndex].wWidth = wWidth;
+
+	gameObj->PlayerPaddles[wIndex].wVelocity = DEFAULT_PADDLE_VELOCITY;
+
 
 	_tcscpy_s(gameObj->PlayerPaddles[wIndex].playerOwnerOfBlock.playerInfo.tcUserName,
 		_countof(gameObj->PlayerPaddles[wIndex].playerOwnerOfBlock.playerInfo.tcUserName),
@@ -258,7 +268,7 @@ BOOL decrementHealth(Game* gameObj)
 }
 
 
-//TODO melhor a velociadae muito grande
+//TODO melhorar velociadae muito grande
 BOOL checkColissionBallObject(Ball* ballObject, const Coords* coordsObj2, const WORD wWidthObj2, const WORD wHeigthObj2)
 {
 	WORD wObjectBallRigth, wObjectBallBottom;
@@ -279,10 +289,10 @@ BOOL checkColissionBallObject(Ball* ballObject, const Coords* coordsObj2, const 
 		return TRUE;
 	}
 
-	if (wObjectBallRigth + ballObject->nMovementVectorX  * ballObject->wVelocity > coordsObj2->x &&
-		ballObject->ballPosition.x + ballObject->nMovementVectorX  * ballObject->wVelocity < wObjectBallRigth &&
-		wObjectBallBottom > coordsObj2->y &&
-		ballObject->ballPosition.y < wObject2Bottom)
+	if (wObjectBallBottom > coordsObj2->y &&
+		ballObject->ballPosition.y < wObject2Bottom &&
+		wObjectBallRigth + ballObject->nMovementVectorX * ballObject->wVelocity > coordsObj2->x &&
+		ballObject->ballPosition.x + ballObject->nMovementVectorX  * ballObject->wVelocity < wObjectBallRigth)
 	{
 		ballObject->nMovementVectorX = ballObject->nMovementVectorX * -1;
 		return TRUE;
@@ -290,4 +300,66 @@ BOOL checkColissionBallObject(Ball* ballObject, const Coords* coordsObj2, const 
 
 	return  FALSE;
 
+}
+
+int getPaddleOwnerByName(const PTCHAR UserName, Game* gameObj)
+{
+	for (size_t i = 0; i < gameObj->wNumberOfPlayerPaddles; i++)
+	{
+		if (_tcscmp(UserName, gameObj->PlayerPaddles[i].playerOwnerOfBlock.playerInfo.tcUserName) == 0)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+VOID movePaddle(const PTCHAR userName, Game* gameObj, const short nDirectionToMove)
+{
+	int nIndex = getPaddleOwnerByName(userName, gameObj);
+	Paddle* playerPaddleTemp = NULL;
+	Paddle* myPlayerPaddleTemp = NULL;
+
+
+	if (nIndex >= 0)
+	{
+		myPlayerPaddleTemp = &gameObj->PlayerPaddles[nIndex];
+
+
+		//TESTAR!!
+		//verificamos se existe algum paddle ao lado
+		for (size_t i = 0; i < gameObj->wNumberOfPlayerPaddles; i++)
+		{
+			if (i != nIndex)
+			{
+				playerPaddleTemp = &gameObj->PlayerPaddles[i];
+
+				if (myPlayerPaddleTemp->playerBlockPosition.x + myPlayerPaddleTemp->wVelocity * nDirectionToMove > playerPaddleTemp->playerBlockPosition.x &&
+					myPlayerPaddleTemp->playerBlockPosition.x + myPlayerPaddleTemp->wVelocity * nDirectionToMove < playerPaddleTemp->playerBlockPosition.x + playerPaddleTemp->wWidth)
+				{
+					//colisão 
+					return;
+				}
+			}
+		}
+
+
+		//verificamos se está nas bordas
+		if ((myPlayerPaddleTemp->playerBlockPosition.x + (myPlayerPaddleTemp->wVelocity * nDirectionToMove)) < 0)
+		{
+			myPlayerPaddleTemp->playerBlockPosition.x = 1;
+			return;
+		}
+		else
+		{
+			if ((myPlayerPaddleTemp->playerBlockPosition.x + myPlayerPaddleTemp->wWidth + (myPlayerPaddleTemp->wVelocity * nDirectionToMove)) >= DEFAULT_WIDTH_OF_GAMEBOARD)
+			{
+				myPlayerPaddleTemp->playerBlockPosition.x = DEFAULT_WIDTH_OF_GAMEBOARD - myPlayerPaddleTemp->wWidth - 1;
+				return;
+			}
+		}
+
+		//movemos
+		myPlayerPaddleTemp->playerBlockPosition.x += myPlayerPaddleTemp->wVelocity * nDirectionToMove;
+	}
 }

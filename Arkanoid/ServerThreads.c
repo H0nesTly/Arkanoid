@@ -42,6 +42,12 @@ inline static VOID readNewMessageSharedMemory(MessageQueue* queue, Server* serve
 				queue->circularBufferClientServer.queueOfMessage[queue->circularBufferClientServer.wTailIndex].tcSender);
 
 			break;
+		case KeyPressedLeftMessage:
+			tryToMovePaddle(queue->circularBufferClientServer.queueOfMessage[queue->circularBufferClientServer.wTailIndex].tcSender, serverObj, -1);
+			break;
+		case KeyPressedRigthMessage:
+			tryToMovePaddle(queue->circularBufferClientServer.queueOfMessage[queue->circularBufferClientServer.wTailIndex].tcSender, serverObj, 1);
+			break;
 		case QuitGameMessage:
 			//Retirar cliente do lobby/lista de jogadores
 			_tprintf(TEXT("fechar"));
