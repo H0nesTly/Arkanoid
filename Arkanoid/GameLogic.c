@@ -313,7 +313,7 @@ BOOL checkColissionBallObject(Ball* ballObject, const Coords* coordsObj2, const 
 	wObject2Bottom = coordsObj2->y + wHeigthObj2;
 
 	//Se o vetor X estive a andar colide com alguem?
-	if (ballObject->ballPosition.x + (ballObject->nMovementVectorX * ballObject->wUnitsToMove) < wObjectBallRigth &&
+	if (ballObject->ballPosition.x + (ballObject->nMovementVectorX * ballObject->wUnitsToMove) < wObject2Rigth &&
 		wObjectBallRigth + (ballObject->nMovementVectorX * ballObject->wUnitsToMove) > coordsObj2->x && //lados 
 		ballObject->ballPosition.y < wObject2Bottom  &&
 		wObjectBallBottom > coordsObj2->y)

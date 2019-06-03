@@ -1,7 +1,7 @@
 #pragma once
 #include "..\Communicate\stdafx.h"
-#include "..\Communicate\GameStructures.h"
 #include "..\Communicate\MessageProtocol.h"
+#include "..\Communicate\GameStructures.h"
 #include "Server.h"
 #include "ServerThreads.h"
 #include "ServerSyncObj.h"

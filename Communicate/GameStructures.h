@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "MessageProtocol.h"
+
 
 #define DEFAULT_WIDTH_OF_GAMEBOARD 400
 #define DEFAULT_HEIGTH_OF_GAMEBOARD 600

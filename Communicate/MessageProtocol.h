@@ -2,6 +2,7 @@
 #pragma warning(disable: 4201)
 #include "stdafx.h"
 #include "DllSetup.h"
+#include "GameStructures.h"
 
 #define MESSAGE_QUEUE_SIZE 20
 #define MESSAGE_QUEUE_READER_SIZE (MESSAGE_QUEUE_SIZE / 2)
@@ -61,7 +62,7 @@ struct messageProtocolDatagram
 	{
 		TCHAR tcData[MAX_LENGTH_NAME];
 		ScorePlayer listOfHighScores[NUM_TOP];
-		//Game gameData;
+		Game gameData;
 	};
 };
 
