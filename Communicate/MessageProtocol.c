@@ -2,6 +2,7 @@
 #include "MessageProtocol.h"
 #include "GameStructures.h"
 #include "CircularBuffer.h"
+#include "../Client/ClientStructures.h"
 
 extern ClientConnection gClientConnection;
 /*Variavel que continua o o programa a correr*/
@@ -58,6 +59,13 @@ static VOID loginLocalPIPE(const PTCHAR username)
 static Game* receiveBroadcastSharedMemory()
 {
 	Game* game = (Game*)gClientConnection.SharedMem.lpGame;
+
+	return game;
+}
+
+static Game* receiveBroadcastPipe()
+{
+	Game* game = NULL;//read Message
 
 	return game;
 }
@@ -162,7 +170,7 @@ static VOID sendMessageSharedMemory(const PTCHAR username, TypeOfRequestMessage 
 	}
 }
 
-VOID __cdecl Login(const PTCHAR username, HWND hWndArg, HDC memDC,TypeOfClientConnection arg)
+VOID __cdecl Login(const PTCHAR username, HWND hWndArg, HDC memDC, TypeOfClientConnection arg)
 {
 	gClientConnection.typeOfConnection = arg;
 
@@ -201,6 +209,7 @@ VOID __cdecl ReceiveBroadcast(BOOL* bKeepRunning, Game** gameObj)
 		*gameObj = receiveBroadcastSharedMemory(bKeepRunning);
 		break;
 	case clientNamedPipeLocalConnection:
+		*gameObj = receiveBroadcastPipe();
 		break;
 	case clientNamedPipeRemoteConnection:
 		break;

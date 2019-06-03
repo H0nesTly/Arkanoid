@@ -78,13 +78,14 @@ struct messageProtocolDatagramRequest
 
 struct messageProtocolPipe
 {
-	WORD wTypeOfMessage;//TYPE_OF_MESSAGE_RESPONSE  \ TYPE_OF_MESSAGE_REQUEST 
+	WORD wTypeOfMessage;//TYPE_OF_MESSAGE_RESPONSE | TYPE_OF_MESSAGE_REQUEST 
 	union
 	{
 		TypeOfRequestMessage request;
 		TypeOfResponseMessage response;
 	};
 	MessageProtocolDatagram messagePD;
+	//Game copyOfGame;
 };
 
 struct circularBuffer

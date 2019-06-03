@@ -302,7 +302,7 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 	LARGE_INTEGER liDueTime;
 	LARGE_INTEGER liDueTimeBall;
 
-	liDueTime.QuadPart = -20000000LL; // 5 SEGUNDOS
+	liDueTime.QuadPart = -50000000LL; // 5 SEGUNDOS
 	liDueTimeBall.QuadPart = -1100000LL;//500 ms
 
 

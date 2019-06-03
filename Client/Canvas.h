@@ -1,8 +1,10 @@
 #pragma once
+#include "ClientStructures.h"
 #include "../Communicate/GameStructures.h"
 
-#define COLOR_PLAYERBLOCK_ENEMY RGB(255, 0, 0)
-#define COLOR_MYPLAYERBLOCK_ENEMY RGB(0, 255, 0)
+#define COLOR_PLAYERPADDLE_ENEMY RGB(255, 0, 0)
+#define COLOR_PLAYERPADDLE_WATCHING RGB(0, 0, 255)
+#define COLOR_MYPLAYERPADDLE RGB(0, 255, 0)
 
 #define COLOR_BALL RGB(255, 255, 255)
 
@@ -21,7 +23,7 @@ VOID drawBalls(const Ball*, HDC);
 
 VOID drawBonus(BonusBlock*, HDC);
 
-VOID drawGameBoard(const GameBoard* , HDC );
+VOID drawGameBoard(const GameBoard*, HDC);
 
-VOID drawGame(const Game* , HDC );
+VOID drawGame(const Game*, HDC);
 

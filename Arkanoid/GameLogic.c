@@ -14,14 +14,14 @@ VOID moveBall(Game* gameObj)
 	if ((ballToMove->ballPosition.x + (ballToMove->nMovementVectorX * ballToMove->wVelocity)) < 0)
 	{
 		ballToMove->nMovementVectorX = ballToMove->nMovementVectorX * -1;
-		ballToMove->ballPosition.x = 1;
+		ballToMove->ballPosition.x = 0 + NORMAL_SPACING;
 	}
 	else
 	{
 		if ((ballToMove->ballPosition.x + ballToMove->wWitdh + (ballToMove->nMovementVectorX * ballToMove->wVelocity)) >= DEFAULT_WIDTH_OF_GAMEBOARD)
 		{
 			ballToMove->nMovementVectorX = ballToMove->nMovementVectorX * -1;
-			ballToMove->ballPosition.x = DEFAULT_WIDTH_OF_GAMEBOARD - ballToMove->wWitdh - 1;
+			ballToMove->ballPosition.x = DEFAULT_WIDTH_OF_GAMEBOARD - ballToMove->wWitdh - NORMAL_SPACING;
 		}
 	}
 
@@ -29,7 +29,7 @@ VOID moveBall(Game* gameObj)
 	if ((ballToMove->ballPosition.y + (ballToMove->nMovementVectorY * ballToMove->wVelocity)) < 0)
 	{
 		ballToMove->nMovementVectorY = ballToMove->nMovementVectorY * -1;
-		ballToMove->ballPosition.y = 1;
+		ballToMove->ballPosition.y = 0 + NORMAL_SPACING;
 	}
 	else
 	{
@@ -129,18 +129,18 @@ VOID createBall(WORD wCoordX, WORD wCoordY, Game* gameObj)
 	gameObj->ball.wVelocity = DEFAULT_BALL_VELOCITY;
 }
 
-VOID createPlayerPaddle(WORD wCoordX, WORD wCoordY, WORD wHeigth, WORD wWidth, const PTCHAR OwnerUserName, Game* gameObj)
+VOID createPlayerPaddle(const PTCHAR OwnerUserName, Game* gameObj)
 {
 	WORD wIndex = gameObj->wNumberOfPlayerPaddles++;
+	WORD wWidthOfPaddle = generateWidthOfPlayePaddle(gameObj);
 
-	gameObj->PlayerPaddles[wIndex].playerBlockPosition.x = wCoordX;
-	gameObj->PlayerPaddles[wIndex].playerBlockPosition.y = wCoordY;
+	gameObj->PlayerPaddles[wIndex].playerBlockPosition.x = 1 + wWidthOfPaddle * gameObj->wNumberOfPlayerPaddles;
+	gameObj->PlayerPaddles[wIndex].playerBlockPosition.y = DEFAULT_POS_Y_PLAYER_PADDLE;
 
-	gameObj->PlayerPaddles[wIndex].wHeight = wHeigth;
-	gameObj->PlayerPaddles[wIndex].wWidth = wWidth;
+	gameObj->PlayerPaddles[wIndex].wHeight = HEIGTH_OF_PLAYER_PADDLE;
+	gameObj->PlayerPaddles[wIndex].wWidth = wWidthOfPaddle;
 
 	gameObj->PlayerPaddles[wIndex].wVelocity = DEFAULT_PADDLE_VELOCITY;
-
 
 	_tcscpy_s(gameObj->PlayerPaddles[wIndex].playerOwnerOfBlock.playerInfo.tcUserName,
 		_countof(gameObj->PlayerPaddles[wIndex].playerOwnerOfBlock.playerInfo.tcUserName),
@@ -196,19 +196,19 @@ VOID destroyBlock(WORD wIndex, Game* gameObj)
 	{
 		switch (gameObj->blocks[wIndex].typeOfBlock)
 		{
-			case Magic:
+		case Magic:
 			//gerar bonus
 			break;
-			case Normal:
+		case Normal:
 			break;
-			case  Rigid:
-				if (gameObj->blocks[wIndex].wNumberOfColisions > 1)
-				{
-					gameObj->blocks[wIndex].wNumberOfColisions--;
-					return;
-				}
+		case  Rigid:
+			if (gameObj->blocks[wIndex].wNumberOfColisions > 1)
+			{
+				gameObj->blocks[wIndex].wNumberOfColisions--;
+				return;
+			}
 			break;
-			default:
+		default:
 			break;
 		}
 
@@ -334,6 +334,11 @@ BOOL checkColissionBallObject(Ball* ballObject, const Coords* coordsObj2, const 
 	return  FALSE;
 }
 
+WORD generateWidthOfPlayePaddle(const Game* gameObj)
+{
+	return DEFAULT_WIDTH_OF_PLAYER_PADDLE;
+}
+
 int getPaddleOwnerByName(const PTCHAR UserName, Game* gameObj)
 {
 	for (size_t i = 0; i < gameObj->wNumberOfPlayerPaddles; i++)
@@ -366,8 +371,10 @@ VOID movePaddle(const PTCHAR userName, Game* gameObj, const short nDirectionToMo
 			{
 				playerPaddleTemp = &gameObj->PlayerPaddles[i];
 
-				if (myPlayerPaddleTemp->playerBlockPosition.x + myPlayerPaddleTemp->wVelocity * nDirectionToMove > playerPaddleTemp->playerBlockPosition.x &&
-					myPlayerPaddleTemp->playerBlockPosition.x + myPlayerPaddleTemp->wVelocity * nDirectionToMove < playerPaddleTemp->playerBlockPosition.x + playerPaddleTemp->wWidth)
+				if ((myPlayerPaddleTemp->playerBlockPosition.x + myPlayerPaddleTemp->wVelocity * nDirectionToMove >= playerPaddleTemp->playerBlockPosition.x &&
+					myPlayerPaddleTemp->playerBlockPosition.x + myPlayerPaddleTemp->wVelocity * nDirectionToMove <= playerPaddleTemp->playerBlockPosition.x + playerPaddleTemp->wWidth) ||
+					(myPlayerPaddleTemp->playerBlockPosition.x + myPlayerPaddleTemp->wVelocity * nDirectionToMove <= playerPaddleTemp->playerBlockPosition.x &&
+						myPlayerPaddleTemp->playerBlockPosition.x + myPlayerPaddleTemp->wWidth + myPlayerPaddleTemp->wVelocity * nDirectionToMove >= playerPaddleTemp->playerBlockPosition.x))
 				{
 					//colisão 
 					return;
@@ -379,14 +386,14 @@ VOID movePaddle(const PTCHAR userName, Game* gameObj, const short nDirectionToMo
 		//verificamos se está nas bordas
 		if ((myPlayerPaddleTemp->playerBlockPosition.x + (myPlayerPaddleTemp->wVelocity * nDirectionToMove)) < 0)
 		{
-			myPlayerPaddleTemp->playerBlockPosition.x = 1;
+			myPlayerPaddleTemp->playerBlockPosition.x = 0 + NORMAL_SPACING;
 			return;
 		}
 		else
 		{
 			if ((myPlayerPaddleTemp->playerBlockPosition.x + myPlayerPaddleTemp->wWidth + (myPlayerPaddleTemp->wVelocity * nDirectionToMove)) >= DEFAULT_WIDTH_OF_GAMEBOARD)
 			{
-				myPlayerPaddleTemp->playerBlockPosition.x = DEFAULT_WIDTH_OF_GAMEBOARD - myPlayerPaddleTemp->wWidth - 1;
+				myPlayerPaddleTemp->playerBlockPosition.x = DEFAULT_WIDTH_OF_GAMEBOARD - myPlayerPaddleTemp->wWidth - NORMAL_SPACING * 2;
 				return;
 			}
 		}

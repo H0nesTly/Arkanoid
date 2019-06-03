@@ -6,13 +6,23 @@
 
 typedef struct clientStructure ClientStructure;
 
+typedef enum userMode UserMode;
+
 struct clientStructure
 {
 	TCHAR tcUserName[MAX_LENGTH_NAME];
 	HWND hWndWindow;
 	HDC doubleBufferingDC;
+	UserMode myMode;
 };
-//
+
+enum userMode
+{
+	WaitingForGameToStart,
+	PlayingGame,
+	WatchingGame
+};
+
 //struct configKey
 //{
 //	WORD wMoveRight;

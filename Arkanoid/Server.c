@@ -539,8 +539,7 @@ BOOL addUserNameToLobby(PTCHAR userName, Server* server)
 	return FALSE;
 }
 
-//Vamos criar os blocos
-//TODO: CRIAR BLOCOS COM ALTURAS E COORDENADAS
+//TODO: CRIAR BLOCOS COM Larguras E COORDENADAS
 VOID addUsersToGame(Server* serverObj)
 {
 	UsersPlaying* playersInGame = (UsersPlaying*)&serverObj->gameInstance.usersInGame;
@@ -558,8 +557,9 @@ VOID addUsersToGame(Server* serverObj)
 			&serverObj->gameInstance.lobbyGame.playersInLobby[i], //origem
 			sizeof(PlayerInfo));		//Tamanho
 
-		createPlayerPaddle(200, DEFAULT_POS_Y_PLAYER_PADDLE, //coords
-			HEIGTH_OF_PLAYER_PADDLE, wWidthPaddle,  //dimensoes
+
+
+		createPlayerPaddle(
 			playersInGame->playersPlaying[i].tcUserName, //owner
 			(Game*)serverObj->serverHandlers.sharedMemHandlers.lpSharedMemGame); //ponteiro
 
@@ -592,7 +592,7 @@ VOID tryToMovePaddle(const PTCHAR username, Server* serverObj, const short nSide
 {
 	if (serverObj->gameInstance.GameStates != GameInProgress)
 	{
-				_tprintf(TEXT("\nComportamento nao esperado NENHUM JOGO A CORRER1!!"));
+		_tprintf(TEXT("\nComportamento nao esperado NENHUM JOGO A CORRER1!!"));
 		return;
 	}
 	else

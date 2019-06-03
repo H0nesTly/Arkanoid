@@ -3,6 +3,7 @@
 
 extern HWND gWnd;
 extern RECT rectWindowProp;
+extern ClientStructure gClientInfo;
 RECT rectOffsetGameBoard;
 
 VOID drawBlocks(const Block* blocksObj, HDC memDc)
@@ -80,7 +81,21 @@ VOID drawPlayerPaddles(const Paddle* playerBlockObj, HDC memDC)
 	rect.right = rect.left + playerBlockObj->wWidth;
 	rect.bottom = rect.top + playerBlockObj->wHeight;
 
-	hBrush = CreateSolidBrush(COLOR_PLAYERBLOCK_ENEMY);
+	if (gClientInfo.myMode == WatchingGame)
+	{
+		hBrush = CreateSolidBrush(COLOR_PLAYERPADDLE_WATCHING);
+	}
+	else
+	{
+		if (_tcscmp(gClientInfo.tcUserName, playerBlockObj->playerOwnerOfBlock.playerInfo.tcUserName) == 0)
+		{
+			hBrush = CreateSolidBrush(COLOR_MYPLAYERPADDLE);
+		}
+		else
+		{ 
+			hBrush = CreateSolidBrush(COLOR_PLAYERPADDLE_ENEMY);
+		}
+	}
 
 	FillRect(memDC, &rect, hBrush);
 
@@ -123,7 +138,9 @@ VOID drawGame(const Game* gameObj, HDC memDC)
 
 		drawBalls(&gameObj->ball, memDC);
 
-		drawPlayerPaddles(&gameObj->PlayerPaddles[0], memDC);
+
+		for (size_t i = 0; i < gameObj->wNumberOfPlayerPaddles; i++)
+			drawPlayerPaddles(&gameObj->PlayerPaddles[i], memDC);
 	}
 	else
 	{
