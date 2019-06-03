@@ -303,8 +303,6 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 	LARGE_INTEGER liDueTimeBall;
 
 	liDueTime.QuadPart = -50000000LL; // 5 SEGUNDOS
-	liDueTimeBall.QuadPart = -1100000LL;//500 ms
-
 
 	hTimerWaitForPlayersToConnect = CreateWaitableTimer(NULL, TRUE, NULL);
 	hTimerWaitUpdateBall = CreateWaitableTimer(NULL, TRUE, NULL);
@@ -340,6 +338,8 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 	transferPlayersToGame(serverObj);
 	SetEvent(hgGameObject);
 
+	liDueTimeBall.QuadPart = -100000LL * game->ball.wVelocity;//10 ms
+
 	while (1)
 	{
 		//When a manual-reset timer is set to the signaled state, it remains in this state until SetWaitableTimer is
@@ -356,6 +356,7 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 		WaitForSingleObject(hTimerWaitUpdateBall, INFINITE);
 		moveBall(game);
 		SetEvent(hgGameObject);
+
 	}
 
 	return 0;

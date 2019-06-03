@@ -18,9 +18,10 @@
 
 #define NUM_OF_OBJ_GAME 20
 #define NUM_OF_BLOCK_OBJ_GAME 40
-#define DEFAULT_BALL_VELOCITY 4
+#define DEFAULT_BALL_UNITS_TO_MOVE 4
 #define DEFAULT_PADDLE_VELOCITY 4
 
+#define DEFAULT_BALL_VELOCITY 10
 
 #define NAME_SHARED_MEMORY_GAME TEXT("dllSharedMemGame")
 
@@ -47,7 +48,6 @@ struct ball
 {
 	Coords ballPosition;
 	TCHAR tcFigure;
-	WORD wRadius;
 
 	WORD wWitdh;
 	WORD wHeigth;
@@ -55,6 +55,7 @@ struct ball
 	int nMovementVectorX, nMovementVectorY;
 
 	WORD wVelocity;
+	WORD wUnitsToMove;
 };
 
 struct playerInfo
@@ -78,7 +79,7 @@ struct paddle
 	Coords playerBlockPosition;
 	Player playerOwnerOfBlock;
 	WORD wWidth, wHeight;
-	WORD wVelocity;
+	WORD wUnitsToMove;
 };
 
 struct block

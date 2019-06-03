@@ -61,6 +61,7 @@ struct messageProtocolDatagram
 	{
 		TCHAR tcData[MAX_LENGTH_NAME];
 		ScorePlayer listOfHighScores[NUM_TOP];
+		//Game gameData;
 	};
 };
 
