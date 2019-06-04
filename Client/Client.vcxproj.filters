@@ -54,5 +54,11 @@
     <Image Include="SpeedUp.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="SlowDown.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="triple.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

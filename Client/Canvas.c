@@ -92,8 +92,24 @@ VOID drawBonus(const BonusBlock* bonusObj, HDC memDC)
 		);
 		break;
 	case SpeedUp:
-				hBmp = (HBITMAP)LoadImage(GetModuleHandle(NULL),
+		hBmp = (HBITMAP)LoadImage(GetModuleHandle(NULL),
 			MAKEINTRESOURCE(IDB_BITMAPSPEEDUP),
+			IMAGE_BITMAP,
+			0, 0,
+			LR_DEFAULTSIZE
+		);
+		break;
+	case Triple:
+		hBmp = (HBITMAP)LoadImage(GetModuleHandle(NULL),
+			MAKEINTRESOURCE(IDB_BITMAPTRIPLE),
+			IMAGE_BITMAP,
+			0, 0,
+			LR_DEFAULTSIZE
+		);
+		break;
+	case SlowDown:
+		hBmp = (HBITMAP)LoadImage(GetModuleHandle(NULL),
+			MAKEINTRESOURCE(IDB_BITMAPSLOWDOWN),
 			IMAGE_BITMAP,
 			0, 0,
 			LR_DEFAULTSIZE
