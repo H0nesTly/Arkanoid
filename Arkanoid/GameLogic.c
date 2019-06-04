@@ -104,13 +104,13 @@ VOID createLevel(Game*gameObj)
 	createBlocks(66, 61, 10, 30, Normal, gameObj);
 	createBlocks(97, 61, 10, 30, Normal, gameObj);
 	//+50				  
-	createBlocks(147, 61, 10, 30, Rigid, gameObj);
-	createBlocks(178, 61, 10, 30, Normal, gameObj);
-	createBlocks(209, 61, 10, 30, Rigid, gameObj);
+	createBlocks(147, 61, 10, 30, Magic, gameObj);
+	createBlocks(178, 61, 10, 30, Magic, gameObj);
+	createBlocks(209, 61, 10, 30, Magic, gameObj);
 	//+50				  
-	createBlocks(259, 61, 10, 30, Normal, gameObj);
-	createBlocks(290, 61, 10, 30, Normal, gameObj);
-	createBlocks(321, 61, 10, 30, Normal, gameObj);
+	createBlocks(259, 61, 10, 30, Magic, gameObj);
+	createBlocks(290, 61, 10, 30, Magic, gameObj);
+	createBlocks(321, 61, 10, 30, Magic, gameObj);
 
 	createBall(50, 300, gameObj);
 }
