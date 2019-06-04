@@ -4,6 +4,8 @@
 
 VOID moveBall(Game*);
 
+VOID moveBonus(Game*);
+
 VOID createLevel(Game*);
 
 VOID createGameBoard(WORD, WORD, WORD, WORD, GameBoard*);

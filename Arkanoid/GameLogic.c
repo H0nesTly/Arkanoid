@@ -33,7 +33,7 @@ VOID moveBall(Game* gameObj)
 	}
 	else
 	{
-		if (ballToMove->ballPosition.y + ballToMove->wHeigth + (ballToMove->nMovementVectorX * ballToMove->wUnitsToMove) > DEFAULT_HEIGTH_LOSE_BALL)
+		if (ballToMove->ballPosition.y + ballToMove->wHeight + (ballToMove->nMovementVectorX * ballToMove->wUnitsToMove) > DEFAULT_HEIGTH_LOSE_BALL)
 		{
 			_tprintf(TEXT("\n Perdeste uma vida"));
 		}
@@ -43,6 +43,14 @@ VOID moveBall(Game* gameObj)
 	{
 		if (checkColissionBallObject(ballToMove, &gameObj->PlayerPaddles[i].playerBlockPosition, gameObj->PlayerPaddles[i].wWidth, gameObj->PlayerPaddles[i].wHeight))
 			bCheckMore = !bCheckMore;
+	}
+
+	for (size_t i = 0; i < gameObj->wNumberOfBonusDropping && bCheckMore; i++)
+	{
+		if (checkColissionBallObject(ballToMove, &gameObj->bonusBlock[i].bonusCoords, gameObj->bonusBlock[i].wWidth, gameObj->bonusBlock[i].wHeight))
+		{
+			bCheckMore = !bCheckMore;
+		}
 	}
 
 	for (WORD i = 0; i < gameObj->wNumberOfBlocks && bCheckMore; i++)
@@ -107,12 +115,12 @@ VOID createLevel(Game*gameObj)
 	createBall(50, 300, gameObj);
 }
 
-VOID createGameBoard(WORD wCoordX, WORD wCoordY, WORD wHeigth, WORD wWidth, GameBoard* gameObj)
+VOID createGameBoard(WORD wCoordX, WORD wCoordY, WORD wHeight, WORD wWidth, GameBoard* gameObj)
 {
 	gameObj->gameBoardPosition.x = wCoordX;
 	gameObj->gameBoardPosition.y = wCoordY;
 
-	gameObj->wHeight = wHeigth;
+	gameObj->wHeight = wHeight;
 	gameObj->wWidth = wWidth;
 }
 
@@ -121,7 +129,7 @@ VOID createBall(WORD wCoordX, WORD wCoordY, Game* gameObj)
 	gameObj->ball.ballPosition.x = wCoordX;
 	gameObj->ball.ballPosition.y = wCoordY;
 
-	gameObj->ball.wHeigth = gameObj->ball.wWitdh = 8;
+	gameObj->ball.wHeight = gameObj->ball.wWitdh = 8;
 
 	gameObj->ball.nMovementVectorX = 1;
 	gameObj->ball.nMovementVectorY = -1;
@@ -148,7 +156,7 @@ VOID createPlayerPaddle(const PTCHAR OwnerUserName, Game* gameObj)
 		OwnerUserName);
 }
 
-VOID createBlocks(WORD wCoordX, WORD wCoordY, WORD wHeigth, WORD wWidth, TypesOfBlock toBlock, Game* gameObj)
+VOID createBlocks(WORD wCoordX, WORD wCoordY, WORD wHeight, WORD wWidth, TypesOfBlock toBlock, Game* gameObj)
 {
 	WORD wIndex = gameObj->wNumberOfBlocks++;
 
@@ -156,7 +164,7 @@ VOID createBlocks(WORD wCoordX, WORD wCoordY, WORD wHeigth, WORD wWidth, TypesOf
 	gameObj->blocks[wIndex].blockPosition.y = wCoordY;
 
 	gameObj->blocks[wIndex].wWidth = wWidth;
-	gameObj->blocks[wIndex].wHeight = wHeigth;
+	gameObj->blocks[wIndex].wHeight = wHeight;
 
 	gameObj->blocks[wIndex].typeOfBlock = toBlock;
 
@@ -175,30 +183,35 @@ VOID createBlocks(WORD wCoordX, WORD wCoordY, WORD wHeigth, WORD wWidth, TypesOf
 	}
 }
 
-VOID createBonus(WORD wCoordX, WORD wCoordY, WORD wHeigth, WORD wWidth, TypeOfBonus toBonus, Game* gameObj)
+VOID createBonus(WORD wCoordX, WORD wCoordY, WORD wHeight, WORD wWidth, TypeOfBonus toBonus, Game* gameObj)
 {
-	WORD wIndex = 0;
-
-	while (gameObj->bonusBlock[wIndex].wRadius != 0)
-	{
-		wIndex++;
-	}
+	WORD wIndex = gameObj->wNumberOfBonusDropping++;
 
 	gameObj->bonusBlock[wIndex].bonusCoords.x = wCoordX;
 	gameObj->bonusBlock[wIndex].bonusCoords.y = wCoordY;
-	gameObj->bonusBlock[wIndex].wRadius = wCoordY;
 
+	gameObj->bonusBlock[wIndex].wWidth = wWidth;
+	gameObj->bonusBlock[wIndex].wHeight = wHeight;
+	
 	gameObj->bonusBlock[wIndex].typeOfBonus = toBonus;
 }
 
 VOID destroyBlock(WORD wIndex, Game* gameObj)
 {
+	float valueGenerate;
 	if (wIndex >= 0 && wIndex < NUM_OF_BLOCK_OBJ_GAME)
 	{
 		switch (gameObj->blocks[wIndex].typeOfBlock)
 		{
 		case Magic:
-			//gerar bonus
+			valueGenerate = ((float)rand()) / 1;
+
+			createBonus(gameObj->blocks[wIndex].blockPosition.x,
+				gameObj->blocks[wIndex].blockPosition.y,
+				8,
+				8,
+				ExtraHealth,
+				gameObj);
 			break;
 		case Normal:
 			break;
@@ -232,6 +245,16 @@ VOID destroyBonus(WORD wIndex, Game* gameObj)
 	if (wIndex >= 0 && wIndex < NUM_OF_OBJ_GAME)
 	{
 		ZeroMemory(&gameObj->bonusBlock[wIndex], sizeof(BonusBlock));
+
+		for (size_t i = wIndex; i + 1< gameObj->wNumberOfBonusDropping; i++)
+		{
+			CopyMemory(&gameObj->bonusBlock[i],
+				&gameObj->bonusBlock[i + 1],
+				sizeof(BonusBlock));
+
+			ZeroMemory(&gameObj->bonusBlock[i + 1], sizeof(BonusBlock));
+		}
+		gameObj->wNumberOfBonusDropping--;
 	}
 }
 
@@ -301,16 +324,16 @@ BOOL decrementHealth(Game* gameObj)
 
 
 //TODO melhorar velociadae muito grande
-BOOL checkColissionBallObject(Ball* ballObject, const Coords* coordsObj2, const WORD wWidthObj2, const WORD wHeigthObj2)
+BOOL checkColissionBallObject(Ball* ballObject, const Coords* coordsObj2, const WORD wWidthObj2, const WORD wHeightObj2)
 {
 	WORD wObjectBallRigth, wObjectBallBottom;
 	WORD wObject2Rigth, wObject2Bottom;
 
 	wObjectBallRigth = ballObject->ballPosition.x + ballObject->wWitdh;
-	wObjectBallBottom = ballObject->ballPosition.y + ballObject->wHeigth;
+	wObjectBallBottom = ballObject->ballPosition.y + ballObject->wHeight;
 
 	wObject2Rigth = coordsObj2->x + wWidthObj2;
-	wObject2Bottom = coordsObj2->y + wHeigthObj2;
+	wObject2Bottom = coordsObj2->y + wHeightObj2;
 
 	//Se o vetor X estive a andar colide com alguem?
 	if (ballObject->ballPosition.x + (ballObject->nMovementVectorX * ballObject->wUnitsToMove) < wObject2Rigth &&

@@ -50,7 +50,7 @@ struct ball
 	TCHAR tcFigure;
 
 	WORD wWitdh;
-	WORD wHeigth;
+	WORD wHeight;
 
 	int nMovementVectorX, nMovementVectorY;
 
@@ -96,8 +96,7 @@ struct bonus
 {
 	TypeOfBonus typeOfBonus;
 	Coords bonusCoords;
-	TCHAR tcFigure; // retirar
-	WORD wRadius;
+	WORD wWidth, wHeight;
 	float fVelocityDrop;
 };
 
@@ -110,6 +109,7 @@ struct gameBoard
 
 struct game
 {
+	WORD wNumberOfBonusDropping;
 	BonusBlock bonusBlock[NUM_OF_OBJ_GAME];
 
 	WORD wNumberOfBlocks;

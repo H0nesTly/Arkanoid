@@ -3,6 +3,8 @@
 #include "GameLogic.h"
 #include "../Communicate/MessageProtocol.h"
 
+static HANDLE hTimerWaitUpdateBall = NULL;
+
 inline static VOID readNewMessageSharedMemory(MessageQueue* queue, Server* serverObj)
 {
 	//CRITICAL SECTION
@@ -298,7 +300,7 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 	Game* game = (Game*)serverObj->serverHandlers.sharedMemHandlers.lpSharedMemGame;
 
 	HANDLE hTimerWaitForPlayersToConnect = NULL;
-	HANDLE hTimerWaitUpdateBall = NULL;
+
 	LARGE_INTEGER liDueTime;
 	LARGE_INTEGER liDueTimeBall;
 
@@ -324,7 +326,7 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 		NULL,				//Argumentos para routime
 		FALSE))
 	{
-		printf("SetWaitableTimer failed (%d)\n", GetLastError());
+		_tprintf(TEXT("SetWaitableTimer failed (%d)\n"), GetLastError());
 		return 2;
 	}
 
@@ -364,6 +366,15 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 
 DWORD WINAPI BonusThread(LPVOID lpArg)
 {
+	Game* gameObj = (Game*)((Server*)lpArg)->serverHandlers.sharedMemHandlers.lpSharedMemGame;
+
+	while (1)
+	{
+		WaitForSingleObject(hTimerWaitUpdateBall, INFINITE);
+
+	}
+
+
 	return 0;
 }
 
