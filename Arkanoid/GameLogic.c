@@ -1,5 +1,4 @@
 #include "GameLogic.h"
-#include <stdlib.h>
 
 extern GameServerConfiguration serverConfig;
 
@@ -289,8 +288,8 @@ VOID destroyBlock(WORD wIndex, Game* gameObj)
 		case Magic:
 			valueGenerate = ((float)rand()) / 1;
 
-			//if (valueGenerate > serverConfig.probVidaExtra)
-			//{
+			if (valueGenerate > serverConfig.probTriple)
+			{
 				createBonus(gameObj->blocks[wIndex].blockPosition.x,
 					gameObj->blocks[wIndex].blockPosition.y,
 					16,
@@ -298,7 +297,7 @@ VOID destroyBlock(WORD wIndex, Game* gameObj)
 					ExtraHealth,
 					gameObj);
 
-			//}
+			}
 
 			break;
 		case Normal:

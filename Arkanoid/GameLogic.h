@@ -1,6 +1,7 @@
 #pragma once
 #include "..\Communicate\stdafx.h"
 #include "..\Communicate\GameStructures.h"
+#include "Server.h"
 
 typedef struct gameServerConfiguration GameServerConfiguration;
 typedef struct coords Coords;
