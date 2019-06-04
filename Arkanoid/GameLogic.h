@@ -4,7 +4,9 @@
 
 VOID moveBall(Game*);
 
-VOID moveBonus(Game*);
+VOID moveBonus(Game*, WORD);
+
+VOID movePaddle(const PTCHAR, Game*, const short);
 
 VOID createLevel(Game*);
 
@@ -37,6 +39,7 @@ WORD generateWidthOfPlayePaddle(const Game*);
 //Retorna 1 caso seja detetada colisao
 BOOL checkColissionBallObject(Ball*, const Coords*, const WORD, const WORD);
 
+BOOL checkColissionBonusObject(const BonusBlock*, const Coords*, const WORD, const WORD);
+
 int getPaddleOwnerByName(const PTCHAR, Game*);
 
-VOID movePaddle(const PTCHAR, Game*, const short);

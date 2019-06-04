@@ -21,7 +21,7 @@ VOID drawPlayerPaddles(const Paddle*, HDC);
 
 VOID drawBalls(const Ball*, HDC);
 
-VOID drawBonus(BonusBlock*, HDC);
+VOID drawBonus(const BonusBlock*, HDC);
 
 VOID drawGameBoard(const GameBoard*, HDC);
 

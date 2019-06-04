@@ -48,5 +48,23 @@
     <Image Include="bitmap4.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="SlowDown.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="SpeedUp.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="ExtraHealth.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="bitmap1.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="bitmap2.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="bitmap3.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

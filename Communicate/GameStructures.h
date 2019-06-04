@@ -86,18 +86,19 @@ struct block
 {
 	Coords blockPosition;
 	WORD wWidth, wHeight;
+
 	TypesOfBlock typeOfBlock;
-	TCHAR tcFigure;//retirar
 
 	WORD wNumberOfColisions;
 };
 
 struct bonus
 {
-	TypeOfBonus typeOfBonus;
 	Coords bonusCoords;
 	WORD wWidth, wHeight;
-	float fVelocityDrop;
+
+	TypeOfBonus typeOfBonus;
+	WORD wDropUnits;
 };
 
 struct gameBoard

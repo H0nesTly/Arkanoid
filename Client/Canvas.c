@@ -70,6 +70,41 @@ VOID drawBalls(const Ball* ballObj, HDC memDC)
 	DeleteDC(tempDC);
 }
 
+
+
+VOID drawBonus(const BonusBlock* bonusObj, HDC memDC)
+{
+	RECT rect;
+	HBITMAP hBmp = NULL;
+	BITMAP bmp;
+	HDC tempDC = CreateCompatibleDC(memDC);
+
+	ZeroMemory(&rect, sizeof(RECT));
+
+	switch (bonusObj->typeOfBonus)
+	{
+	case ExtraHealth:
+		hBmp = (HBITMAP)LoadImage(GetModuleHandle(NULL),
+			MAKEINTRESOURCE(IDB_BITMAP4),
+			IMAGE_BITMAP,
+			0, 0,
+			LR_DEFAULTSIZE
+		);
+		break;
+	}
+
+	GetObject(hBmp, sizeof(bmp), &bmp);
+
+	SelectObject(tempDC, hBmp);
+
+	rect.left = bonusObj->bonusCoords.x + rectOffsetGameBoard.left;
+	rect.top = bonusObj->bonusCoords.y + rectOffsetGameBoard.top;
+
+	BitBlt(memDC, rect.left, rect.top, bonusObj->wWidth, bonusObj->wHeight, tempDC, 0, 0, SRCCOPY);
+
+	DeleteDC(tempDC);
+}
+
 VOID drawPlayerPaddles(const Paddle* playerBlockObj, HDC memDC)
 {
 	RECT rect;
@@ -92,7 +127,7 @@ VOID drawPlayerPaddles(const Paddle* playerBlockObj, HDC memDC)
 			hBrush = CreateSolidBrush(COLOR_MYPLAYERPADDLE);
 		}
 		else
-		{ 
+		{
 			hBrush = CreateSolidBrush(COLOR_PLAYERPADDLE_ENEMY);
 		}
 	}
@@ -141,6 +176,8 @@ VOID drawGame(const Game* gameObj, HDC memDC)
 
 		for (size_t i = 0; i < gameObj->wNumberOfPlayerPaddles; i++)
 			drawPlayerPaddles(&gameObj->PlayerPaddles[i], memDC);
+
+		drawBonus(&gameObj->bonusBlock[0], memDC);
 	}
 	else
 	{

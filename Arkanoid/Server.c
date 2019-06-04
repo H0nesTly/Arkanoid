@@ -580,6 +580,7 @@ VOID startGame(Server* serverObj)
 {
 	//Vamos inicializar a thread da bola
 	ResumeThread(serverObj->serverHandlers.threadHandlers.hThreadBall);
+	ResumeThread(serverObj->serverHandlers.threadHandlers.hThreadBonus);
 }
 
 WORD getPlayersInLobby(const Lobby* lobby)

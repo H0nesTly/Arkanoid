@@ -304,7 +304,7 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 	LARGE_INTEGER liDueTime;
 	LARGE_INTEGER liDueTimeBall;
 
-	liDueTime.QuadPart = -50000000LL; // 5 SEGUNDOS
+	liDueTime.QuadPart = -20000000LL; // 5 SEGUNDOS
 
 	hTimerWaitForPlayersToConnect = CreateWaitableTimer(NULL, TRUE, NULL);
 	hTimerWaitUpdateBall = CreateWaitableTimer(NULL, TRUE, NULL);
@@ -371,7 +371,10 @@ DWORD WINAPI BonusThread(LPVOID lpArg)
 	while (1)
 	{
 		WaitForSingleObject(hTimerWaitUpdateBall, INFINITE);
-
+		for (WORD i = 0; i < gameObj->wNumberOfBonusDropping; i++)
+		{
+			moveBonus(gameObj, i);
+		}
 	}
 
 
