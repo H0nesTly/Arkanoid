@@ -22,12 +22,18 @@ struct serverThreadsHandlers
 {
 	HANDLE hThreadConsumer;
 	DWORD dwIdConsumer;
+
 	HANDLE hThreadBall;
 	DWORD dwThreadBall;
+
+	HANDLE hThreadBonus;
+	DWORD dwThreadBonus;
 };
 
 DWORD WINAPI ConsumerMessageThread(LPVOID);
 
 DWORD WINAPI BallThread(LPVOID);
+
+DWORD WINAPI BonusThread(LPVOID);
 
 VOID freeThreads(ServerThreadsHandlers);

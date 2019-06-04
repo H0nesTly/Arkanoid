@@ -362,6 +362,11 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 	return 0;
 }
 
+DWORD WINAPI BonusThread(LPVOID lpArg)
+{
+	return 0;
+}
+
 VOID freeThreads(ServerThreadsHandlers handlers)
 {
 	CloseHandle(handlers.hThreadConsumer);

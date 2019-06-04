@@ -38,13 +38,13 @@ int _tmain(int argc, LPTSTR argv[])
 	}
 
 	if (!intitServerMessageMem(&serverInstance.serverHandlers.sharedMemHandlers.hMapObjMessage,
-		&serverInstance.serverHandlers.sharedMemHandlers.LpSharedMemMessage) )
+		&serverInstance.serverHandlers.sharedMemHandlers.LpSharedMemMessage))
 	{
 		_tprintf(TEXT("ERRO Instancia Servidor ja a correr"));
 		exit(EXIT_FAILURE);
 	}
 
-	if(!initSyncObject())
+	if (!initSyncObject())
 	{
 		_tprintf(TEXT("ERRO Criar objetos de sincronização"));
 		exit(EXIT_FAILURE);
@@ -55,14 +55,14 @@ int _tmain(int argc, LPTSTR argv[])
 		_tprintf(TEXT("ERRO Criar Pipes"));
 		exit(EXIT_FAILURE);
 	}
-	
+
 	loadGameConfiguration(TEXT("config.txt"), &serverConfig);
 
 	serverInstance.serverHandlers.threadHandlers.hThreadConsumer = CreateThread(
 		NULL,
 		0,
 		ConsumerMessageThread,	//nome da funçao
-		(LPVOID) &serverInstance,					//Argumento a ser passado
+		(LPVOID)&serverInstance,					//Argumento a ser passado
 		0,						//Flags de criaçao
 		&serverInstance.serverHandlers.threadHandlers.dwIdConsumer //idThread
 	);
@@ -71,23 +71,37 @@ int _tmain(int argc, LPTSTR argv[])
 		NULL,
 		0,
 		BallThread,	//nome da funçao
-		(LPVOID) &serverInstance,					//Argumento a ser passado
+		(LPVOID)&serverInstance,					//Argumento a ser passado
 		CREATE_SUSPENDED,						//flag de criação - SUSPENDIDA
 		&serverInstance.serverHandlers.threadHandlers.dwThreadBall //idThread
 	);
 
-	if ( serverInstance.serverHandlers.threadHandlers.hThreadConsumer == NULL 
-		|| serverInstance.serverHandlers.threadHandlers.hThreadBall == NULL)
+	serverInstance.serverHandlers.threadHandlers.hThreadBonus = CreateThread(
+		NULL,
+		0,
+		BonusThread,	//nome da funçao
+		(LPVOID)&serverInstance,					//Argumento a ser passado
+		CREATE_SUSPENDED,						//flag de criação - SUSPENDIDA
+		&serverInstance.serverHandlers.threadHandlers.dwThreadBonus //idThread
+	);
+
+
+
+	if (serverInstance.serverHandlers.threadHandlers.hThreadConsumer == NULL ||
+		serverInstance.serverHandlers.threadHandlers.hThreadBall == NULL ||
+		serverInstance.serverHandlers.threadHandlers.hThreadBonus == NULL)
 	{
 		exit(EXIT_FAILURE);
 	}
 
 
 	WaitForSingleObject(serverInstance.serverHandlers.threadHandlers.hThreadConsumer, INFINITE);
+	WaitForSingleObject(serverInstance.serverHandlers.threadHandlers.hThreadBonus, INFINITE);
 	WaitForSingleObject(serverInstance.serverHandlers.threadHandlers.hThreadBall, INFINITE);
-	   
+
+
 	getTopTenRegistry(scoreTopTen);
-	
+
 	//setTopTenRegistry(scoreTopTen);
 
 
