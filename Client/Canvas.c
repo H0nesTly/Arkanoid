@@ -85,7 +85,15 @@ VOID drawBonus(const BonusBlock* bonusObj, HDC memDC)
 	{
 	case ExtraHealth:
 		hBmp = (HBITMAP)LoadImage(GetModuleHandle(NULL),
-			MAKEINTRESOURCE(IDB_BITMAP4),
+			MAKEINTRESOURCE(IDB_BITMAPEXTRAHEALTH),
+			IMAGE_BITMAP,
+			0, 0,
+			LR_DEFAULTSIZE
+		);
+		break;
+	case SpeedUp:
+				hBmp = (HBITMAP)LoadImage(GetModuleHandle(NULL),
+			MAKEINTRESOURCE(IDB_BITMAPSPEEDUP),
 			IMAGE_BITMAP,
 			0, 0,
 			LR_DEFAULTSIZE
