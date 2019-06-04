@@ -1,10 +1,8 @@
 niveis: 10
-speedups: 3
-slowdowns: 4
-vidasiniciais: 5
-tijolosiniciais: 20
-probabilidadespeedup: 50.5
-probabilidadeslowdown: 50
-probabilidadebonus: 30
-duracao: 10
-velocidadebola: 20
+vidasiniciais : 5
+duracaoEfeitos : 10
+probabilidadespeedup : 0.25
+probabilidadeslowdown : 0.25
+probabilidadevidaextra : 0.3
+probabilidadeTriple : 0.2
+velocidadebola : 10

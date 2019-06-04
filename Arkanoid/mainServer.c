@@ -8,6 +8,8 @@
 #include "ServerThreads.h"
 #include "ServerSyncObj.h"
 
+GameServerConfiguration serverConfig;
+
 int _tmain(int argc, LPTSTR argv[])
 {
 	UNREFERENCED_PARAMETER(argc);
@@ -15,7 +17,6 @@ int _tmain(int argc, LPTSTR argv[])
 
 	Server serverInstance;
 	ScorePlayer scoreTopTen[10];
-	GameServerConfiguration serverConfig;
 
 	ZeroMemory(&serverInstance, sizeof(Server));
 	ZeroMemory(&scoreTopTen, sizeof(scoreTopTen));
@@ -56,7 +57,12 @@ int _tmain(int argc, LPTSTR argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	loadGameConfiguration(TEXT("config.txt"), &serverConfig);
+	if (argc == 2)
+	{
+		_tprintf(TEXT("\nFicheiro %s carregado %s"), argv[1],
+			loadGameConfiguration(argv[1], &serverConfig) ? TEXT("Sucesso") : TEXT("Falhou"));
+	}
+
 
 	serverInstance.serverHandlers.threadHandlers.hThreadConsumer = CreateThread(
 		NULL,

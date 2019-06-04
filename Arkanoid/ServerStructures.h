@@ -2,6 +2,7 @@
 #include "..\Communicate\stdafx.h"
 #include "..\Communicate\MessageProtocol.h"
 #include "..\Communicate\GameStructures.h"
+
 #include "Server.h"
 #include "ServerThreads.h"
 #include "ServerSyncObj.h"
@@ -56,18 +57,14 @@ struct serverHandles
 
 struct gameServerConfiguration
 {
-	int niveis;
-	int speedUps;
-	int slowDowns;
-	int duracao;
+	WORD niveis;
+	WORD vidasIniciais;
+	WORD duracaoEfeitos;
 	double probSpeedUp;
 	double probSlowDowns;
-	int vidasIniciais;
-	int tejolosIniciais;
-	double fVelocityBall;
-	double fBonusProbabilities;
-	WORD wWidthGameBoard, wHeightGameBoard;	
-	WORD wWidthPlayerBlock, wHeightPlayerBlock;
+	double probVidaExtra;
+	double probTriple;
+	WORD wVelocityBall;
 };
 
 struct lobby

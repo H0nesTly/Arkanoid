@@ -1,5 +1,5 @@
 #include "Server.h"
-#include "../Communicate/CircularBuffer.h"
+#include "..\Communicate\CircularBuffer.h"
 
 BOOL intitServerGameMem(HANDLE* hMapObj, LPVOID* lpSharedMem)
 {
@@ -252,20 +252,6 @@ BOOL loadGameConfiguration(TCHAR *nomeFicheiro, GameServerConfiguration *serverC
 			serverConfig->niveis = _tstoi(word);
 			continue;
 		}
-		if (_tcsstr(buffer, TEXT_FILE_SPEED_UPS) != NULL)
-		{
-			word = _tcstok_s(buffer, TEXT(": "), &tcNextToken);
-			word = _tcstok_s(NULL, TEXT(": "), &tcNextToken);
-			serverConfig->speedUps = _tstoi(word);
-			continue;
-		}
-		if (_tcsstr(buffer, TEXT_FILE_SLOW_DOWNS) != NULL)
-		{
-			word = _tcstok_s(buffer, TEXT(": "), &tcNextToken);
-			word = _tcstok_s(NULL, TEXT(": "), &tcNextToken);
-			serverConfig->slowDowns = _tstoi(word);
-			continue;
-		}
 		if (_tcsstr(buffer, TEXT_FILE_INITIAL_LIFES) != NULL)
 		{
 			word = _tcstok_s(buffer, TEXT(": "), &tcNextToken);
@@ -273,11 +259,11 @@ BOOL loadGameConfiguration(TCHAR *nomeFicheiro, GameServerConfiguration *serverC
 			serverConfig->vidasIniciais = _tstoi(word);
 			continue;
 		}
-		if (_tcsstr(buffer, TEXT_FILE_INITIAL_BLOCKS) != NULL)
+		if (_tcsstr(buffer, TEXT_FILE_DURATION_BONUS) != NULL)
 		{
 			word = _tcstok_s(buffer, TEXT(": "), &tcNextToken);
 			word = _tcstok_s(NULL, TEXT(": "), &tcNextToken);
-			serverConfig->tejolosIniciais = _tstoi(word);
+			serverConfig->duracaoEfeitos = _tstoi(word);
 			continue;
 		}
 		if (_tcsstr(buffer, TEXT_FILE_PROB_SPEED_UPS) != NULL)
@@ -293,29 +279,28 @@ BOOL loadGameConfiguration(TCHAR *nomeFicheiro, GameServerConfiguration *serverC
 			word = _tcstok_s(NULL, TEXT(": "), &tcNextToken);
 			serverConfig->probSlowDowns = _tstof(word);
 			continue;
-		}
-		if (_tcsstr(buffer, TEXT_FILE_PROB_BONUS) != NULL)
+		}	
+		if (_tcsstr(buffer, TEXT_FILE_PROB_EXTRA_HEALTH) != NULL)
 		{
 			word = _tcstok_s(buffer, TEXT(": "), &tcNextToken);
 			word = _tcstok_s(NULL, TEXT(": "), &tcNextToken);
-			serverConfig->fBonusProbabilities = _tstoi(word);
+			serverConfig->probVidaExtra = _tstof(word);
 			continue;
-		}
-		if (_tcsstr(buffer, TEXT_FILE_DURATION_LEVEL) != NULL)
+		}		
+		if (_tcsstr(buffer, TEXT_FILE_PROB_BONUS_TRIPLE) != NULL)
 		{
 			word = _tcstok_s(buffer, TEXT(": "), &tcNextToken);
 			word = _tcstok_s(NULL, TEXT(": "), &tcNextToken);
-			serverConfig->duracao = _tstoi(word);
+			serverConfig->probTriple = _tstof(word);
 			continue;
 		}
 		if (_tcsstr(buffer, TEXT_FILE_BALL_SPEED) != NULL)
 		{
 			word = _tcstok_s(buffer, TEXT(": "), &tcNextToken);
 			word = _tcstok_s(NULL, TEXT(": "), &tcNextToken);
-			serverConfig->fVelocityBall = _tstof(word);
+			serverConfig->wVelocityBall = _tstoi(word);
 			continue;
 		}
-
 	}
 
 	if (fOpenFile)

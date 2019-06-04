@@ -1,6 +1,8 @@
 #include "GameLogic.h"
 #include <stdlib.h>
 
+extern GameServerConfiguration serverConfig;
+
 VOID moveBall(Game* gameObj)
 {
 	BOOL bCheckMore = TRUE;
@@ -140,7 +142,7 @@ VOID moveBonus(Game* gameObj, WORD wIndex)
 		{
 			if (checkColissionBonusObject(bonusBlock, &gameObj->PlayerPaddles[i].playerBlockPosition, gameObj->PlayerPaddles[i].wWidth, gameObj->PlayerPaddles[i].wHeight))
 			{
-				catchBonus(wIndex,gameObj);
+				catchBonus(wIndex, gameObj);
 				destroyBonus(wIndex, gameObj);
 				return;
 			}
@@ -287,12 +289,17 @@ VOID destroyBlock(WORD wIndex, Game* gameObj)
 		case Magic:
 			valueGenerate = ((float)rand()) / 1;
 
-			createBonus(gameObj->blocks[wIndex].blockPosition.x,
-				gameObj->blocks[wIndex].blockPosition.y,
-				16,
-				16,
-				ExtraHealth,
-				gameObj);
+			//if (valueGenerate > serverConfig.probVidaExtra)
+			//{
+				createBonus(gameObj->blocks[wIndex].blockPosition.x,
+					gameObj->blocks[wIndex].blockPosition.y,
+					16,
+					16,
+					ExtraHealth,
+					gameObj);
+
+			//}
+
 			break;
 		case Normal:
 			break;
@@ -439,7 +446,7 @@ BOOL checkColissionBallObject(Ball* ballObject, const Coords* coordsObj2, const 
 	return  FALSE;
 }
 
-BOOL checkColissionBonusObject(BonusBlock* bonusObject, const Coords* coordsObj2, const WORD wWidthObj2, const WORD wHeightObj2)
+BOOL checkColissionBonusObject(const BonusBlock* bonusObject, const Coords* coordsObj2, const WORD wWidthObj2, const WORD wHeightObj2)
 {
 	WORD wObject1Rigth, wObject1Bottom;
 	WORD wObject2Rigth, wObject2Bottom;

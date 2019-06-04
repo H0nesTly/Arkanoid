@@ -2,6 +2,14 @@
 #include "..\Communicate\stdafx.h"
 #include "..\Communicate\GameStructures.h"
 
+typedef struct gameServerConfiguration GameServerConfiguration;
+typedef struct coords Coords;
+typedef struct ball Ball;
+typedef struct paddle Paddle;
+typedef struct block Block;
+typedef struct bonus BonusBlock;
+typedef struct game Game;
+
 VOID moveBall(Game*);
 
 VOID moveBonus(Game*, WORD);
