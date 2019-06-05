@@ -201,7 +201,8 @@ VOID drawGame(const Game* gameObj, HDC memDC)
 		for (size_t i = 0; i < gameObj->wNumberOfPlayerPaddles; i++)
 			drawPlayerPaddles(&gameObj->PlayerPaddles[i], memDC);
 
-		drawBonus(&gameObj->bonusBlock[0], memDC);
+		for (size_t i = 0; i < gameObj->wNumberOfBonusDropping; i++)
+			drawBonus(&gameObj->bonusBlock[i], memDC);
 	}
 	else
 	{
