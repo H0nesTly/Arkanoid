@@ -517,7 +517,7 @@ BOOL addUserNameToLobby(PTCHAR userName, Server* server)
 			userName		//Origem
 		);
 
-		startGame(server);
+		startGame(server);		
 
 		return TRUE;
 	}
@@ -563,6 +563,10 @@ VOID transferPlayersToGame(Server* serverObj)
 
 VOID startGame(Server* serverObj)
 {
+	Game* game = (Game*)serverObj->serverHandlers.sharedMemHandlers.lpSharedMemGame;
+
+	setHealth(game, serverConfig.vidasIniciais);
+
 	//Vamos inicializar a thread da bola
 	ResumeThread(serverObj->serverHandlers.threadHandlers.hThreadBall);
 	ResumeThread(serverObj->serverHandlers.threadHandlers.hThreadBonus);

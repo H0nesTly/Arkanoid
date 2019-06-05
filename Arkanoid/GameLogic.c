@@ -214,7 +214,8 @@ VOID createBall(WORD wCoordX, WORD wCoordY, Game* gameObj)
 	gameObj->ball.nMovementVectorX = 1;
 	gameObj->ball.nMovementVectorY = -1;
 
-	gameObj->ball.wVelocity = DEFAULT_BALL_VELOCITY;
+	setBallVelocity(&gameObj->ball, serverConfig.wVelocityBall);
+
 	gameObj->ball.wUnitsToMove = DEFAULT_BALL_UNITS_TO_MOVE;
 }
 
@@ -288,16 +289,15 @@ VOID destroyBlock(WORD wIndex, Game* gameObj)
 		case Magic:
 			valueGenerate = ((float)rand()) / 1;
 
-			if (valueGenerate > serverConfig.probTriple)
-			{
-				createBonus(gameObj->blocks[wIndex].blockPosition.x,
-					gameObj->blocks[wIndex].blockPosition.y,
-					16,
-					16,
-					ExtraHealth,
-					gameObj);
+			//if (valueGenerate > serverConfig.probTriple)
 
-			}
+			createBonus(gameObj->blocks[wIndex].blockPosition.x,
+				gameObj->blocks[wIndex].blockPosition.y,
+				16,
+				16,
+				ExtraHealth,
+				gameObj);
+
 
 			break;
 		case Normal:
@@ -397,6 +397,25 @@ VOID catchBonus(WORD wIndex, Game* gameObj)
 		}
 		destroyBonus(wIndex, gameObj);
 	}
+}
+
+VOID setBallVelocity(Ball* balleObj, WORD wVelocity)
+{
+	if (wVelocity == 0)
+	{
+		wVelocity = DEFAULT_BALL_VELOCITY;
+	}
+	balleObj->wVelocity = wVelocity; 
+}
+
+VOID setHealth(Game* gameObj, WORD wLifes)
+{
+	if (wLifes == 0)
+	{
+		wLifes = DEFAULT_HEALTH;
+	}
+
+	gameObj->wLifes = wLifes;
 }
 
 VOID incrementHealth(Game* gameObj)

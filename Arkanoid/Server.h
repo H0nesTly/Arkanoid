@@ -16,6 +16,8 @@
 
 #define TEXT_REGISTY_PATH TEXT("Software\\Arkanoid")
 
+extern GameServerConfiguration serverConfig;
+
 /*Mapea a Memoria que ira armazenar o jogo*/
 BOOL intitServerGameMem(HANDLE*, LPVOID*);
 

@@ -39,6 +39,10 @@ VOID destroyPlayerPaddle(const PTCHAR, Game*);
 
 VOID catchBonus(WORD, Game*);
 
+VOID setBallVelocity(Ball*, WORD);
+
+VOID setHealth(Game*, WORD);
+
 VOID incrementHealth(Game*);
 
 BOOL decrementHealth(Game*);
