@@ -147,6 +147,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 		0,
 		&dwThreadsIds[2]
 	);
+	PlaySound(TEXT("background_music.wav"), NULL, SND_ASYNC | SND_NODEFAULT);
 
 	// ============================================================================
 	// 5. Loop de Mensagens
@@ -184,7 +185,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 	switch (messg)
 	{
 	case WM_CREATE:
-		PlaySound(TEXT("./backgorund_music.mp3"), NULL, SND_ALIAS | SND_APPLICATION);
 		GetClientRect(hWnd, &rectWindowProp);
 
 		hDC = GetDC(hWnd);
