@@ -1,27 +1,98 @@
 #include "Canvas.h"
 #include "resource1.h"
+#include <stdlib.h>
 
 extern HWND gWnd;
 extern RECT rectWindowProp;
 extern ClientStructure gClientInfo;
 RECT rectOffsetGameBoard;
 
+static HBITMAP hBmpBall = NULL;
+static HBITMAP hBmpBonusSpeedUp = NULL;
+static HBITMAP hBmpBonusSlowDown = NULL;
+static HBITMAP hBmpBonusExtraHealth = NULL;
+static HBITMAP hBmpBonusTriple = NULL;
+static HBITMAP hBmpLife = NULL;
+
+
+static VOID initResources()
+{
+	hBmpBall = (HBITMAP)LoadImage(GetModuleHandle(NULL),
+		MAKEINTRESOURCE(IDB_BITMAP4),
+		IMAGE_BITMAP,
+		0, 0,
+		LR_DEFAULTSIZE
+	);
+
+	hBmpBonusSpeedUp = (HBITMAP)LoadImage(GetModuleHandle(NULL),
+		MAKEINTRESOURCE(IDB_BITMAPSPEEDUP),
+		IMAGE_BITMAP,
+		0, 0,
+		LR_DEFAULTSIZE
+	);
+
+	hBmpBonusSlowDown = (HBITMAP)LoadImage(GetModuleHandle(NULL),
+		MAKEINTRESOURCE(IDB_BITMAPSLOWDOWN),
+		IMAGE_BITMAP,
+		0, 0,
+		LR_DEFAULTSIZE
+	);
+
+	hBmpBonusExtraHealth = (HBITMAP)LoadImage(GetModuleHandle(NULL),
+		MAKEINTRESOURCE(IDB_BITMAPEXTRAHEALTH),
+		IMAGE_BITMAP,
+		0, 0,
+		LR_DEFAULTSIZE
+	);
+
+	hBmpBonusTriple = (HBITMAP)LoadImage(GetModuleHandle(NULL),
+		MAKEINTRESOURCE(IDB_BITMAPTRIPLE),
+		IMAGE_BITMAP,
+		0, 0,
+		LR_DEFAULTSIZE
+	);
+
+	hBmpLife = (HBITMAP)LoadImage(GetModuleHandle(NULL),
+		MAKEINTRESOURCE(IDB_BITMAPLIFE),
+		IMAGE_BITMAP,
+		0, 0,
+		LR_DEFAULTSIZE
+	);
+}
+
 VOID drawScore(const DWORD wScore, HDC memDC)
 {
-	//SetTextColor(memDC, RGB(255, 255, 255));
-	//SetBkMode(memDC, TRANSPARENT);
-	//rect.left = xPos;
-	//rect.top = yPos;
-	//DrawText(memDC, &c, 1, &rect, DT_SINGLELINE | DT_NOCLIP);
+	RECT rect;
+	TCHAR tcScore[20];
+	SetTextColor(memDC, RGB(255, 255, 255));
+	SetBkMode(memDC, TRANSPARENT);
+	rect.left = rectOffsetGameBoard.left + 128;
+	rect.top = 15;
+
+	_stprintf_s(tcScore, _countof(tcScore), TEXT("Pontuação : %d"), wScore);
+	DrawText(memDC, tcScore, -1, &rect, DT_SINGLELINE | DT_NOCLIP);
 }
 
 VOID drawHealth(const WORD wLifesLeft, HDC memDC)
 {
+	RECT rect;
+	BITMAP bmp;
+	HDC tempDC = CreateCompatibleDC(memDC);
+
+	ZeroMemory(&rect, sizeof(RECT));
+	GetObject(hBmpLife, sizeof(bmp), &bmp);
+
+	SelectObject(tempDC, hBmpLife);
+
+	rect.left = rectOffsetGameBoard.left;
+	rect.top = 15;
+
 	for (size_t i = 0; i < wLifesLeft; i++)
 	{
-		
+		BitBlt(memDC, rect.left + bmp.bmWidth * i, rect.top, bmp.bmWidth, bmp.bmWidth, tempDC, 0, 0, SRCCOPY);
 	}
 
+	DeleteDC(tempDC);
 }
 
 VOID drawBlocks(const Block* blocksObj, HDC memDc)
@@ -64,21 +135,14 @@ VOID drawBlocks(const Block* blocksObj, HDC memDc)
 VOID drawBalls(const Ball* ballObj, HDC memDC)
 {
 	RECT rect;
-	HBITMAP hBmp = NULL;
 	BITMAP bmp;
 	HDC tempDC = CreateCompatibleDC(memDC);
 
 	ZeroMemory(&rect, sizeof(RECT));
 
-	hBmp = (HBITMAP)LoadImage(GetModuleHandle(NULL),
-		MAKEINTRESOURCE(IDB_BITMAP4),
-		IMAGE_BITMAP,
-		0, 0,
-		LR_DEFAULTSIZE
-	);
-	GetObject(hBmp, sizeof(bmp), &bmp);
+	GetObject(hBmpBall, sizeof(bmp), &bmp);
 
-	SelectObject(tempDC, hBmp);
+	SelectObject(tempDC, hBmpBall);
 
 	rect.left = ballObj->ballPosition.x + rectOffsetGameBoard.left;
 	rect.top = ballObj->ballPosition.y + rectOffsetGameBoard.top;
@@ -87,8 +151,6 @@ VOID drawBalls(const Ball* ballObj, HDC memDC)
 
 	DeleteDC(tempDC);
 }
-
-
 
 VOID drawBonus(const BonusBlock* bonusObj, HDC memDC)
 {
@@ -102,36 +164,16 @@ VOID drawBonus(const BonusBlock* bonusObj, HDC memDC)
 	switch (bonusObj->typeOfBonus)
 	{
 	case ExtraHealth:
-		hBmp = (HBITMAP)LoadImage(GetModuleHandle(NULL),
-			MAKEINTRESOURCE(IDB_BITMAPEXTRAHEALTH),
-			IMAGE_BITMAP,
-			0, 0,
-			LR_DEFAULTSIZE
-		);
+		hBmp = hBmpBonusExtraHealth;
 		break;
 	case SpeedUp:
-		hBmp = (HBITMAP)LoadImage(GetModuleHandle(NULL),
-			MAKEINTRESOURCE(IDB_BITMAPSPEEDUP),
-			IMAGE_BITMAP,
-			0, 0,
-			LR_DEFAULTSIZE
-		);
+		hBmp = hBmpBonusSpeedUp;
 		break;
 	case Triple:
-		hBmp = (HBITMAP)LoadImage(GetModuleHandle(NULL),
-			MAKEINTRESOURCE(IDB_BITMAPTRIPLE),
-			IMAGE_BITMAP,
-			0, 0,
-			LR_DEFAULTSIZE
-		);
+		hBmp = hBmpBonusTriple;
 		break;
 	case SlowDown:
-		hBmp = (HBITMAP)LoadImage(GetModuleHandle(NULL),
-			MAKEINTRESOURCE(IDB_BITMAPSLOWDOWN),
-			IMAGE_BITMAP,
-			0, 0,
-			LR_DEFAULTSIZE
-		);
+		hBmp = hBmpBonusSlowDown;
 		break;
 	}
 
@@ -206,11 +248,11 @@ VOID drawGame(const Game* gameObj, HDC memDC)
 {
 	if (gameObj != NULL)
 	{
-		drawHealth(gameObj->wLifes, memDC);
-		drawScore(gameObj->dwScore, memDC);
 
 		drawGameBoard(&gameObj->myGameBoard, memDC);
 
+		drawHealth(gameObj->wLifes, memDC);
+		drawScore(gameObj->dwScore, memDC);
 		for (int i = 0; i < gameObj->wNumberOfBlocks; ++i)
 		{
 			drawBlocks(&gameObj->blocks[i], memDC);
@@ -227,6 +269,6 @@ VOID drawGame(const Game* gameObj, HDC memDC)
 	}
 	else
 	{
-		//espera do jogo
+		initResources();
 	}
 }
