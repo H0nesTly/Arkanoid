@@ -15,6 +15,10 @@
 
 #define COLOR_GAMEBOARD RGB(0, 233, 0)
 
+VOID drawScore(const WORD, HDC);
+
+VOID drawHealth(const WORD, HDC);
+
 VOID drawBlocks(const Block*, HDC);
 
 VOID drawPlayerPaddles(const Paddle*, HDC);

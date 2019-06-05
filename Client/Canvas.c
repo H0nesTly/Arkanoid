@@ -6,6 +6,16 @@ extern RECT rectWindowProp;
 extern ClientStructure gClientInfo;
 RECT rectOffsetGameBoard;
 
+VOID drawScore(const WORD wScore, HDC memDC)
+{
+	
+}
+
+VOID drawHealth(const WORD wLifesLeft, HDC)
+{
+	
+}
+
 VOID drawBlocks(const Block* blocksObj, HDC memDc)
 {
 	HBRUSH hBrush = NULL;
