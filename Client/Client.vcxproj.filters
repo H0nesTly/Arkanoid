@@ -15,53 +15,25 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Canvas.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="ClientStructures.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ClientThreads.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="resource1.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Canvas.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="mainClient.c">
+    <ClCompile Include="Canvas.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ClientThreads.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Canvas.c">
+    <ClCompile Include="mainClient.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Client.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="bitmap4.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="ExtraHealth.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="SpeedUp.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="SlowDown.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="triple.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="life.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
   </ItemGroup>
 </Project>

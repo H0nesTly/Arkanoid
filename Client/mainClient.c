@@ -1,6 +1,6 @@
-/*Template de c em que suporta multi-byte e unicode*/
-/*			ATUALMENTE NESTE TEMPLATE ESTÁ ATIVO A
-		OPÇOA UNICODE LOGO ESTA A CORRER COM UTF-16*/
+ï»¿/*Template de c em que suporta multi-byte e unicode*/
+/*			ATUALMENTE NESTE TEMPLATE ESTï¿½ ATIVO A
+		OPï¿½OA UNICODE LOGO ESTA A CORRER COM UTF-16*/
 #include <windows.h>
 #include <winuser.h>
 #include <tchar.h>
@@ -37,7 +37,7 @@ extern BOOL bKeepRunning;
 ClientStructure gClientInfo;
 
 // ============================================================================
-// FUNÇÃO DE INÍCIO DO PROGRAMA: WinMain()
+// FUNï¿½ï¿½O DE INï¿½CIO DO PROGRAMA: WinMain()
 // ============================================================================
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow)
 {
@@ -49,37 +49,37 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 
 	ZeroMemory(&gClientInfo, sizeof(ClientStructure));
 
-	HWND hWnd; // hWnd é o handler da janela, gerado mais abaixo por CreateWindow()
-	MSG lpMsg; // MSG é uma estrutura definida no Windows para as mensagens
-	WNDCLASSEX wcApp; // WNDCLASSEX é uma estrutura cujos membros servem para
-	// definir as características da classe da janela
+	HWND hWnd; // hWnd ï¿½ o handler da janela, gerado mais abaixo por CreateWindow()
+	MSG lpMsg; // MSG ï¿½ uma estrutura definida no Windows para as mensagens
+	WNDCLASSEX wcApp; // WNDCLASSEX ï¿½ uma estrutura cujos membros servem para
+	// definir as caracterï¿½sticas da classe da janela
 	// ============================================================================
-	// 1. Definição das características da janela "wcApp"
+	// 1. Definiï¿½ï¿½o das caracterï¿½sticas da janela "wcApp"
 	// (Valores dos elementos da estrutura "wcApp" do tipo WNDCLASSEX)
 	// ============================================================================
 	wcApp.cbSize = sizeof(WNDCLASSEX); // Tamanho da estrutura WNDCLASSEX
-	wcApp.hInstance = hInst; // Instância da janela actualmente exibida
-	// ("hInst" é parâmetro de WinMain e vem
-	// inicializada daí)
+	wcApp.hInstance = hInst; // Instï¿½ncia da janela actualmente exibida
+	// ("hInst" ï¿½ parï¿½metro de WinMain e vem
+	// inicializada daï¿½)
 	wcApp.lpszClassName = NAME_OF_WINDOWS_PROGRAM; // Nome da janela (neste caso = nome do programa)
-	wcApp.lpfnWndProc = WndProc; // Endereço da função de processamento da janela // ("TrataEventos" foi declarada no início e // encontra-se mais abaixo)
+	wcApp.lpfnWndProc = WndProc; // Endereï¿½o da funï¿½ï¿½o de processamento da janela // ("TrataEventos" foi declarada no inï¿½cio e // encontra-se mais abaixo)
 	wcApp.style = CS_HREDRAW | CS_VREDRAW;// Estilo da janela: Fazer o redraw se for // modificada horizontal ou verticalmente
 
-	// "hIcon" = handler do ícon normal
+	// "hIcon" = handler do ï¿½con normal
 	wcApp.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 
-	// "hIconSm" = handler do ícon pequeno
+	// "hIconSm" = handler do ï¿½con pequeno
 	wcApp.hIconSm = LoadIcon(NULL, IDI_INFORMATION);
 
 	wcApp.hCursor = LoadCursor(NULL, IDC_ARROW); // "hCursor" = handler do cursor (rato)
 	// "NULL" = Forma definida no Windows
 	// "IDC_ARROW" Aspecto "seta"
 	wcApp.lpszMenuName = NULL; // Classe do menu que a janela pode ter
-	// (NULL = não tem menu)
+	// (NULL = nï¿½o tem menu)
 	wcApp.cbClsExtra = 0; // Livre, para uso particular
 	wcApp.cbWndExtra = 0; // Livre, para uso particular
 	wcApp.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
-	// "hbrBackground" = handler para "brush" de pintura do fundo da janela. Devolvido por // "GetStockObject".Neste caso o fundo será branco
+	// "hbrBackground" = handler para "brush" de pintura do fundo da janela. Devolvido por // "GetStockObject".Neste caso o fundo serï¿½ branco
 	// ============================================================================
 	// 2. Registar a classe "wcApp" no Windows
 	// ============================================================================
@@ -90,29 +90,29 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	// ============================================================================
 	hWnd = CreateWindow(
 		NAME_OF_WINDOWS_PROGRAM, // Nome da janela (programa) definido acima
-		TEXT("Arkanoid - Client"),// Texto que figura na barra do título
+		TEXT("Arkanoid - Client"),// Texto que figura na barra do tï¿½tulo
 		WS_OVERLAPPEDWINDOW, // Estilo da janela (WS_OVERLAPPED= normal)
-		CW_USEDEFAULT, // Posição x pixels (default=à direita da última)
-		CW_USEDEFAULT, // Posição y pixels (default=abaixo da última)
+		CW_USEDEFAULT, // Posiï¿½ï¿½o x pixels (default=ï¿½ direita da ï¿½ltima)
+		CW_USEDEFAULT, // Posiï¿½ï¿½o y pixels (default=abaixo da ï¿½ltima)
 		CW_USEDEFAULT, // Largura da janela (em pixels)
 		CW_USEDEFAULT, // Altura da janela (em pixels)
 		(HWND)HWND_DESKTOP, // handle da janela pai (se se criar uma a partir de
 		// outra) ou HWND_DESKTOP se a janela for a primeira,
 		// criada a partir do "desktop"
 		(HMENU)NULL, // handle do menu da janela (se tiver menu)
-		(HINSTANCE)hInst, // handle da instância do programa actual ("hInst" é
-		// passado num dos parâmetros de WinMain()
-		0); // Não há parâmetros adicionais para a janela
+		(HINSTANCE)hInst, // handle da instï¿½ncia do programa actual ("hInst" ï¿½
+		// passado num dos parï¿½metros de WinMain()
+		0); // Nï¿½o hï¿½ parï¿½metros adicionais para a janela
 		// ============================================================================
 		// 4. Mostrar a janela
 		// ============================================================================
 	ShowWindow(hWnd, nCmdShow); // "hWnd"= handler da janela, devolvido por
-	// "CreateWindow"; "nCmdShow"= modo de exibição (p.e.
-	// normal/modal); é passado como parâmetro de WinMain()
+	// "CreateWindow"; "nCmdShow"= modo de exibiï¿½ï¿½o (p.e.
+	// normal/modal); ï¿½ passado como parï¿½metro de WinMain()
 
 
-	UpdateWindow(hWnd); // Refrescar a janela (Windows envia à janela uma
-	// mensagem para pintar, mostrar dados, (refrescar)…
+	UpdateWindow(hWnd); // Refrescar a janela (Windows envia ï¿½ janela uma
+	// mensagem para pintar, mostrar dados, (refrescar)ï¿½
 
 	gClientInfo.hWndWindow = hWnd;
 	DialogBox(NULL,
@@ -153,10 +153,10 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	// ============================================================================
 	while (GetMessage(&lpMsg, NULL, 0, 0))
 	{
-		TranslateMessage(&lpMsg); // Pré-processamento da mensagem (p.e. obter código
+		TranslateMessage(&lpMsg); // Prï¿½-processamento da mensagem (p.e. obter cï¿½digo
 		// ASCII da tecla premida)
 		DispatchMessage(&lpMsg); // Enviar a mensagem traduzida de volta ao Windows, que
-		// aguarda até que a possa reenviar à função de
+		// aguarda atï¿½ que a possa reenviar ï¿½ funï¿½ï¿½o de
 		// tratamento da janela, CALLBACK TrataEventos (abaixo)
 	}
 
@@ -166,13 +166,13 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	// ============================================================================
 	// 6. Fim do programa
 	// ============================================================================
-	return((int)lpMsg.wParam); // Retorna sempre o parâmetro wParam da estrutura lpMsg
+	return((int)lpMsg.wParam); // Retorna sempre o parï¿½metro wParam da estrutura lpMsg
 }
 // ============================================================================
-// FUNÇÃO DE PROCESSAMENTO DA JANELA
-// Esta função pode ter um nome qualquer: Apenas é necesário que na inicialização da // estrutura "wcApp", feita no início de WinMain(), se identifique essa função. Neste // caso "wcApp.lpfnWndProc = WndProc"
+// FUNï¿½ï¿½O DE PROCESSAMENTO DA JANELA
+// Esta funï¿½ï¿½o pode ter um nome qualquer: Apenas ï¿½ necesï¿½rio que na inicializaï¿½ï¿½o da // estrutura "wcApp", feita no inï¿½cio de WinMain(), se identifique essa funï¿½ï¿½o. Neste // caso "wcApp.lpfnWndProc = WndProc"
 //
-// A função EndProc é sempre do tipo "switch..." com "cases" que descriminam a mensagem // recebida e a tratar. Estas mensagens são identificadas por constantes (p.e.
+// A funï¿½ï¿½o EndProc ï¿½ sempre do tipo "switch..." com "cases" que descriminam a mensagem // recebida e a tratar. Estas mensagens sï¿½o identificadas por constantes (p.e.
 // WM_DESTROY, WM_CHAR, WM_KEYDOWN, WM_PAINT...) definidas em windows.h ============================================================================
 LRESULT CALLBACK WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 {
@@ -249,7 +249,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 			DestroyWindow(hWnd);
 			break;
 		case IDNO:
-			//não faz nada
+			//nï¿½o faz nada
 			return (1);
 			break;
 		}
@@ -260,7 +260,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 		PostQuitMessage(0);
 		break;
 	default:
-		// Neste exemplo, para qualquer outra mensagem (p.e. "minimizar","maximizar","restaurar") // não é efectuado nenhum processamento, apenas se segue o "default" do Windows
+		// Neste exemplo, para qualquer outra mensagem (p.e. "minimizar","maximizar","restaurar") // nï¿½o ï¿½ efectuado nenhum processamento, apenas se segue o "default" do Windows
 		return DefWindowProc(hWnd, messg, wParam, lParam);
 		break;
 	}

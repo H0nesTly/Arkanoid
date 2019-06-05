@@ -1,4 +1,4 @@
-#include "Canvas.h"
+ï»¿#include "Canvas.h"
 #include "resource1.h"
 #include <stdlib.h>
 
@@ -69,7 +69,7 @@ VOID drawScore(const DWORD wScore, HDC memDC)
 	rect.left = rectOffsetGameBoard.left + 128;
 	rect.top = 15;
 
-	_stprintf_s(tcScore, _countof(tcScore), TEXT("Pontuação : %d"), wScore);
+	_stprintf_s(tcScore, _countof(tcScore), TEXT("Pontuaï¿½ï¿½o : %d"), wScore);
 	DrawText(memDC, tcScore, -1, &rect, DT_SINGLELINE | DT_NOCLIP);
 }
 

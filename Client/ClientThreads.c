@@ -1,4 +1,4 @@
-#include "..\Communicate\stdafx.h"
+ï»¿#include "..\Communicate\stdafx.h"
 #include "ClientThreads.h"
 #include "ClientStructures.h"
 #include "Canvas.h"
@@ -12,7 +12,7 @@ DWORD WINAPI readMessageThread(LPVOID lpArg)
 {
 	ClientStructure* clientInfo = (ClientStructure*)lpArg;
 
-	//Bug Aqui forçar o fecho 
+	//Bug Aqui forï¿½ar o fecho 
 	while (bKeepRunning)
 	{
 		ReceiveMessage(clientInfo->tcUserName, &bKeepRunning);
