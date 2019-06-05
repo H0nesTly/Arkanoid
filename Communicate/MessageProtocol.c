@@ -63,11 +63,20 @@ static Game* receiveBroadcastSharedMemory()
 	return game;
 }
 
-static Game* receiveBroadcastPipe()
+static VOID receiveBroadcastPipe(Game* gameObj)
 {
-	Game* game = NULL;//read Message
+	DWORD dwBytesToRead;
 
-	return game;
+	MessageProtocolPipe myMessage;
+
+	ReadFile(gClientConnection.PipeLocal.hNamedPipeReadFromServer,
+		&myMessage,
+		sizeof(MessageProtocolPipe),
+		&dwBytesToRead,
+		NULL);
+
+	CopyMemory(gameObj, &myMessage.messagePD.gameData, sizeof(Game));
+
 }
 
 static VOID receiveMessageSharedMemory(const PTCHAR UserName, BOOL* bKeepRunning)
@@ -206,10 +215,10 @@ VOID __cdecl ReceiveBroadcast(BOOL* bKeepRunning, Game** gameObj)
 	switch (gClientConnection.typeOfConnection)
 	{
 	case clientSharedMemoryConnection:
-		*gameObj = receiveBroadcastSharedMemory(bKeepRunning);
+		*gameObj = receiveBroadcastSharedMemory();
 		break;
 	case clientNamedPipeLocalConnection:
-		*gameObj = receiveBroadcastPipe();
+		receiveBroadcastPipe(*gameObj);
 		break;
 	case clientNamedPipeRemoteConnection:
 		break;

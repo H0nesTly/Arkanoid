@@ -39,7 +39,6 @@ ClientStructure gClientInfo;
 // ============================================================================
 // FUNÇÃO DE INÍCIO DO PROGRAMA: WinMain()
 // ============================================================================
-// Em Windows, o programa começa sempre a sua execução na função WinMain()que desempenha // o papel da função main() do C em modo consola WINAPI indica o "tipo da função" (WINAPI // para todas as declaradas nos headers do Windows e CALLBACK para as funções de // processamento da janela)
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow)
 {
 	UNREFERENCED_PARAMETER(hPrevInst);
@@ -285,7 +284,8 @@ BOOL CALLBACK manageDialogEvents(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lP
 				}
 				else if (IsDlgButtonChecked(hWnd, IDC_RADIONAMEDPIPE) == BST_CHECKED)
 				{
-					gameObj = malloc(sizeof(Game));
+					gameObj = (Game*)malloc(sizeof(Game));
+
 					Login(gClientInfo.tcUserName, gClientInfo.hWndWindow, gClientInfo.doubleBufferingDC, clientNamedPipeLocalConnection);
 				}
 				EndDialog(hWnd, 0);

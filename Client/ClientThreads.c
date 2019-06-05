@@ -12,10 +12,11 @@ DWORD WINAPI readMessageThread(LPVOID lpArg)
 {
 	ClientStructure* clientInfo = (ClientStructure*)lpArg;
 
-	//Bug Aqui forçar o felho 
+	//Bug Aqui forçar o fecho 
 	while (bKeepRunning)
 	{
 		ReceiveMessage(clientInfo->tcUserName, &bKeepRunning);
+		Sleep(10000);
 	}
 
 	_tprintf(TEXT("\nVou fechar!!"));

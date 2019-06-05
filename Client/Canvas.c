@@ -248,7 +248,6 @@ VOID drawGame(const Game* gameObj, HDC memDC)
 {
 	if (gameObj != NULL)
 	{
-
 		drawGameBoard(&gameObj->myGameBoard, memDC);
 
 		drawHealth(gameObj->wLifes, memDC);
@@ -259,8 +258,7 @@ VOID drawGame(const Game* gameObj, HDC memDC)
 		}
 
 		drawBalls(&gameObj->ball, memDC);
-
-
+		
 		for (size_t i = 0; i < gameObj->wNumberOfPlayerPaddles; i++)
 			drawPlayerPaddles(&gameObj->PlayerPaddles[i], memDC);
 
