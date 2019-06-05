@@ -124,7 +124,8 @@ enum responseOfMessage
 	ResponseFail = -1,
 	ResponseLoginFail,
 	ResponseLoginSuccess,
-	ResponseTop10
+	ResponseTop10,
+	ResponseGameData
 };
 
 enum requestOfMessage

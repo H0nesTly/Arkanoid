@@ -2,6 +2,7 @@
 #include "Server.h"
 #include "GameLogic.h"
 #include "../Communicate/MessageProtocol.h"
+#include <minwinbase.h>
 
 static HANDLE hTimerWaitUpdateBall = NULL;
 
@@ -144,7 +145,6 @@ inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Serv
 		if (bOperationReturn  && npInstances->dwNumberOfBytesRead != 0)
 		{
 			//processamos mensagem
-
 			npInstances->fPendigIO = FALSE;
 			npInstances->State = WriteState;
 			return;
@@ -163,8 +163,6 @@ inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Serv
 
 		if (npInstances->message.wTypeOfMessage == TYPE_OF_MESSAGE_REQUEST)
 		{
-			_tprintf(TEXT("\n Handle [] Nome %s Erro[%d]\n"), npInstances->message.messagePD.tcSender, GetLastError());
-
 			switch (npInstances->message.request)
 			{
 			case LoginMessage:
@@ -203,6 +201,7 @@ inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Serv
 				tryToMovePaddle(npInstances->message.messagePD.tcSender, serverObj, 1);
 				break;
 			case QuitGameMessage:
+				//Disconnecta
 				break;
 			}
 		}
@@ -238,6 +237,31 @@ inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Serv
 	default:
 		_tprintf(TEXT("\n Estado não esperado"));
 		break;
+	}
+}
+
+static VOID broadCastGameData(NamedPipeInstance* npInst, Server* serverObj)
+{
+	Game* gameObj = (Game*)serverObj->serverHandlers.sharedMemHandlers.lpSharedMemGame;
+
+	MessageProtocolPipe myMessage;
+
+	ZeroMemory(&myMessage, sizeof(MessageProtocolPipe));
+
+	CopyMemory(&myMessage.messagePD.gameData, gameObj, sizeof(Game));
+
+	writeMessageToClientPipe(&myMessage, ResponseGameData, NAME_SERVER, TEXT("*"));
+
+	for (size_t i = 0; i < MAX_PLAYER_INSTANCES; i++)
+	{
+		if (npInst->State != ConnectingState)
+		{
+			WriteFile(npInst[i].hNamedPipeWriteToClient,
+				&myMessage,
+				sizeof(MessageProtocolPipe),
+				NULL,
+				NULL);
+		}
 	}
 }
 
@@ -362,8 +386,10 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 		{
 			moveBonus(game, i);
 		}
-		SetEvent(hgGameObject);
 
+		broadCastGameData(serverObj->serverHandlers.namedPipeInstances, serverObj);
+
+		SetEvent(hgGameObject);
 	}
 
 	return 0;
