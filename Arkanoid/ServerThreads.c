@@ -357,6 +357,11 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 
 		WaitForSingleObject(hTimerWaitUpdateBall, INFINITE);
 		moveBall(game);
+
+		for (WORD i = 0; i < game->wNumberOfBonusDropping; i++)
+		{
+			moveBonus(game, i);
+		}
 		SetEvent(hgGameObject);
 
 	}
@@ -368,14 +373,11 @@ DWORD WINAPI BonusThread(LPVOID lpArg)
 {
 	Game* gameObj = (Game*)((Server*)lpArg)->serverHandlers.sharedMemHandlers.lpSharedMemGame;
 
-	while (1)
-	{
-		WaitForSingleObject(hTimerWaitUpdateBall, INFINITE);
-		for (WORD i = 0; i < gameObj->wNumberOfBonusDropping; i++)
-		{
-			moveBonus(gameObj, i);
-		}
-	}
+	//while (1)
+	//{
+	//	//WaitForSingleObject(hTimerWaitUpdateBall, INFINITE);
+
+	//}
 
 
 	return 0;

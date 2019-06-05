@@ -273,7 +273,7 @@ VOID createBonus(WORD wCoordX, WORD wCoordY, WORD wHeight, WORD wWidth, TypeOfBo
 	gameObj->bonusBlock[wIndex].wHeight = wHeight;
 
 	gameObj->bonusBlock[wIndex].wDropUnits = 4;
-
+	 
 	gameObj->bonusBlock[wIndex].typeOfBonus = toBonus;
 }
 
