@@ -127,8 +127,6 @@ VOID moveBonus(Game* gameObj, WORD wIndex)
 	BonusBlock* bonusBlock = &gameObj->bonusBlock[wIndex];
 	BOOL bKeepChecking = TRUE;
 
-	_tprintf(TEXT("\nCordenadas do bonus %d"), bonusBlock->bonusCoords.y);
-
 	if (bonusBlock->bonusCoords.y + bonusBlock->wHeight + bonusBlock->wDropUnits > DEFAULT_HEIGTH_LOSE_BALL)
 	{
 		destroyBonus(wIndex, gameObj);
@@ -281,23 +279,59 @@ VOID createBonus(WORD wCoordX, WORD wCoordY, WORD wHeight, WORD wWidth, TypeOfBo
 
 VOID destroyBlock(WORD wIndex, Game* gameObj)
 {
-	float valueGenerate;
+	double valueGenerate, lastProb = 0;
 	if (wIndex >= 0 && wIndex < NUM_OF_BLOCK_OBJ_GAME)
 	{
 		switch (gameObj->blocks[wIndex].typeOfBlock)
 		{
 		case Magic:
-			valueGenerate = ((float)rand()) / 1;
+			valueGenerate = ((float)rand()) / RAND_MAX;
+			lastProb += serverConfig.probTriple;
 
-			//if (valueGenerate > serverConfig.probTriple)
-
-			createBonus(gameObj->blocks[wIndex].blockPosition.x,
-				gameObj->blocks[wIndex].blockPosition.y,
-				16,
-				16,
-				ExtraHealth,
-				gameObj);
-
+			if (valueGenerate <= lastProb)
+			{
+				createBonus(gameObj->blocks[wIndex].blockPosition.x,
+					gameObj->blocks[wIndex].blockPosition.y,
+					16,
+					16,
+					ExtraHealth,
+					gameObj);
+			}
+			else
+			{
+				lastProb += serverConfig.probSlowDowns;
+				if (valueGenerate <= lastProb)
+				{
+					createBonus(gameObj->blocks[wIndex].blockPosition.x,
+						gameObj->blocks[wIndex].blockPosition.y,
+						16,
+						16,
+						SlowDown,
+						gameObj);
+				}
+				else
+				{
+					lastProb += serverConfig.probSpeedUp;
+					if (valueGenerate <= lastProb)
+					{
+						createBonus(gameObj->blocks[wIndex].blockPosition.x,
+							gameObj->blocks[wIndex].blockPosition.y,
+							16,
+							16,
+							SpeedUp,
+							gameObj);
+					}
+					else
+					{
+						createBonus(gameObj->blocks[wIndex].blockPosition.x,
+							gameObj->blocks[wIndex].blockPosition.y,
+							16,
+							16,
+							ExtraHealth,
+							gameObj);
+					}
+				}
+			}
 
 			break;
 		case Normal:
@@ -405,7 +439,7 @@ VOID setBallVelocity(Ball* balleObj, WORD wVelocity)
 	{
 		wVelocity = DEFAULT_BALL_VELOCITY;
 	}
-	balleObj->wVelocity = wVelocity; 
+	balleObj->wVelocity = wVelocity;
 }
 
 VOID setHealth(Game* gameObj, WORD wLifes)
