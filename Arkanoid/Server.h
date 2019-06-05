@@ -38,9 +38,11 @@ VOID setScoreTopTen(ScorePlayer newScore, ScorePlayer scoreTopTen[]);
 
 BOOL verifyUserName(PTCHAR);
 
+VOID broadCastGameData(NamedPipeInstance* , Server*);
+
 VOID writeMessageToClientSharedMemory(MessageQueue*, TypeOfResponseMessage, const PTCHAR, const PTCHAR);
 
-VOID writeMessageToClientPipe(MessageProtocolPipe*, TypeOfResponseMessage, const PTCHAR, const PTCHAR);
+VOID writeMessageToClientPipeResponse(MessageProtocolPipe*, TypeOfResponseMessage, const PTCHAR, const PTCHAR);
 
 /*@return - true se não existir username ja no servidor*/
 BOOL checkUserNameInLobby(PTCHAR, const ServerGameInstance *);

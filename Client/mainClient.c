@@ -257,6 +257,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_DESTROY: // Destruir a janela e terminar o programa
 	// "PostQuitMessage(Exit Status)"
+		free(gameObj);
 		PostQuitMessage(0);
 		break;
 	default:
@@ -284,6 +285,7 @@ BOOL CALLBACK manageDialogEvents(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lP
 				}
 				else if (IsDlgButtonChecked(hWnd, IDC_RADIONAMEDPIPE) == BST_CHECKED)
 				{
+					gameObj = malloc(sizeof(Game));
 					Login(gClientInfo.tcUserName, gClientInfo.hWndWindow, gClientInfo.doubleBufferingDC, clientNamedPipeLocalConnection);
 				}
 				EndDialog(hWnd, 0);

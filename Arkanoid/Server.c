@@ -161,6 +161,31 @@ BOOL initServerPipeLocal(NamedPipeInstance npInstances[], WORD wInstances)
 	return TRUE;
 }
 
+VOID broadCastGameData(NamedPipeInstance* npInst, Server* serverObj)
+{
+	Game* gameObj = (Game*)serverObj->serverHandlers.sharedMemHandlers.lpSharedMemGame;
+
+	MessageProtocolPipe myMessage;
+
+	ZeroMemory(&myMessage, sizeof(MessageProtocolPipe));
+
+	CopyMemory(&myMessage.messagePD.gameData, gameObj, sizeof(Game));
+
+	writeMessageToClientPipeResponse(&myMessage, ResponseGameData, NAME_SERVER, TEXT("*"));
+
+	for (size_t i = 0; i < MAX_PLAYER_INSTANCES; i++)
+	{
+		if (npInst->State != ConnectingState)
+		{
+			WriteFile(npInst[i].hNamedPipeWriteToClient,
+				&myMessage,
+				sizeof(MessageProtocolPipe),
+				NULL,
+				NULL);
+		}
+	}
+}
+
 VOID writeMessageToClientSharedMemory(MessageQueue* mqArg, TypeOfResponseMessage response, const PTCHAR pSender, const PTCHAR pDestination)
 {
 	MessageProtocolDatagram aux;
@@ -205,6 +230,7 @@ VOID writeMessageToClientPipeResponse(MessageProtocolPipe* mppArg, TypeOfRespons
 		pSender,
 		pDestination);
 }
+
 
 VOID fillMessageToProtocolDatagram(MessageProtocolDatagram* message_protocol_datagram, const PTCHAR pSender, const PTCHAR pDestination)
 {
