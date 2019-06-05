@@ -2,11 +2,11 @@
 /*			ATUALMENTE NESTE TEMPLATE ESTÁ ATIVO A
 		OPÇOA UNICODE LOGO ESTA A CORRER COM UTF-16*/
 #include <windows.h>
+#include <winuser.h>
 #include <tchar.h>
 #include <fcntl.h>
 #include <io.h>
 #include <stdio.h>
-#include <winuser.h>
 #include <stdlib.h>
 
 #include "ClientStructures.h"
@@ -184,7 +184,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 	switch (messg)
 	{
 	case WM_CREATE:
-
+		PlaySound(TEXT("./backgorund_music.mp3"), NULL, SND_ALIAS | SND_APPLICATION);
 		GetClientRect(hWnd, &rectWindowProp);
 
 		hDC = GetDC(hWnd);
@@ -228,10 +228,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 		{
 		case VK_LEFT:
 			//xBitMap = xBitMap > 0 ? xBitMap - 10 : 0;
-			SendMessageDll(&bKeepRunning,KeyPressedLeftMessage);
+			SendMessageDll(&bKeepRunning, KeyPressedLeftMessage);
 			break;
 		case VK_RIGHT:
-			SendMessageDll(&bKeepRunning,KeyPressedRigthMessage);
+			SendMessageDll(&bKeepRunning, KeyPressedRigthMessage);
 			break;
 		case VK_DOWN:
 			//yBitMap = yBitMap < rect.top - bmp.bmWidth ? yBitMap + 10 : rect.bottom - bmp.bmHeight;
@@ -251,6 +251,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 			break;
 		case IDNO:
 			//não faz nada
+			return (1);
 			break;
 		}
 		break;
