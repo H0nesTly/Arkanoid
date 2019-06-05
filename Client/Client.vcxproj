@@ -153,7 +153,6 @@
   <ItemGroup>
     <Image Include="bitmap4.bmp" />
     <Image Include="life.bmp" />
-    <Image Include="Life.bmp" />
     <Image Include="SlowDown.bmp">
       <DeploymentContent>false</DeploymentContent>
     </Image>
