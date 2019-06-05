@@ -123,11 +123,24 @@
     <ClInclude Include="Canvas.h" />
     <ClInclude Include="ClientStructures.h" />
     <ClInclude Include="ClientThreads.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Canvas.c" />
     <ClCompile Include="ClientThreads.c" />
     <ClCompile Include="mainClient.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Client.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="ball.bmp" />
+    <Image Include="bitmap1.bmp" />
+    <Image Include="ExtraHealth.bmp" />
+    <Image Include="life.bmp" />
+    <Image Include="SlowDown.bmp" />
+    <Image Include="SpeedUp.bmp" />
+    <Image Include="triple.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,5 +1,5 @@
 ﻿#include "Canvas.h"
-#include "resource1.h"
+#include "resource.h"
 #include <stdlib.h>
 
 extern HWND gWnd;
@@ -18,7 +18,7 @@ static HBITMAP hBmpLife = NULL;
 static VOID initResources()
 {
 	hBmpBall = (HBITMAP)LoadImage(GetModuleHandle(NULL),
-		MAKEINTRESOURCE(IDB_BITMAP4),
+		MAKEINTRESOURCE(IDB_BITMAPBALL),
 		IMAGE_BITMAP,
 		0, 0,
 		LR_DEFAULTSIZE

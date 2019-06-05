@@ -11,7 +11,7 @@
 
 #include "ClientStructures.h"
 #include "ClientThreads.h"
-#include "resource1.h"
+#include "resource.h"
 #include "Canvas.h"
 #include "..\Communicate\MessageProtocol.h"
 #include "..\Communicate\DllSetup.h"
