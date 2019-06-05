@@ -72,7 +72,6 @@ struct playerInfo
 struct player
 {
 	PlayerInfo playerInfo;
-	DWORD dwScore;
 };
 
 struct paddle
@@ -122,6 +121,7 @@ struct game
 	Ball ball;
 
 	WORD wLifes;
+	DWORD dwScore;
 	GameBoard myGameBoard;
 };
 

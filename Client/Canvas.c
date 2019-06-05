@@ -6,14 +6,22 @@ extern RECT rectWindowProp;
 extern ClientStructure gClientInfo;
 RECT rectOffsetGameBoard;
 
-VOID drawScore(const WORD wScore, HDC memDC)
+VOID drawScore(const DWORD wScore, HDC memDC)
 {
-	
+	//SetTextColor(memDC, RGB(255, 255, 255));
+	//SetBkMode(memDC, TRANSPARENT);
+	//rect.left = xPos;
+	//rect.top = yPos;
+	//DrawText(memDC, &c, 1, &rect, DT_SINGLELINE | DT_NOCLIP);
 }
 
-VOID drawHealth(const WORD wLifesLeft, HDC)
+VOID drawHealth(const WORD wLifesLeft, HDC memDC)
 {
-	
+	for (size_t i = 0; i < wLifesLeft; i++)
+	{
+		
+	}
+
 }
 
 VOID drawBlocks(const Block* blocksObj, HDC memDc)
@@ -198,6 +206,9 @@ VOID drawGame(const Game* gameObj, HDC memDC)
 {
 	if (gameObj != NULL)
 	{
+		drawHealth(gameObj->wLifes, memDC);
+		drawScore(gameObj->dwScore, memDC);
+
 		drawGameBoard(&gameObj->myGameBoard, memDC);
 
 		for (int i = 0; i < gameObj->wNumberOfBlocks; ++i)

@@ -15,7 +15,7 @@
 
 #define COLOR_GAMEBOARD RGB(0, 233, 0)
 
-VOID drawScore(const WORD, HDC);
+VOID drawScore(const DWORD, HDC);
 
 VOID drawHealth(const WORD, HDC);
 
