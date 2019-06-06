@@ -38,6 +38,9 @@ struct clientConnection
 			HANDLE hEventReadNewMessage;
 			/*Mutex's para a escrita de novas mensagens*/
 			HANDLE hMutexWriteNewMessage;
+
+			HANDLE hEventWaitForGameData;
+
 		} SharedMem;
 
 		struct pipeLocal
@@ -77,9 +80,9 @@ BOOL initClientMessageMemDLL(HANDLE*, LPVOID*);
 
 VOID freeMappedMemoryDLL(HANDLE, LPVOID, HANDLE, LPVOID);
 
-BOOL initSyncObjectsDLL(HANDLE*, HANDLE*, HANDLE*, HANDLE*);
+BOOL initSyncObjectsDLL(HANDLE*, HANDLE*, HANDLE*, HANDLE*, HANDLE*);
 
-VOID freeSyncObjectsDLL(HANDLE, HANDLE, HANDLE, HANDLE);
+VOID freeSyncObjectsDLL(HANDLE, HANDLE, HANDLE, HANDLE,HANDLE);
 /*----------  FIM Funçoes de Bootstrapping para memoria partilhada ----------*/
 
 /*---------- Funçoes de Bootstrapping para NamedPipes ----------*/

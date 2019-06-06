@@ -16,7 +16,6 @@ DWORD WINAPI readMessageThread(LPVOID lpArg)
 	while (bKeepRunning)
 	{
 		ReceiveMessage(clientInfo->tcUserName, &bKeepRunning);
-		Sleep(10000);
 	}
 
 	_tprintf(TEXT("\nVou fechar!!"));
@@ -35,23 +34,14 @@ DWORD WINAPI readGameDataThread(LPVOID lpArg)
 {
 	UNREFERENCED_PARAMETER(lpArg);
 
-	HANDLE hEvent = CreateEvent(
-		NULL,
-		TRUE,
-		FALSE,
-		NAME_EVENT_OBJECT_GAME
-	);
 
 	while (bKeepRunning)
 	{
-		WaitForSingleObject(hEvent, INFINITE);
+
 		ReceiveBroadcast(&bKeepRunning, &gameObj);
 
 		InvalidateRect(gWnd, NULL, FALSE);
-
 		//RedrawWindow(gWnd,0, 0,RDW_INVALIDATE | RDW_UPDATENOW);
-
-		ResetEvent(hEvent);
 	}
 
 	return 0;

@@ -36,7 +36,8 @@ VOID freeComponentsDLL(ClientConnection* ccArg)
 			ccArg->SharedMem.hSemaphoreWriteMessageToServer,
 			ccArg->SharedMem.hSemaphoreReadMessageFromServer,
 			ccArg->SharedMem.hEventReadNewMessage,
-			ccArg->SharedMem.hMutexWriteNewMessage);
+			ccArg->SharedMem.hMutexWriteNewMessage,
+			ccArg->SharedMem.hEventReadNewMessage);
 
 		break;
 	case clientNamedPipeLocalConnection:
@@ -55,7 +56,7 @@ BOOL initSharedMemoryDLL(SharedMemory* shArg)
 {
 	return initClientGameMemDLL(&shArg->hGame, &shArg->lpGame) &&
 		initClientMessageMemDLL(&shArg->hMessage, &shArg->lpMessage) &&
-		initSyncObjectsDLL(&shArg->hEventReadNewMessage, &shArg->hSemaphoreWriteMessageToServer, &shArg->hMutexWriteNewMessage, &shArg->hSemaphoreReadMessageFromServer);
+		initSyncObjectsDLL(&shArg->hEventReadNewMessage, &shArg->hSemaphoreWriteMessageToServer, &shArg->hMutexWriteNewMessage, &shArg->hSemaphoreReadMessageFromServer, &shArg->hEventWaitForGameData);
 }
 
 BOOL initClientGameMemDLL(HANDLE* hMapObj, LPVOID* lpSharedMem)
@@ -141,7 +142,7 @@ VOID freeMappedMemoryDLL(HANDLE hMapObjGame, LPVOID lpSharedGame, HANDLE hMapObj
 	CloseHandle(hMapObjMessage);
 }
 
-BOOL initSyncObjectsDLL(HANDLE* hRObj, HANDLE* hwSemaphore, HANDLE* hMutex, HANDLE* hwSemaphoreFromServer)
+BOOL initSyncObjectsDLL(HANDLE* hRObj, HANDLE* hwSemaphore, HANDLE* hMutex, HANDLE* hwSemaphoreFromServer, HANDLE* hEventNewDataGame)
 {
 	*hRObj = CreateEvent(
 		NULL,		//security attributes
@@ -169,17 +170,25 @@ BOOL initSyncObjectsDLL(HANDLE* hRObj, HANDLE* hwSemaphore, HANDLE* hMutex, HAND
 		TRUE,
 		NAME_MUTEX_OBJECT_CLIENT_WRITE_MESSAGE);
 
+	*hEventNewDataGame = CreateEvent(
+		NULL,
+		TRUE,
+		FALSE,
+		NAME_EVENT_OBJECT_GAME
+	);
+
 	_tprintf(TEXT("Criou eventos \n"));
 
-	return *hRObj == NULL || *hwSemaphore == NULL || *hMutex == NULL || *hwSemaphoreFromServer == NULL ? FALSE : TRUE;
+	return *hRObj == NULL || *hwSemaphore == NULL || *hMutex == NULL || *hwSemaphoreFromServer == NULL || *hEventNewDataGame == NULL ? FALSE : TRUE;
 }
 
-VOID freeSyncObjectsDLL(HANDLE hWObj, HANDLE hSObj, HANDLE hRObj, HANDLE hMutex)
+VOID freeSyncObjectsDLL(HANDLE hWObj, HANDLE hSObj, HANDLE hRObj, HANDLE hMutex,HANDLE hGameData)
 {
 	CloseHandle(hWObj);
 	CloseHandle(hSObj);
 	CloseHandle(hRObj);
 	CloseHandle(hMutex);
+	CloseHandle(hGameData);
 }
 
 BOOL initNamedPipeLocalDLL(PipeLocal* plArg)
@@ -203,7 +212,7 @@ BOOL initNamedPipeLocalDLL(PipeLocal* plArg)
 		NULL,				//securty atributes
 		OPEN_EXISTING,		//abrir o pipe
 		0,					//atributos normais
-		NULL);		
+		NULL);
 
 	if (plArg->hNamedPipeWriteToServer == INVALID_HANDLE_VALUE ||
 		plArg->hNamedPipeReadFromServer == INVALID_HANDLE_VALUE ||

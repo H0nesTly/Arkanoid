@@ -58,7 +58,11 @@ static VOID loginLocalPIPE(const PTCHAR username)
 
 static Game* receiveBroadcastSharedMemory()
 {
+	WaitForSingleObject(gClientConnection.SharedMem.hEventWaitForGameData, INFINITE);
+
 	Game* game = (Game*)gClientConnection.SharedMem.lpGame;
+
+	ResetEvent(gClientConnection.SharedMem.hEventWaitForGameData);
 
 	return game;
 }
