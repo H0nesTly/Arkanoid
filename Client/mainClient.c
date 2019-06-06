@@ -146,7 +146,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 		0,
 		&dwThreadsIds[2]
 	);
-	PlaySound(TEXT("background_music.wav"), NULL, SND_ASYNC | SND_NODEFAULT);
+	//PlaySound(TEXT("background_music.wav"), NULL, SND_ASYNC | SND_NODEFAULT);
 
 	// ============================================================================
 	// 5. Loop de Mensagens
