@@ -1,5 +1,6 @@
 #include "Server.h"
 #include "..\Communicate\CircularBuffer.h"
+#include <sddl.h>
 
 BOOL intitServerGameMem(HANDLE* hMapObj, LPVOID* lpSharedMem)
 {
@@ -619,66 +620,20 @@ VOID tryToMovePaddle(const PTCHAR username, Server* serverObj, const short nSide
 
 VOID initSecurityAtributes(SECURITY_ATTRIBUTES* saArg)
 {
-	PSECURITY_ATTRIBUTES pSD;
-	PACL pACL;
-	EXPLICIT_ACCESS ea;
-	PSID pEveryonesSID = NULL, pAdminSD = NULL;
-	SID_IDENTIFIER_AUTHORITY sidAuthWorld = SECURITY_WORLD_SID_AUTHORITY; // represents the top-level authority of a security identifier (SID).
-	TCHAR str[256];
+	const TCHAR* szSD = TEXT("D:")
+		TEXT("(A;OICI;GA;;;BG)")
+		TEXT("(A;OICI;GA;;;AN)")
+		TEXT("(A;OICI;GA;;;AU)")
+		TEXT("(A;OICI;GA;;;BA)");
 
-	pSD = (PSECURITY_DESCRIPTOR)LocalAlloc(LPTR,
-		SECURITY_DESCRIPTOR_MIN_LENGTH);
+	saArg->nLength = sizeof(SECURITY_ATTRIBUTES);
+	saArg->bInheritHandle = FALSE;
 
-	if (pSD == NULL)
-	{
-		_tprintf(TEXT("Erro LocalAlloc!!!"));
-		return;
-	}
-	if (!InitializeSecurityDescriptor(pSD, SECURITY_DESCRIPTOR_REVISION))
-	{
-		_tprintf(TEXT("Erro IniSec!!!"));
-		return;
-	}
 
-	// Create a well-known SID for the Everyone group.
-	if (!AllocateAndInitializeSid(
-		&sidAuthWorld,			//This structure provides the top-level identifier authority value to set in the SID.
-		1,						//numero de sub authority
-		SECURITY_WORLD_RID,		//
-		0, 0, 0, 0, 0, 0, 0,	//sem sub authority
-		&pEveryonesSID))		//A pointer to a variable that receives the pointer to the allocated and initialized SID structure.
-	{
-		_stprintf_s(str, 256, TEXT("AllocateAndInitializeSid() error %u"), GetLastError());
-		_tprintf(str);
-		Cleanup(pEveryonesSID, pAdminSD, NULL, pSD);
-	}
-	else
-	{
-		_tprintf(TEXT("AllocateAndInitializeSid() for the Everyone group is OK"));
-	}
-
-	ZeroMemory(&ea, sizeof(EXPLICIT_ACCESS));
-
-	ea.grfAccessPermissions = GENERIC_READ | GENERIC_WRITE;
-	ea.grfAccessMode = SET_ACCESS;
-	ea.grfInheritance = SUB_CONTAINERS_AND_OBJECTS_INHERIT;
-	ea.Trustee.TrusteeForm = TRUSTEE_IS_SID;
-	ea.Trustee.TrusteeType = TRUSTEE_IS_WELL_KNOWN_GROUP;
-	ea.Trustee.ptstrName = (LPTSTR)pEveryonesSID;
-
-	if (SetEntriesInAcl(1, &ea, NULL, &pACL) != ERROR_SUCCESS) {
-		_tprintf(TEXT("Erro SetAcl!!!"));
-		return;
-	}
-
-	if (!SetSecurityDescriptorDacl(pSD, TRUE, pACL, FALSE)) {
-		_tprintf(TEXT("Erro IniSec!!!"));
-		return;
-	}
-
-	saArg->nLength = sizeof(*saArg);
-	saArg->lpSecurityDescriptor = pSD;
-	saArg->bInheritHandle = TRUE;
+	ConvertStringSecurityDescriptorToSecurityDescriptor(szSD,
+		SDDL_REVISION_1,
+		&(saArg->lpSecurityDescriptor),
+		NULL);
 }
 
 // Buffer clean up routine
