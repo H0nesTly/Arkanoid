@@ -203,8 +203,8 @@ BOOL initNamedPipeLocalDLL(PipeLocal* plArg)
 	initSecurityAtributes(&sa);
 
 	plArg->hNamedPipeWriteToServer = CreateFile(
-		//NAME_NAMED_PIPE_WRITE_TO_SERVER,
-		TEXT("\\\\192.168.56.102\\pipe\\namedPipeWrite"),	//Nome do Pipe		
+		NAME_NAMED_PIPE_WRITE_TO_SERVER,
+		//TEXT("\\\\192.168.56.102\\pipe\\namedPipeWrite"),	//Nome do Pipe		
 		GENERIC_WRITE,
 		0,					//modo de partilha
 		&sa,				//securty atributes
@@ -213,8 +213,8 @@ BOOL initNamedPipeLocalDLL(PipeLocal* plArg)
 		NULL);				//template file
 
 	plArg->hNamedPipeReadFromServer = CreateFile(
-		//NAME_NAMED_PIPE_READ_FROM_SERVER,
-		TEXT("\\\\192.168.56.102\\pipe\\namedPipeRead"),	//Nome do Pipe		
+		NAME_NAMED_PIPE_READ_FROM_SERVER,
+		//TEXT("\\\\192.168.56.102\\pipe\\namedPipeRead"),	//Nome do Pipe		
 		GENERIC_READ,
 		0,					//modo de partilha
 		&sa,				//securty atributes

@@ -42,7 +42,7 @@ static VOID loginLocalPIPE(const PTCHAR username)
 
 	ZeroMemory(&messageToSend, sizeof(MessageProtocolPipe));
 
-	writeMessageToServerPipeRequest(&messageToSend, LoginMessage, NAME_SERVER, username);
+	writeMessageToServerPipeRequest(&messageToSend, LoginMessage, username, NAME_SERVER);
 
 	dwBytesToWrite = sizeof(MessageProtocolPipe);
 	WriteFile(hPipe,
@@ -180,6 +180,24 @@ static VOID sendMessageSharedMemory(const PTCHAR username, TypeOfRequestMessage 
 	}
 }
 
+static VOID sendMessagePipe(const PTCHAR username, TypeOfRequestMessage tRequest)
+{
+	HANDLE hPipe = gClientConnection.PipeLocal.hNamedPipeWriteToServer;
+	MessageProtocolPipe messageToSend;
+	DWORD dwBytesToWrite;
+
+	ZeroMemory(&messageToSend, sizeof(MessageProtocolPipe));
+
+	writeMessageToServerPipeRequest(&messageToSend, tRequest, username, NAME_SERVER);
+
+	dwBytesToWrite = sizeof(MessageProtocolPipe);
+	WriteFile(hPipe,
+		&messageToSend,
+		dwBytesToWrite,
+		&dwBytesToWrite,
+		NULL);
+}
+
 VOID __cdecl setGameObj(Game** gameObj)
 {
 	gClientConnection.PipeLocal.gameObj = *gameObj;
@@ -247,6 +265,7 @@ VOID __cdecl SendMessageDll(BOOL* bKeepRunning, TypeOfRequestMessage tRequest)
 		sendMessageSharedMemory(gClientConnection.tcUserName, tRequest);
 		break;
 	case clientNamedPipeLocalConnection:
+		sendMessagePipe(gClientConnection.tcUserName, tRequest);
 		break;
 	case clientNamedPipeRemoteConnection:
 		break;

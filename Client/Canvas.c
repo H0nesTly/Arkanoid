@@ -86,7 +86,7 @@ VOID drawHealth(const WORD wLifesLeft, HDC memDC)
 	rect.left = rectOffsetGameBoard.left;
 	rect.top = 15;
 
-	for (size_t i = 0; i < wLifesLeft; i++)
+	for (int i = 0; i < wLifesLeft; i++)
 	{
 		BitBlt(memDC, rect.left + bmp.bmWidth * i, rect.top, bmp.bmWidth, bmp.bmWidth, tempDC, 0, 0, SRCCOPY);
 	}
