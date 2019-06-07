@@ -143,12 +143,11 @@ VOID moveBonus(Game* gameObj, WORD wIndex)
 
 	for (size_t i = 0; i < gameObj->wNumberOfPlayerPaddles; i++)
 	{
-		if (gameObj->PlayerPaddles[i].playerBlockPosition.y <= bonusBlock->bonusCoords.y)
+		if (gameObj->PlayerPaddles[i].playerBlockPosition.y <= bonusBlock->bonusCoords.y + bonusBlock->wDropUnits)
 		{
 			if (checkColissionBonusObject(bonusBlock, &gameObj->PlayerPaddles[i].playerBlockPosition, gameObj->PlayerPaddles[i].wWidth, gameObj->PlayerPaddles[i].wHeight))
 			{
 				catchBonus(wIndex, gameObj);
-				destroyBonus(wIndex, gameObj);
 				return;
 			}
 		}
@@ -224,7 +223,7 @@ VOID createBall(WORD wCoordX, WORD wCoordY, Game* gameObj)
 
 	setBallVelocity(&gameObj->ball[wIndex], serverConfig.wVelocityBall);
 
-	gameObj->ball[wIndex].wUnitsToMove = DEFAULT_BALL_UNITS_TO_MOVE;
+	gameObj->ball[wIndex].wUnitsToMove = serverConfig.wVelocityBall;
 }
 
 VOID createPlayerPaddle(const PTCHAR OwnerUserName, Game* gameObj)
@@ -282,7 +281,7 @@ VOID createBonus(WORD wCoordX, WORD wCoordY, WORD wHeight, WORD wWidth, TypeOfBo
 	gameObj->bonusBlock[wIndex].wWidth = wWidth;
 	gameObj->bonusBlock[wIndex].wHeight = wHeight;
 
-	gameObj->bonusBlock[wIndex].wDropUnits = 4;
+	gameObj->bonusBlock[wIndex].wDropUnits = 3;
 
 	gameObj->bonusBlock[wIndex].typeOfBonus = toBonus;
 }
@@ -440,9 +439,10 @@ VOID destroyBall(WORD wIndex, Game* gameObj)
 
 VOID catchBonus(WORD wIndex, Game* gameObj)
 {
+	WORD aux;
 	if (wIndex >= 0 && wIndex < NUM_OF_OBJ_GAME)
 	{
-		switch (gameObj->blocks[wIndex].typeOfBlock)
+		switch (gameObj->bonusBlock[wIndex].typeOfBonus)
 		{
 		case SpeedUp:
 			break;
@@ -454,7 +454,8 @@ VOID catchBonus(WORD wIndex, Game* gameObj)
 			incrementHealth(gameObj);
 			break;
 		case Triple:
-			//cria duas bolas
+			
+			//createBall(,, gameObj);
 			break;
 			//Nao faz nada
 		case None:
@@ -486,7 +487,7 @@ VOID setHealth(Game* gameObj, WORD wLifes)
 
 VOID incrementHealth(Game* gameObj)
 {
-	gameObj->wLifes++;
+	gameObj->wLifes += 1;
 }
 
 BOOL decrementHealth(Game* gameObj)
@@ -494,7 +495,6 @@ BOOL decrementHealth(Game* gameObj)
 	return gameObj->wLifes > 0 ? gameObj->wLifes-- : FALSE;
 }
 
-//TODO melhorar velociadae muito grande
 BOOL checkColissionBallObject(Ball* ballObject, const Coords* coordsObj2, const WORD wWidthObj2, const WORD wHeightObj2)
 {
 	WORD wObjectBallRigth, wObjectBallBottom;
