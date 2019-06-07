@@ -46,14 +46,11 @@ static VOID loginLocalPIPE(const PTCHAR username)
 	writeMessageToServerPipeRequest(&messageToSend, LoginMessage, NAME_SERVER, username);
 
 	dwBytesToWrite = sizeof(MessageProtocolPipe);
-	if (WriteFile(hPipe,
+	WriteFile(hPipe,
 		&messageToSend,
 		dwBytesToWrite,
 		&dwBytesToWrite,
-		NULL))
-	{
-		_tprintf(TEXT("\nMensaagem enviada com sucesso tamanho %d |Erro %d\n"), dwBytesToWrite, GetLastError());
-	}
+		NULL);
 }
 
 static Game* receiveBroadcastSharedMemory()

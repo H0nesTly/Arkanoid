@@ -2,6 +2,7 @@
 #include "..\Communicate\CircularBuffer.h"
 #include <sddl.h>
 
+
 BOOL intitServerGameMem(HANDLE* hMapObj, LPVOID* lpSharedMem)
 {
 	//Mapear sharedMem para o jogo
@@ -123,7 +124,7 @@ BOOL initServerPipeLocal(NamedPipeInstance npInstances[], WORD wInstances)
 			sizeof(MessageProtocolPipe),	// Tamanho das mensagens que vai escrever
 			sizeof(MessageProtocolPipe),	//Tamanho das mensagens que vai ler
 			0,								//TimeOut
-			NULL					//Atributos de segurança
+			&sa_attributes					//Atributos de segurança
 		);
 
 
@@ -141,7 +142,7 @@ BOOL initServerPipeLocal(NamedPipeInstance npInstances[], WORD wInstances)
 			sizeof(MessageProtocolPipe),	// Tamanho das mensagens que vai escrever
 			sizeof(MessageProtocolPipe),	//Tamanho das mensagens que vai ler
 			0,							//TimeOut
-			NULL							//Atributos de segurança
+			&sa_attributes							//Atributos de segurança
 		);
 
 		if (npInstances[i].hNamedPipeReadFromClient == INVALID_HANDLE_VALUE ||

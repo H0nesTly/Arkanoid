@@ -14,6 +14,7 @@ struct clientStructure
 	HWND hWndWindow;
 	HDC doubleBufferingDC;
 	UserMode myMode;
+	TCHAR tcIP[16];
 };
 
 enum userMode

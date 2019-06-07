@@ -70,8 +70,8 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 		TEXT("ark_n.ico"),   // the icon file name
 		IMAGE_ICON,       // specifies that the file is an icon
 		0,                // width of the image (we'll specify default later on)
-		0,  
-		LR_LOADTRANSPARENT|// height of the image
+		0,
+		LR_LOADTRANSPARENT |// height of the image
 		LR_LOADFROMFILE |  // we want to load a file (as opposed to a resource)
 		LR_DEFAULTSIZE |   // default metrics based on the type (IMAGE_ICON, 32x32)
 		LR_SHARED         // let the system release the handle when it's no longer used
@@ -292,6 +292,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 
 BOOL CALLBACK manageDialogEvents(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 {
+	HANDLE hUserToken = NULL;
+	TCHAR tcPassword[20];
+	BOOL bLog;
+
 	UNREFERENCED_PARAMETER(lParam);
 	switch (messg)
 	{
@@ -308,6 +312,17 @@ BOOL CALLBACK manageDialogEvents(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lP
 				else if (IsDlgButtonChecked(hWnd, IDC_RADIONAMEDPIPE) == BST_CHECKED)
 				{
 					gameObj = (Game*)malloc(sizeof(Game));
+
+
+					GetDlgItemText(hWnd, IDC_IPADDRESSNAMEPIPE, gClientInfo.tcIP, 20);
+					GetDlgItemText(hWnd, IDC_EDITPASSWORD, tcPassword, 20);
+
+					bLog = LogonUser(TEXT("teste"), gClientInfo.tcIP, tcPassword,
+						LOGON32_LOGON_NEW_CREDENTIALS, //tipo de logon
+						LOGON32_PROVIDER_DEFAULT, //logon provide
+						&hUserToken);
+
+					bLog = ImpersonateLoggedOnUser(hUserToken);
 
 					Login(gClientInfo.tcUserName, gClientInfo.hWndWindow, gClientInfo.doubleBufferingDC, clientNamedPipeLocalConnection);
 				}
