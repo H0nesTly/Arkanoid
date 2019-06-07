@@ -18,7 +18,6 @@ DWORD WINAPI readMessageThread(LPVOID lpArg)
 		ReceiveMessage(clientInfo->tcUserName, &bKeepRunning);
 	}
 
-	_tprintf(TEXT("\nVou fechar!!"));
 	return 0;
 }
 

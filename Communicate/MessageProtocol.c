@@ -3,8 +3,11 @@
 #include "GameStructures.h"
 #include "CircularBuffer.h"
 #include "../Client/ClientStructures.h"
+#include <minwinbase.h>
 
 extern ClientConnection gClientConnection;
+
+static HANDLE ghNewBroadCastMessage = NULL;
 /*Variavel que continua o o programa a correr*/
 
 static VOID loginSharedMemory(const PTCHAR username)
@@ -20,10 +23,6 @@ static VOID loginSharedMemory(const PTCHAR username)
 		//Escrevemos mensagem
 
 	writeMessageToServerSharedMemory(queue, LoginMessage, username, NAME_SERVER);
-
-	//_tcscpy_s(queue->circularBufferClientServer.queueOfMessage[queue->circularBufferClientServer.wHeadIndex].tcData,
-	//	_countof(queue->circularBufferClientServer.queueOfMessage[0].tcData),
-	//	TEXT("Quero me conectar"));
 
 	//END CRITICAL SECTION	
 
@@ -66,18 +65,9 @@ static Game* receiveBroadcastSharedMemory()
 
 static VOID receiveBroadcastPipe(Game* gameObj)
 {
-	DWORD dwBytesToRead;
+	WaitForSingleObject(ghNewBroadCastMessage, INFINITE);
 
-	MessageProtocolPipe myMessage;
-
-	ReadFile(gClientConnection.PipeLocal.hNamedPipeReadFromServer,
-		&myMessage,
-		sizeof(MessageProtocolPipe),
-		&dwBytesToRead,
-		NULL);
-
-	CopyMemory(gameObj, &myMessage.messagePD.gameData, sizeof(Game));
-
+	CopyMemory(gameObj, &gClientConnection.PipeLocal.gameObj, sizeof(Game));
 }
 
 static VOID receiveMessageSharedMemory(const PTCHAR UserName, BOOL* bKeepRunning)
@@ -144,10 +134,24 @@ static VOID	receiveMessageLocalPipe(const PTCHAR UserName, BOOL* bKeepRunning)
 				break;
 			case ResponseLoginSuccess:
 				_tprintf(TEXT("\n%s"), messageToReceive.messagePD.tcData);
+
+				ghNewBroadCastMessage = CreateEvent(
+					NULL,
+					FALSE,		//modo automático
+					FALSE,		//nao sinalizado
+					NULL);
 				break;
 			case ResponseTop10:
 				//TODO: COMO MOSTRAR NA INTERFACE GRÁFICA
 				break;
+			case ResponseGameData:w
+				SetEvent(ghNewBroadCastMessage);
+
+				CopyMemory(gClientConnection.PipeLocal.gameObj,
+					&messageToReceive.messagePD.gameData,
+					sizeof(Game));
+				break;
+
 			}
 		}
 
@@ -178,6 +182,11 @@ static VOID sendMessageSharedMemory(const PTCHAR username, TypeOfRequestMessage 
 		_tprintf(TEXT("Release do mutex ou semafor FALHOU:(%d)\n"), GetLastError());
 		return;
 	}
+}
+
+VOID __cdecl setGameObj(Game** gameObj)
+{
+	gClientConnection.PipeLocal.gameObj = *gameObj;
 }
 
 VOID __cdecl Login(const PTCHAR username, HWND hWndArg, HDC memDC, TypeOfClientConnection arg)

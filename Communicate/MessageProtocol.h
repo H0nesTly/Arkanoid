@@ -149,6 +149,8 @@ enum requestOfMessage
 extern "C" {          // we need to export the C interface
 	#endif
 
+	DLL_API VOID __cdecl setGameObj(Game**);
+
 	/*Enviamos mensagem ao servidor*/
 	DLL_API VOID __cdecl Login(const PTCHAR, HWND, HDC, TypeOfClientConnection);
 

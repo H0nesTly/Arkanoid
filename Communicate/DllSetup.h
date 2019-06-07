@@ -1,5 +1,6 @@
 #pragma once
 #include "stdafx.h"
+#include "GameStructures.h"
 
 typedef struct clientConnection ClientConnection;
 typedef struct windowhandlers Windowhandlers;
@@ -47,6 +48,7 @@ struct clientConnection
 		{
 			HANDLE hNamedPipeWriteToServer;
 			HANDLE hNamedPipeReadFromServer;
+			Game* gameObj;
 			//Estado?
 		} PipeLocal;
 
@@ -82,7 +84,7 @@ VOID freeMappedMemoryDLL(HANDLE, LPVOID, HANDLE, LPVOID);
 
 BOOL initSyncObjectsDLL(HANDLE*, HANDLE*, HANDLE*, HANDLE*, HANDLE*);
 
-VOID freeSyncObjectsDLL(HANDLE, HANDLE, HANDLE, HANDLE,HANDLE);
+VOID freeSyncObjectsDLL(HANDLE, HANDLE, HANDLE, HANDLE, HANDLE);
 /*----------  FIM Funçoes de Bootstrapping para memoria partilhada ----------*/
 
 /*---------- Funçoes de Bootstrapping para NamedPipes ----------*/
