@@ -7,15 +7,14 @@ extern RECT rectWindowProp;
 extern ClientStructure gClientInfo;
 RECT rectOffsetGameBoard;
 
-static HBITMAP hBmpBall = NULL;
-static HBITMAP hBmpBonusSpeedUp = NULL;
-static HBITMAP hBmpBonusSlowDown = NULL;
-static HBITMAP hBmpBonusExtraHealth = NULL;
-static HBITMAP hBmpBonusTriple = NULL;
-static HBITMAP hBmpLife = NULL;
+ HBITMAP hBmpBall = NULL;
+ HBITMAP hBmpBonusSpeedUp = NULL;
+ HBITMAP hBmpBonusSlowDown = NULL;
+ HBITMAP hBmpBonusExtraHealth = NULL;
+ HBITMAP hBmpBonusTriple = NULL;
+ HBITMAP hBmpLife = NULL;
 
-
-static VOID initResources()
+ static VOID initResources()
 {
 	hBmpBall = (HBITMAP)LoadImage(GetModuleHandle(NULL),
 		MAKEINTRESOURCE(IDB_BITMAPBALL),

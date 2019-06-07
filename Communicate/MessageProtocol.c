@@ -63,11 +63,14 @@ static Game* receiveBroadcastSharedMemory()
 	return game;
 }
 
-static VOID receiveBroadcastPipe(Game* gameObj)
+static Game*  receiveBroadcastPipe()
 {
 	WaitForSingleObject(ghNewBroadCastMessage, INFINITE);
 
-	CopyMemory(gameObj, &gClientConnection.PipeLocal.gameObj, sizeof(Game));
+	Game *gameObj = gClientConnection.PipeLocal.gameObj;
+
+	return gameObj;
+	//CopyMemory(gameObj, &gClientConnection.PipeLocal.gameObj, sizeof(Game));
 }
 
 static VOID receiveMessageSharedMemory(const PTCHAR UserName, BOOL* bKeepRunning)
@@ -134,24 +137,17 @@ static VOID	receiveMessageLocalPipe(const PTCHAR UserName, BOOL* bKeepRunning)
 				break;
 			case ResponseLoginSuccess:
 				_tprintf(TEXT("\n%s"), messageToReceive.messagePD.tcData);
-
-				ghNewBroadCastMessage = CreateEvent(
-					NULL,
-					FALSE,		//modo automático
-					FALSE,		//nao sinalizado
-					NULL);
 				break;
 			case ResponseTop10:
 				//TODO: COMO MOSTRAR NA INTERFACE GRÁFICA
 				break;
-			case ResponseGameData:w
-				SetEvent(ghNewBroadCastMessage);
-
+			case ResponseGameData:
 				CopyMemory(gClientConnection.PipeLocal.gameObj,
 					&messageToReceive.messagePD.gameData,
 					sizeof(Game));
-				break;
 
+				SetEvent(ghNewBroadCastMessage);
+				break;
 			}
 		}
 
@@ -212,6 +208,12 @@ VOID __cdecl Login(const PTCHAR username, HWND hWndArg, HDC memDC, TypeOfClientC
 		break;
 	case clientNamedPipeLocalConnection:
 		loginLocalPIPE(gClientConnection.tcUserName);
+
+		ghNewBroadCastMessage = CreateEvent(
+			NULL,
+			FALSE,		//modo automático
+			FALSE,		//nao sinalizado
+			NULL);
 		break;
 	case clientNamedPipeRemoteConnection:
 		break;
@@ -228,7 +230,7 @@ VOID __cdecl ReceiveBroadcast(BOOL* bKeepRunning, Game** gameObj)
 		*gameObj = receiveBroadcastSharedMemory();
 		break;
 	case clientNamedPipeLocalConnection:
-		receiveBroadcastPipe(*gameObj);
+		*gameObj = receiveBroadcastPipe();
 		break;
 	case clientNamedPipeRemoteConnection:
 		break;

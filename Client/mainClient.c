@@ -311,9 +311,6 @@ BOOL CALLBACK manageDialogEvents(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lP
 				}
 				else if (IsDlgButtonChecked(hWnd, IDC_RADIONAMEDPIPE) == BST_CHECKED)
 				{
-					gameObj = (Game*)malloc(sizeof(Game));
-
-
 					GetDlgItemText(hWnd, IDC_IPADDRESSNAMEPIPE, gClientInfo.tcIP, 20);
 					GetDlgItemText(hWnd, IDC_EDITPASSWORD, tcPassword, 20);
 

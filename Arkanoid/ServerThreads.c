@@ -38,7 +38,6 @@ inline static VOID readNewMessageSharedMemory(MessageQueue* queue, Server* serve
 
 			break;
 		case TopPlayersMessage:
-
 			writeMessageToClientSharedMemory(queue,
 				ResponseTop10,
 				NAME_SERVER,

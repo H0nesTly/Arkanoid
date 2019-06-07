@@ -82,7 +82,6 @@ VOID movePaddle(const PTCHAR userName, Game* gameObj, const short nDirectionToMo
 	{
 		myPlayerPaddleTemp = &gameObj->PlayerPaddles[nIndex];
 
-
 		//TESTAR!!
 		//verificamos se existe algum paddle ao lado
 		for (size_t i = 0; i < gameObj->wNumberOfPlayerPaddles; i++)
