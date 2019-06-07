@@ -338,7 +338,7 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 	transferPlayersToGame(serverObj);
 	SetEvent(hgGameObject);
 
-	liDueTimeBall.QuadPart = -100000LL * game->ball.wVelocity;//10 ms
+	liDueTimeBall.QuadPart = -100000LL * game->ball[0].wVelocity;//10 ms
 
 	while (1)
 	{
@@ -354,6 +354,7 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 			FALSE);
 
 		WaitForSingleObject(hTimerWaitUpdateBall, INFINITE);
+
 		moveBall(game);
 
 		for (WORD i = 0; i < game->wNumberOfBonusDropping; i++)

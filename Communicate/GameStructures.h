@@ -118,7 +118,9 @@ struct game
 
 	WORD wNumberOfPlayerPaddles;
 	Paddle PlayerPaddles[NUM_OF_OBJ_GAME];
-	Ball ball;
+
+	WORD wNumberOfBalls;
+	Ball ball[NUM_OF_OBJ_GAME];
 
 	WORD wLifes;
 	DWORD dwScore;

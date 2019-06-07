@@ -5,70 +5,79 @@ extern GameServerConfiguration serverConfig;
 VOID moveBall(Game* gameObj)
 {
 	BOOL bCheckMore = TRUE;
-	//if (ballToMove->ballPosition.y < 550)
-	//{
-	//	//perde uma vida 
-	//}
+	Ball * ballToMove;
 
-	Ball * ballToMove = &gameObj->ball;
+	for (int i = 0; i < gameObj->wNumberOfBalls; i++)
+	{
+		ballToMove = &gameObj->ball[i];
 
-	if ((ballToMove->ballPosition.x + (ballToMove->nMovementVectorX * ballToMove->wUnitsToMove)) < 0)
-	{
-		ballToMove->nMovementVectorX = ballToMove->nMovementVectorX * -1;
-		ballToMove->ballPosition.x = 0 + NORMAL_SPACING;
-	}
-	else
-	{
-		if ((ballToMove->ballPosition.x + ballToMove->wWitdh + (ballToMove->nMovementVectorX * ballToMove->wUnitsToMove)) >= DEFAULT_WIDTH_OF_GAMEBOARD)
+		if ((ballToMove->ballPosition.x + (ballToMove->nMovementVectorX * ballToMove->wUnitsToMove)) < 0)
 		{
 			ballToMove->nMovementVectorX = ballToMove->nMovementVectorX * -1;
-			ballToMove->ballPosition.x = DEFAULT_WIDTH_OF_GAMEBOARD - ballToMove->wWitdh - NORMAL_SPACING;
+			ballToMove->ballPosition.x = 0 + NORMAL_SPACING;
 		}
-	}
-
-
-	if ((ballToMove->ballPosition.y + (ballToMove->nMovementVectorY * ballToMove->wUnitsToMove)) < 0)
-	{
-		ballToMove->nMovementVectorY = ballToMove->nMovementVectorY * -1;
-		ballToMove->ballPosition.y = 0 + NORMAL_SPACING;
-	}
-	else
-	{
-		if (ballToMove->ballPosition.y + ballToMove->wHeight + (ballToMove->nMovementVectorX * ballToMove->wUnitsToMove) > DEFAULT_HEIGTH_LOSE_BALL)
+		else
 		{
-			_tprintf(TEXT("\n Perdeste uma vida"));
-		}
-	}
-
-	for (size_t i = 0; i < gameObj->wNumberOfPlayerPaddles && bCheckMore; i++)
-	{
-		if (checkColissionBallObject(ballToMove, &gameObj->PlayerPaddles[i].playerBlockPosition, gameObj->PlayerPaddles[i].wWidth, gameObj->PlayerPaddles[i].wHeight))
-			bCheckMore = !bCheckMore;
-	}
-
-	for (size_t i = 0; i < gameObj->wNumberOfBonusDropping && bCheckMore; i++)
-	{
-		if (checkColissionBallObject(ballToMove, &gameObj->bonusBlock[i].bonusCoords, gameObj->bonusBlock[i].wWidth, gameObj->bonusBlock[i].wHeight))
-		{
-			bCheckMore = !bCheckMore;
-		}
-	}
-
-	for (WORD i = 0; i < gameObj->wNumberOfBlocks && bCheckMore; i++)
-	{
-		//se a bola estiver debaixo não pode colidir poupamos algum tempo TODO: X Axis
-		if (ballToMove->ballPosition.y + ballToMove->nMovementVectorY * ballToMove->wUnitsToMove <= gameObj->blocks[i].blockPosition.y + gameObj->blocks[i].wHeight)
-		{
-			if (checkColissionBallObject(ballToMove, &gameObj->blocks[i].blockPosition, gameObj->blocks[i].wWidth, gameObj->blocks[i].wHeight))
+			if ((ballToMove->ballPosition.x + ballToMove->wWitdh + (ballToMove->nMovementVectorX * ballToMove->wUnitsToMove)) >= DEFAULT_WIDTH_OF_GAMEBOARD)
 			{
-				destroyBlock(i, gameObj);
+				ballToMove->nMovementVectorX = ballToMove->nMovementVectorX * -1;
+				ballToMove->ballPosition.x = DEFAULT_WIDTH_OF_GAMEBOARD - ballToMove->wWitdh - NORMAL_SPACING;
+			}
+		}
+
+
+		if ((ballToMove->ballPosition.y + (ballToMove->nMovementVectorY * ballToMove->wUnitsToMove)) < 0)
+		{
+			ballToMove->nMovementVectorY = ballToMove->nMovementVectorY * -1;
+			ballToMove->ballPosition.y = 0 + NORMAL_SPACING;
+		}
+		else
+		{
+			if (ballToMove->ballPosition.y + ballToMove->wHeight + (ballToMove->nMovementVectorX * ballToMove->wUnitsToMove) > DEFAULT_HEIGTH_LOSE_BALL)
+			{
+				_tprintf(TEXT("\n Vidas restantes %d"), gameObj->wLifes);
+				//retorna
+				destroyBall(i,gameObj);
+
+				if (gameObj->wNumberOfBalls == 0)
+				{
+					decrementHealth(gameObj);
+				}
+			}
+		}
+
+		for (size_t i = 0; i < gameObj->wNumberOfPlayerPaddles && bCheckMore; i++)
+		{
+			if (checkColissionBallObject(ballToMove, &gameObj->PlayerPaddles[i].playerBlockPosition, gameObj->PlayerPaddles[i].wWidth, gameObj->PlayerPaddles[i].wHeight))
+				bCheckMore = !bCheckMore;
+		}
+
+		for (size_t i = 0; i < gameObj->wNumberOfBonusDropping && bCheckMore; i++)
+		{
+			if (checkColissionBallObject(ballToMove, &gameObj->bonusBlock[i].bonusCoords, gameObj->bonusBlock[i].wWidth, gameObj->bonusBlock[i].wHeight))
+			{
 				bCheckMore = !bCheckMore;
 			}
 		}
+
+		for (WORD i = 0; i < gameObj->wNumberOfBlocks && bCheckMore; i++)
+		{
+			//se a bola estiver debaixo não pode colidir poupamos algum tempo TODO: X Axis
+			if (ballToMove->ballPosition.y + ballToMove->nMovementVectorY * ballToMove->wUnitsToMove <= gameObj->blocks[i].blockPosition.y + gameObj->blocks[i].wHeight)
+			{
+				if (checkColissionBallObject(ballToMove, &gameObj->blocks[i].blockPosition, gameObj->blocks[i].wWidth, gameObj->blocks[i].wHeight))
+				{
+					destroyBlock(i, gameObj);
+					bCheckMore = !bCheckMore;
+				}
+			}
+		}
+
+		ballToMove->ballPosition.x += ballToMove->nMovementVectorX * ballToMove->wUnitsToMove;
+		ballToMove->ballPosition.y += ballToMove->nMovementVectorY * ballToMove->wUnitsToMove;
 	}
 
-	ballToMove->ballPosition.x += ballToMove->nMovementVectorX * ballToMove->wUnitsToMove;
-	ballToMove->ballPosition.y += ballToMove->nMovementVectorY * ballToMove->wUnitsToMove;
+
 
 }
 
@@ -203,17 +212,19 @@ VOID createGameBoard(WORD wCoordX, WORD wCoordY, WORD wHeight, WORD wWidth, Game
 
 VOID createBall(WORD wCoordX, WORD wCoordY, Game* gameObj)
 {
-	gameObj->ball.ballPosition.x = wCoordX;
-	gameObj->ball.ballPosition.y = wCoordY;
+	WORD wIndex = gameObj->wNumberOfBalls++;
 
-	gameObj->ball.wHeight = gameObj->ball.wWitdh = 8;
+	gameObj->ball[wIndex].ballPosition.x = wCoordX;
+	gameObj->ball[wIndex].ballPosition.y = wCoordY;
 
-	gameObj->ball.nMovementVectorX = 1;
-	gameObj->ball.nMovementVectorY = -1;
+	gameObj->ball[wIndex].wHeight = gameObj->ball[wIndex].wWitdh = 8;
 
-	setBallVelocity(&gameObj->ball, serverConfig.wVelocityBall);
+	gameObj->ball[wIndex].nMovementVectorX = 1;
+	gameObj->ball[wIndex].nMovementVectorY = -1;
 
-	gameObj->ball.wUnitsToMove = DEFAULT_BALL_UNITS_TO_MOVE;
+	setBallVelocity(&gameObj->ball[wIndex], serverConfig.wVelocityBall);
+
+	gameObj->ball[wIndex].wUnitsToMove = DEFAULT_BALL_UNITS_TO_MOVE;
 }
 
 VOID createPlayerPaddle(const PTCHAR OwnerUserName, Game* gameObj)
@@ -272,7 +283,7 @@ VOID createBonus(WORD wCoordX, WORD wCoordY, WORD wHeight, WORD wWidth, TypeOfBo
 	gameObj->bonusBlock[wIndex].wHeight = wHeight;
 
 	gameObj->bonusBlock[wIndex].wDropUnits = 4;
-	 
+
 	gameObj->bonusBlock[wIndex].typeOfBonus = toBonus;
 }
 
@@ -402,7 +413,24 @@ VOID destroyPlayerPaddle(const PTCHAR username, Game* gameObj)
 //TODO: Apagar com index
 VOID destroyBall(WORD wIndex, Game* gameObj)
 {
-	ZeroMemory(&gameObj->ball, sizeof(Ball));
+	if (wIndex >= 0 && wIndex < NUM_OF_OBJ_GAME)
+	{
+		ZeroMemory(&gameObj->ball[wIndex], sizeof(Ball));
+
+		for (size_t i = wIndex; i + 1 < gameObj->wNumberOfBalls; i++)
+		{
+			CopyMemory(&gameObj->ball[i],
+				&gameObj->ball[i + 1],
+				sizeof(Ball));
+
+			ZeroMemory(&gameObj->ball[i + 1], sizeof(Ball));
+		}
+
+		if (gameObj->wNumberOfBalls > 0)
+			gameObj->wNumberOfBalls--;
+		else
+			gameObj->wNumberOfBalls = 0;
+	}
 }
 
 VOID catchBonus(WORD wIndex, Game* gameObj)
@@ -460,7 +488,6 @@ BOOL decrementHealth(Game* gameObj)
 {
 	return gameObj->wLifes > 0 ? gameObj->wLifes-- : FALSE;
 }
-
 
 //TODO melhorar velociadae muito grande
 BOOL checkColissionBallObject(Ball* ballObject, const Coords* coordsObj2, const WORD wWidthObj2, const WORD wHeightObj2)
