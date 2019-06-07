@@ -3,6 +3,8 @@
 #include "GameStructures.h"
 #include "MessageProtocol.h"
 
+#include <sddl.h>
+
 BOOL initComponetsDLL(ClientConnection* ccArg)
 {
 	switch (ccArg->typeOfConnection)
@@ -182,7 +184,7 @@ BOOL initSyncObjectsDLL(HANDLE* hRObj, HANDLE* hwSemaphore, HANDLE* hMutex, HAND
 	return *hRObj == NULL || *hwSemaphore == NULL || *hMutex == NULL || *hwSemaphoreFromServer == NULL || *hEventNewDataGame == NULL ? FALSE : TRUE;
 }
 
-VOID freeSyncObjectsDLL(HANDLE hWObj, HANDLE hSObj, HANDLE hRObj, HANDLE hMutex,HANDLE hGameData)
+VOID freeSyncObjectsDLL(HANDLE hWObj, HANDLE hSObj, HANDLE hRObj, HANDLE hMutex, HANDLE hGameData)
 {
 	CloseHandle(hWObj);
 	CloseHandle(hSObj);
@@ -196,22 +198,26 @@ BOOL initNamedPipeLocalDLL(PipeLocal* plArg)
 	BOOL fReturn;
 	DWORD dwPipeMode;
 
+	SECURITY_ATTRIBUTES sa;
+
+	initSecurityAtributes(&sa);
+
 	plArg->hNamedPipeWriteToServer = CreateFile(
-		NAME_NAMED_PIPE_WRITE_TO_SERVER,
-		 //TEXT("\\\\192.168.56.102\\pipe\\namedPipeWrite"),	//Nome do Pipe		
+		//NAME_NAMED_PIPE_WRITE_TO_SERVER,
+		TEXT("\\\\192.168.56.102\\pipe\\namedPipeWrite"),	//Nome do Pipe		
 		GENERIC_WRITE,
 		0,					//modo de partilha
-		NULL,				//securty atributes
+		&sa,				//securty atributes
 		OPEN_EXISTING,		//abrir o pipe
 		0,					//atributos normais
 		NULL);				//template file
 
 	plArg->hNamedPipeReadFromServer = CreateFile(
-		NAME_NAMED_PIPE_READ_FROM_SERVER,
-		//TEXT("\\\\192.168.56.102\\pipe\\namedPipeRead"),	//Nome do Pipe		
+		//NAME_NAMED_PIPE_READ_FROM_SERVER,
+		TEXT("\\\\192.168.56.102\\pipe\\namedPipeRead"),	//Nome do Pipe		
 		GENERIC_READ,
 		0,					//modo de partilha
-		NULL,				//securty atributes
+		&sa,				//securty atributes
 		OPEN_EXISTING,		//abrir o pipe
 		0,					//atributos normais
 		NULL);
@@ -247,4 +253,22 @@ VOID freeNamedPipeLocalDLL(PipeLocal* plArg)
 {
 	CloseHandle(plArg->hNamedPipeReadFromServer);
 	CloseHandle(plArg->hNamedPipeWriteToServer);
+}
+
+VOID initSecurityAtributes(SECURITY_ATTRIBUTES* saArg)
+{
+	const TCHAR* szSD = TEXT("D:")
+		TEXT("(A;OICI;GA;;;BG)")
+		TEXT("(A;OICI;GA;;;AN)")
+		TEXT("(A;OICI;GA;;;AU)")
+		TEXT("(A;OICI;GA;;;BA)");
+
+	saArg->nLength = sizeof(SECURITY_ATTRIBUTES);
+	saArg->bInheritHandle = FALSE;
+
+
+	ConvertStringSecurityDescriptorToSecurityDescriptor(szSD,
+		SDDL_REVISION_1,
+		&(saArg->lpSecurityDescriptor),
+		NULL);
 }

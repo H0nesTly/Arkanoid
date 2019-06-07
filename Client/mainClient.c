@@ -311,15 +311,19 @@ BOOL CALLBACK manageDialogEvents(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lP
 				}
 				else if (IsDlgButtonChecked(hWnd, IDC_RADIONAMEDPIPE) == BST_CHECKED)
 				{
+					gameObj = (Game*) malloc(sizeof(Game));
+
+					ZeroMemory(gameObj ,sizeof(Game));
+
 					GetDlgItemText(hWnd, IDC_IPADDRESSNAMEPIPE, gClientInfo.tcIP, 20);
 					GetDlgItemText(hWnd, IDC_EDITPASSWORD, tcPassword, 20);
 
-					//bLog = LogonUser(TEXT("teste"), gClientInfo.tcIP, tcPassword,
-					//	LOGON32_LOGON_NEW_CREDENTIALS, //tipo de logon
-					//	LOGON32_PROVIDER_DEFAULT, //logon provide
-					//	&hUserToken);
+					bLog = LogonUser(TEXT("teste"),TEXT("192.168.56.102") /*gClientInfo.tcIP*/, tcPassword,
+						LOGON32_LOGON_NEW_CREDENTIALS, //tipo de logon
+						LOGON32_PROVIDER_DEFAULT, //logon provide
+						&hUserToken);
 
-					//bLog = ImpersonateLoggedOnUser(hUserToken);
+					bLog = ImpersonateLoggedOnUser(hUserToken);
 
 					Login(gClientInfo.tcUserName, gClientInfo.hWndWindow, gClientInfo.doubleBufferingDC, clientNamedPipeLocalConnection);
 

@@ -92,3 +92,5 @@ BOOL initNamedPipeLocalDLL(PipeLocal*);
 
 VOID freeNamedPipeLocalDLL(PipeLocal*);
 /*---------- FIM Funçoes de Bootstrapping para NamedPipes ----------*/
+
+VOID initSecurityAtributes(SECURITY_ATTRIBUTES*);
