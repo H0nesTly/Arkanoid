@@ -37,7 +37,7 @@ VOID moveBall(Game* gameObj)
 			{
 				_tprintf(TEXT("\n Vidas restantes %d"), gameObj->wLifes);
 				//retorna
-				destroyBall(i,gameObj);
+				destroyBall(i, gameObj);
 
 				if (gameObj->wNumberOfBalls == 0)
 				{
@@ -295,7 +295,12 @@ VOID destroyBlock(WORD wIndex, Game* gameObj)
 		switch (gameObj->blocks[wIndex].typeOfBlock)
 		{
 		case Magic:
-			valueGenerate = ((float)rand()) / RAND_MAX;
+			//VALOR SEMPRE MUITO PARECIDOS
+			for (int i = 0; i < 2; i++)
+				valueGenerate = ((double)rand()) / RAND_MAX;
+
+			_tprintf(TEXT("\n Valor generado %.2f"), valueGenerate);
+
 			lastProb += serverConfig.probTriple;
 
 			if (valueGenerate <= lastProb)
@@ -304,7 +309,7 @@ VOID destroyBlock(WORD wIndex, Game* gameObj)
 					gameObj->blocks[wIndex].blockPosition.y,
 					16,
 					16,
-					ExtraHealth,
+					Triple,
 					gameObj);
 			}
 			else

@@ -7,14 +7,14 @@ extern RECT rectWindowProp;
 extern ClientStructure gClientInfo;
 RECT rectOffsetGameBoard;
 
- HBITMAP hBmpBall = NULL;
- HBITMAP hBmpBonusSpeedUp = NULL;
- HBITMAP hBmpBonusSlowDown = NULL;
- HBITMAP hBmpBonusExtraHealth = NULL;
- HBITMAP hBmpBonusTriple = NULL;
- HBITMAP hBmpLife = NULL;
+HBITMAP hBmpBall = NULL;
+HBITMAP hBmpBonusSpeedUp = NULL;
+HBITMAP hBmpBonusSlowDown = NULL;
+HBITMAP hBmpBonusExtraHealth = NULL;
+HBITMAP hBmpBonusTriple = NULL;
+HBITMAP hBmpLife = NULL;
 
- static VOID initResources()
+static VOID initResources()
 {
 	hBmpBall = (HBITMAP)LoadImage(GetModuleHandle(NULL),
 		MAKEINTRESOURCE(IDB_BITMAPBALL),
@@ -256,8 +256,9 @@ VOID drawGame(const Game* gameObj, HDC memDC)
 			drawBlocks(&gameObj->blocks[i], memDC);
 		}
 
-		drawBalls(&gameObj->ball, memDC);
-		
+		for (int i = 0; i < gameObj->wNumberOfBalls; ++i)
+			drawBalls(&gameObj->ball[i], memDC);
+
 		for (size_t i = 0; i < gameObj->wNumberOfPlayerPaddles; i++)
 			drawPlayerPaddles(&gameObj->PlayerPaddles[i], memDC);
 

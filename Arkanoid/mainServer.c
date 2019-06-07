@@ -29,7 +29,7 @@ int _tmain(int argc, LPTSTR argv[])
 	_setmode(_fileno(stdout), _O_WTEXT);
 	#endif
 
-	//loadGameConfiguration(TEXT("config.txt"), &serverConfig);
+	srand(time(0)); 
 
 	if (!intitServerGameMem(&serverInstance.serverHandlers.sharedMemHandlers.hMapObjGame,
 		&serverInstance.serverHandlers.sharedMemHandlers.lpSharedMemGame))

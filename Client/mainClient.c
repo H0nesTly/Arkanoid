@@ -293,7 +293,7 @@ BOOL CALLBACK manageDialogEvents(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lP
 {
 	HANDLE hUserToken = NULL;
 	TCHAR tcPassword[20];
-	BOOL bLog;
+	//BOOL bLog;
 
 	UNREFERENCED_PARAMETER(lParam);
 	switch (messg)

@@ -20,7 +20,7 @@
 #include <aclapi.h>
 #include <strsafe.h>
 #include <minwinbase.h>
-#include <minwinbase.h>
+#include <time.h>
 
 #define MAX_LENGTH_NAME 20
 
