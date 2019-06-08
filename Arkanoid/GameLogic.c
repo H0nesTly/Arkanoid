@@ -197,7 +197,7 @@ VOID createLevel(Game*gameObj)
 	createBlocks(290, 61, 10, 30, Magic, gameObj);
 	createBlocks(321, 61, 10, 30, Magic, gameObj);
 
-	createBall(50, 300, gameObj);
+	createBall((rand() % (DEFAULT_WIDTH_OF_GAMEBOARD)), DEFAULT_HEIGTH_OF_GAMEBOARD / 2, gameObj);
 }
 
 VOID createGameBoard(WORD wCoordX, WORD wCoordY, WORD wHeight, WORD wWidth, GameBoard* gameObj)
@@ -218,7 +218,11 @@ VOID createBall(WORD wCoordX, WORD wCoordY, Game* gameObj)
 
 	gameObj->ball[wIndex].wHeight = gameObj->ball[wIndex].wWitdh = 8;
 
-	gameObj->ball[wIndex].nMovementVectorX = 1;
+	if ((rand() % 2) == 1)
+		gameObj->ball[wIndex].nMovementVectorX = 1;
+	else
+		gameObj->ball[wIndex].nMovementVectorX = -1;
+
 	gameObj->ball[wIndex].nMovementVectorY = -1;
 
 	setBallVelocity(&gameObj->ball[wIndex], serverConfig.wVelocityBall);
@@ -372,6 +376,7 @@ VOID destroyBlock(WORD wIndex, Game* gameObj)
 			ZeroMemory(&gameObj->blocks[i + 1], sizeof(Block));
 		}
 		gameObj->wNumberOfBlocks--;
+		gameObj->dwScore += 10;
 	}
 }
 
@@ -414,7 +419,6 @@ VOID destroyPlayerPaddle(const PTCHAR username, Game* gameObj)
 	}
 }
 
-//TODO: Apagar com index
 VOID destroyBall(WORD wIndex, Game* gameObj)
 {
 	if (wIndex >= 0 && wIndex < NUM_OF_OBJ_GAME)
@@ -439,7 +443,7 @@ VOID destroyBall(WORD wIndex, Game* gameObj)
 
 VOID catchBonus(WORD wIndex, Game* gameObj)
 {
-	WORD aux;
+	WORD auxX;
 	if (wIndex >= 0 && wIndex < NUM_OF_OBJ_GAME)
 	{
 		switch (gameObj->bonusBlock[wIndex].typeOfBonus)
@@ -454,8 +458,11 @@ VOID catchBonus(WORD wIndex, Game* gameObj)
 			incrementHealth(gameObj);
 			break;
 		case Triple:
-			
-			//createBall(,, gameObj);
+			for (int i = 0; i < 2; i++)
+			{
+				auxX = (rand() % (DEFAULT_WIDTH_OF_GAMEBOARD));
+				createBall(auxX, DEFAULT_HEIGTH_OF_GAMEBOARD / 2, gameObj);
+			}
 			break;
 			//Nao faz nada
 		case None:

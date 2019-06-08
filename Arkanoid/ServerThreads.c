@@ -4,7 +4,7 @@
 
 #include "../Communicate/MessageProtocol.h"
 
-static HANDLE hTimerWaitUpdateBall = NULL;
+static HANDLE hTimerWaitForPlayersToConnect = NULL;
 
 inline static VOID readNewMessageSharedMemory(MessageQueue* queue, Server* serverObj)
 {
@@ -297,7 +297,7 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 	Server* serverObj = (Server*)lpArg;
 	Game* game = (Game*)serverObj->serverHandlers.sharedMemHandlers.lpSharedMemGame;
 
-	HANDLE hTimerWaitForPlayersToConnect = NULL;
+	HANDLE hTimerWaitUpdateBall = NULL;
 
 	LARGE_INTEGER liDueTime;
 	LARGE_INTEGER liDueTimeBall;
@@ -357,11 +357,6 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 
 		moveBall(game);
 
-		for (WORD i = 0; i < game->wNumberOfBonusDropping; i++)
-		{
-			moveBonus(game, i);
-		}
-
 		broadCastGameData(serverObj->serverHandlers.namedPipeInstances, serverObj);
 
 		SetEvent(hgGameObject);
@@ -374,11 +369,38 @@ DWORD WINAPI BonusThread(LPVOID lpArg)
 {
 	Game* gameObj = (Game*)((Server*)lpArg)->serverHandlers.sharedMemHandlers.lpSharedMemGame;
 
-	//while (1)
-	//{
-	//	//WaitForSingleObject(hTimerWaitUpdateBall, INFINITE);
+	HANDLE hTimerWaitMoveBonus = NULL;
 
-	//}
+	LARGE_INTEGER liDueTime;
+
+	hTimerWaitMoveBonus = CreateWaitableTimer(NULL, TRUE, NULL);
+
+	liDueTime.QuadPart = -500000LL; // 50 ms
+
+	if (hTimerWaitMoveBonus == NULL)
+	{
+		_tprintf(TEXT("CreateWaitableTimer failed (%d)\n"), GetLastError());
+		return 1;
+	}
+
+	WaitForSingleObject(hTimerWaitForPlayersToConnect, INFINITE);
+
+	while (1)
+	{
+		SetWaitableTimer(hTimerWaitMoveBonus,
+			&liDueTime,
+			TRUE,	//PERIOICO
+			NULL,
+			NULL,
+			FALSE);
+
+		WaitForSingleObject(hTimerWaitMoveBonus, INFINITE);
+
+		for (WORD i = 0; i < gameObj->wNumberOfBonusDropping; i++)
+		{
+			moveBonus(gameObj, i);
+		}
+	}
 
 
 	return 0;

@@ -1,8 +1,8 @@
 niveis: 10
 vidasiniciais : 5
 duracaoEfeitos : 10
-probabilidadespeedup : 0.1
+probabilidadespeedup : 0.0
 probabilidadeslowdown : 0.0
-probabilidadevidaextra : 0.9
-probabilidadeTriple : 0.0
-velocidadebola : 5
+probabilidadevidaextra : 0.1
+probabilidadeTriple : 0.9
+velocidadebola : 10
