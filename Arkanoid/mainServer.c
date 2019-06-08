@@ -98,9 +98,12 @@ int _tmain(int argc, LPTSTR argv[])
 		exit(EXIT_FAILURE);
 	}
 	
-	WaitForSingleObject(serverInstance.serverHandlers.threadHandlers.hThreadConsumer, INFINITE);
-	WaitForSingleObject(serverInstance.serverHandlers.threadHandlers.hThreadBonus, INFINITE);
 	WaitForSingleObject(serverInstance.serverHandlers.threadHandlers.hThreadBall, INFINITE);
+	WaitForSingleObject(serverInstance.serverHandlers.threadHandlers.hThreadBonus, INFINITE);
+
+	serverInstance.gameInstance.GameStates = GameOver;
+
+	WaitForSingleObject(serverInstance.serverHandlers.threadHandlers.hThreadConsumer, INFINITE);
 
 	//enviamos a todos os clientes o top 10 aatualizado
 

@@ -258,7 +258,7 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 
 	hAllHandlers[INDEX_OF_HANDLERS_WAIT_MESSAGE] = hgSyncSemaphoreRead;
 
-	while (1)
+	while (serverObj->gameInstance.GameStates != GameOver)
 	{
 		//_tprintf_s(TEXT("\nA espera de Clientes para se conectar ... [%d]"), GetLastError());
 
