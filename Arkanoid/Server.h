@@ -39,7 +39,7 @@ VOID setScoreTopTen(ScorePlayer newScore, ScorePlayer scoreTopTen[]);
 
 BOOL verifyUserName(PTCHAR);
 
-VOID broadCastGameData(NamedPipeInstance* , Server*);
+VOID broadCastGameData(NamedPipeInstance*, Server*);
 
 VOID writeMessageToClientSharedMemory(MessageQueue*, TypeOfResponseMessage, const PTCHAR, const PTCHAR);
 
@@ -56,13 +56,17 @@ VOID addUsersToGame(Server*);
 
 VOID transferPlayersToGame(Server*);
 
-VOID startGame(Server* );
+VOID startGame(Server*);
 
-VOID tryToMovePaddle(const PTCHAR, Server*,const short);
+VOID removePlayer(Server*, const PTCHAR);
+
+BOOL removePlayerFromLobby(Lobby*, const PTCHAR);
+
+BOOL removePlayerFromGame(UsersPlaying*, Game*, const PTCHAR);
+
+VOID tryToMovePaddle(const PTCHAR, Server*, const short);
 /*--------------- NAMED PIPES ---------------*/
 VOID initSecurityAtributes(SECURITY_ATTRIBUTES*);
-
-void Cleanup(PSID , PSID , PACL , PSECURITY_DESCRIPTOR );
 
 BOOL ConnectNewClientToNP(HANDLE, LPOVERLAPPED);
 

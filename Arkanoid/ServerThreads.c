@@ -69,7 +69,6 @@ inline static VOID readNewMessageSharedMemory(MessageQueue* queue, Server* serve
 	}
 }
 
-//TODO: MELHORAR mecanismo
 inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Server* serverObj)
 {
 	DWORD dwBytesReadAsync;

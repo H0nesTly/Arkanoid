@@ -233,7 +233,6 @@ VOID writeMessageToClientPipeResponse(MessageProtocolPipe* mppArg, TypeOfRespons
 		pDestination);
 }
 
-
 VOID fillMessageToProtocolDatagram(MessageProtocolDatagram* message_protocol_datagram, const PTCHAR pSender, const PTCHAR pDestination)
 {
 	_tcscpy_s(message_protocol_datagram->tcDestination,
@@ -314,14 +313,14 @@ BOOL loadGameConfiguration(TCHAR *nomeFicheiro, GameServerConfiguration *serverC
 			word = _tcstok_s(NULL, TEXT(": "), &tcNextToken);
 			serverConfig->probSlowDowns = _tstof(word);
 			continue;
-		}	
+		}
 		if (_tcsstr(buffer, TEXT_FILE_PROB_EXTRA_HEALTH) != NULL)
 		{
 			word = _tcstok_s(buffer, TEXT(": "), &tcNextToken);
 			word = _tcstok_s(NULL, TEXT(": "), &tcNextToken);
 			serverConfig->probVidaExtra = _tstof(word);
 			continue;
-		}		
+		}
 		if (_tcsstr(buffer, TEXT_FILE_PROB_BONUS_TRIPLE) != NULL)
 		{
 			word = _tcstok_s(buffer, TEXT(": "), &tcNextToken);
@@ -552,14 +551,13 @@ BOOL addUserNameToLobby(PTCHAR userName, Server* server)
 			userName		//Origem
 		);
 
-		startGame(server);		
+		startGame(server);
 
 		return TRUE;
 	}
 	return FALSE;
 }
 
-//TODO: CRIAR BLOCOS COM Larguras E COORDENADAS
 VOID addUsersToGame(Server* serverObj)
 {
 	UsersPlaying* playersInGame = (UsersPlaying*)&serverObj->gameInstance.usersInGame;
@@ -612,7 +610,6 @@ WORD getPlayersInLobby(const Lobby* lobby)
 	return lobby->wPlayersInLobby;
 }
 
-
 VOID tryToMovePaddle(const PTCHAR username, Server* serverObj, const short nSideToMove)
 {
 	if (serverObj->gameInstance.GameStates != GameInProgress)
@@ -642,19 +639,6 @@ VOID initSecurityAtributes(SECURITY_ATTRIBUTES* saArg)
 		SDDL_REVISION_1,
 		&(saArg->lpSecurityDescriptor),
 		NULL);
-}
-
-// Buffer clean up routine
-void Cleanup(PSID pEveryoneSID, PSID pAdminSID, PACL pACL, PSECURITY_DESCRIPTOR pSD)
-{
-	if (pEveryoneSID)
-		FreeSid(pEveryoneSID);
-	if (pAdminSID)
-		FreeSid(pAdminSID);
-	if (pACL)
-		LocalFree(pACL);
-	if (pSD)
-		LocalFree(pSD);
 }
 
 BOOL ConnectNewClientToNP(HANDLE hNamedipe, LPOVERLAPPED lpo)
@@ -700,4 +684,74 @@ VOID DisconnectAndReconnect(NamedPipeInstance* npToDisconect)
 	npToDisconect->State = npToDisconect->fPendigIO ?
 		ConnectingState :
 		ReadState;
+}
+
+VOID removePlayer(Server* serverObj, const PTCHAR userNameToRemove)
+{
+	if (serverObj->gameInstance.GameStates == WaitingForPlayers)
+	{
+		removePlayerFromLobby(&serverObj->gameInstance.lobbyGame, userNameToRemove);
+	}
+	else
+	{
+		if (!removePlayerFromGame(&serverObj->gameInstance.usersInGame, serverObj->serverHandlers.sharedMemHandlers.lpSharedMemGame, userNameToRemove))
+		{
+			//jogo pode esstar a decorrer mas existe pessoas a "ver"
+			if (removePlayerFromLobby(&serverObj->gameInstance.lobbyGame, userNameToRemove))
+			{
+				_tprintf(TEXT("\n User : %s Removido do lobby!!"), userNameToRemove);
+			}
+		}
+		else
+		{
+			_tprintf(TEXT("\n User : %s Removido do jogo!!"), userNameToRemove);
+		}
+	}
+}
+
+BOOL removePlayerFromLobby(Lobby* lobbyPtr, const PTCHAR userNameToRemove)
+{
+	for (WORD i = 0; i < lobbyPtr->wPlayersInLobby; i++)
+	{
+		if (_tcscmp(userNameToRemove, lobbyPtr->playersInLobby[i].tcUserName) == 0)
+		{
+			ZeroMemory(&lobbyPtr->playersInLobby[i], sizeof(PlayerInfo));
+
+			for (WORD j = i; j + 1 < lobbyPtr->wPlayersInLobby; j++)
+			{
+				CopyMemory(&lobbyPtr->playersInLobby[j],
+					&lobbyPtr->playersInLobby[j + 1],
+					sizeof(PlayerInfo));
+
+				ZeroMemory(&lobbyPtr->playersInLobby[j + 1], sizeof(PlayerInfo));
+			}
+			lobbyPtr->wPlayersInLobby--;
+			return FALSE;
+		}
+	}
+	return  FALSE;
+}
+
+BOOL removePlayerFromGame(UsersPlaying* userInGamePtr, Game* gameObj, const PTCHAR userNameToRemove)
+{
+	destroyPlayerPaddle(userNameToRemove, gameObj);
+
+	for (WORD i = 0; i < userInGamePtr->wPlayersPlaying; i++)
+	{
+		if (_tcscmp(userNameToRemove, userInGamePtr->playersPlaying[i].tcUserName) == 0)
+		{
+			ZeroMemory(&gameObj->PlayerPaddles[i], sizeof(PlayerInfo));
+			for (size_t j = i; j + 1 < gameObj->wNumberOfPlayerPaddles; j++)
+			{
+				CopyMemory(&userInGamePtr->playersPlaying[j],
+					&userInGamePtr->playersPlaying[j + 1],
+					sizeof(Paddle));
+
+				ZeroMemory(&userInGamePtr->playersPlaying[j + 1], sizeof(PlayerInfo));
+			}
+			userInGamePtr->wPlayersPlaying--;
+			return  TRUE;
+		}
+	}
+	return FALSE;
 }

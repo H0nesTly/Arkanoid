@@ -111,7 +111,8 @@ int _tmain(int argc, LPTSTR argv[])
 	//setTopTenRegistry(scoreTopTen);
 
 	//enviamos a todos os clientes o top 10 aatualizado
-
+	//Named Pipess e jogadoress dentro do lobby e jogadores
+	//sendMessageToAll(serverInstance);
 	   
 
 
