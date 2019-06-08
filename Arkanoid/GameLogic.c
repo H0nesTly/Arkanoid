@@ -42,6 +42,7 @@ VOID moveBall(Game* gameObj)
 				if (gameObj->wNumberOfBalls == 0)
 				{
 					decrementHealth(gameObj);
+					return;
 				}
 			}
 		}
@@ -76,9 +77,6 @@ VOID moveBall(Game* gameObj)
 		ballToMove->ballPosition.x += ballToMove->nMovementVectorX * ballToMove->wUnitsToMove;
 		ballToMove->ballPosition.y += ballToMove->nMovementVectorY * ballToMove->wUnitsToMove;
 	}
-
-
-
 }
 
 VOID movePaddle(const PTCHAR userName, Game* gameObj, const short nDirectionToMove)
@@ -189,13 +187,13 @@ VOID createLevel(Game*gameObj)
 	createBlocks(66, 61, 10, 30, Normal, gameObj);
 	createBlocks(97, 61, 10, 30, Normal, gameObj);
 	//+50				  
-	createBlocks(147, 61, 10, 30, Magic, gameObj);
-	createBlocks(178, 61, 10, 30, Magic, gameObj);
-	createBlocks(209, 61, 10, 30, Magic, gameObj);
+	createBlocks(147, 61, 10, 30, Normal, gameObj);
+	createBlocks(178, 61, 10, 30, Normal, gameObj);
+	createBlocks(209, 61, 10, 30, Normal, gameObj);
 	//+50				  
-	createBlocks(259, 61, 10, 30, Magic, gameObj);
-	createBlocks(290, 61, 10, 30, Magic, gameObj);
-	createBlocks(321, 61, 10, 30, Magic, gameObj);
+	createBlocks(259, 61, 10, 30, Normal, gameObj);
+	createBlocks(290, 61, 10, 30, Normal, gameObj);
+	createBlocks(321, 61, 10, 30, Normal, gameObj);
 
 	createBall((rand() % (DEFAULT_WIDTH_OF_GAMEBOARD)), DEFAULT_HEIGTH_OF_GAMEBOARD / 2, gameObj);
 }
@@ -497,9 +495,13 @@ VOID incrementHealth(Game* gameObj)
 	gameObj->wLifes += 1;
 }
 
-BOOL decrementHealth(Game* gameObj)
+VOID decrementHealth(Game* gameObj)
 {
-	return gameObj->wLifes > 0 ? gameObj->wLifes-- : FALSE;
+	if (gameObj->wLifes > 0)
+	{
+		--gameObj->wLifes;
+		createBall((rand() % (DEFAULT_WIDTH_OF_GAMEBOARD)), DEFAULT_HEIGTH_OF_GAMEBOARD / 2, gameObj);
+	}
 }
 
 BOOL checkColissionBallObject(Ball* ballObject, const Coords* coordsObj2, const WORD wWidthObj2, const WORD wHeightObj2)

@@ -45,7 +45,7 @@ VOID setHealth(Game*, WORD);
 
 VOID incrementHealth(Game*);
 
-BOOL decrementHealth(Game*);
+VOID decrementHealth(Game*);
 
 WORD generateWidthOfPlayePaddle(const Game*);
 
