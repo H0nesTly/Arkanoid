@@ -1,5 +1,6 @@
 niveis: 10
 vidasiniciais : 2
+esperaPorJogadores: 5
 duracaoEfeitos : 10
 probabilidadespeedup : 0.0
 probabilidadeslowdown : 0.0

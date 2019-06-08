@@ -65,6 +65,7 @@ struct gameServerConfiguration
 	double probVidaExtra;
 	double probTriple;
 	WORD wVelocityBall;
+	WORD wTimeToWaitForNewPlayers;
 };
 
 struct lobby

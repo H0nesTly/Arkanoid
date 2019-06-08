@@ -280,6 +280,13 @@ BOOL loadGameConfiguration(TCHAR *nomeFicheiro, GameServerConfiguration *serverC
 			serverConfig->niveis = _tstoi(word);
 			continue;
 		}
+		if (_tcsstr(buffer, TEXT_TIME_TO_WAIT_FOR_PLAYERS) != NULL)
+		{
+			word = _tcstok_s(buffer, TEXT(": "), &tcNextToken);
+			word = _tcstok_s(NULL, TEXT(": "), &tcNextToken);
+			serverConfig->wTimeToWaitForNewPlayers = _tstoi(word);
+			continue;
+		}
 		if (_tcsstr(buffer, TEXT_FILE_INITIAL_LIFES) != NULL)
 		{
 			word = _tcstok_s(buffer, TEXT(": "), &tcNextToken);

@@ -5,6 +5,7 @@
 
 #define TEXT_FILE_LEVELS TEXT("niveis")
 #define TEXT_FILE_INITIAL_LIFES TEXT("vidasiniciais")
+#define TEXT_TIME_TO_WAIT_FOR_PLAYERS TEXT("esperaPorJogadores")
 #define TEXT_FILE_DURATION_BONUS TEXT("duracaoEfeitos")
 #define TEXT_FILE_PROB_SPEED_UPS TEXT("probabilidadespeedup")
 #define TEXT_FILE_PROB_SLOW_DOWNS TEXT("probabilidadeslowdown")
