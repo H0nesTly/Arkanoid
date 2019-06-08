@@ -340,7 +340,7 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 
 	liDueTimeBall.QuadPart = -100000LL * game->ball[0].wVelocity;//10 ms
 
-	while (1)
+	do
 	{
 		//When a manual-reset timer is set to the signaled state, it remains in this state until SetWaitableTimer is
 		//called to reset the timer. As a result, a periodic manual-reset timer is set to the signaled state 
@@ -360,7 +360,8 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 		broadCastGameData(serverObj->serverHandlers.namedPipeInstances, serverObj);
 
 		SetEvent(hgGameObject);
-	}
+
+	} while (game->wLifes > 0);
 
 	return 0;
 }
@@ -384,8 +385,7 @@ DWORD WINAPI BonusThread(LPVOID lpArg)
 	}
 
 	WaitForSingleObject(hTimerWaitForPlayersToConnect, INFINITE);
-
-	while (1)
+	do
 	{
 		SetWaitableTimer(hTimerWaitMoveBonus,
 			&liDueTime,
@@ -400,9 +400,9 @@ DWORD WINAPI BonusThread(LPVOID lpArg)
 		{
 			moveBonus(gameObj, i);
 		}
-	}
 
-
+	} while (gameObj->wLifes > 0);
+	
 	return 0;
 }
 

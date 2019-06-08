@@ -1,5 +1,5 @@
 niveis: 10
-vidasiniciais : 5
+vidasiniciais : 2
 duracaoEfeitos : 10
 probabilidadespeedup : 0.0
 probabilidadeslowdown : 0.0

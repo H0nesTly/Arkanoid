@@ -35,13 +35,13 @@ VOID moveBall(Game* gameObj)
 		{
 			if (ballToMove->ballPosition.y + ballToMove->wHeight + (ballToMove->nMovementVectorX * ballToMove->wUnitsToMove) > DEFAULT_HEIGTH_LOSE_BALL)
 			{
-				_tprintf(TEXT("\n Vidas restantes %d"), gameObj->wLifes);
 				//retorna
 				destroyBall(i, gameObj);
 
 				if (gameObj->wNumberOfBalls == 0)
 				{
 					decrementHealth(gameObj);
+					_tprintf(TEXT("\n Vidas restantes %d"), gameObj->wLifes);
 					return;
 				}
 			}
@@ -499,7 +499,7 @@ VOID decrementHealth(Game* gameObj)
 {
 	if (gameObj->wLifes > 0)
 	{
-		--gameObj->wLifes;
+		gameObj->wLifes--;
 		createBall((rand() % (DEFAULT_WIDTH_OF_GAMEBOARD)), DEFAULT_HEIGTH_OF_GAMEBOARD / 2, gameObj);
 	}
 }

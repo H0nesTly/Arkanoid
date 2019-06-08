@@ -90,24 +90,22 @@ int _tmain(int argc, LPTSTR argv[])
 		CREATE_SUSPENDED,						//flag de criação - SUSPENDIDA
 		&serverInstance.serverHandlers.threadHandlers.dwThreadBonus //idThread
 	);
-
-
-
+	   
 	if (serverInstance.serverHandlers.threadHandlers.hThreadConsumer == NULL ||
 		serverInstance.serverHandlers.threadHandlers.hThreadBall == NULL ||
 		serverInstance.serverHandlers.threadHandlers.hThreadBonus == NULL)
 	{
 		exit(EXIT_FAILURE);
 	}
-
-
+	
 	WaitForSingleObject(serverInstance.serverHandlers.threadHandlers.hThreadConsumer, INFINITE);
 	WaitForSingleObject(serverInstance.serverHandlers.threadHandlers.hThreadBonus, INFINITE);
 	WaitForSingleObject(serverInstance.serverHandlers.threadHandlers.hThreadBall, INFINITE);
 
+	//enviamos a todos os clientes o top 10 aatualizado
 
 	getTopTenRegistry(scoreTopTen);
-
+	   
 	//setTopTenRegistry(scoreTopTen);
 
 
