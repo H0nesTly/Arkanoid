@@ -72,7 +72,7 @@ VOID moveBall(Game* gameObj)
 				if (checkColissionBallObject(ballToMove, &gameObj->blocks[i].blockPosition, gameObj->blocks[i].wWidth, gameObj->blocks[i].wHeight))
 				{
 					destroyBlock(i, gameObj);
-					incrementScoreOfPlayer(i, gameObj);
+					incrementScoreOfPlayer(ballToMove->wIndexOfLastPlayerPaddleTouch, gameObj);
 					bCheckMore = !bCheckMore;
 				}
 			}
