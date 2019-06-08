@@ -105,11 +105,14 @@ int _tmain(int argc, LPTSTR argv[])
 
 	WaitForSingleObject(serverInstance.serverHandlers.threadHandlers.hThreadConsumer, INFINITE);
 
+	//vamos buscar os valores do nosso jogo e comparamos com os dentro do regestry
+	getTopTenRegistry(scoreTopTen);
+
+	//setTopTenRegistry(scoreTopTen);
+
 	//enviamos a todos os clientes o top 10 aatualizado
 
-	getTopTenRegistry(scoreTopTen);
 	   
-	//setTopTenRegistry(scoreTopTen);
 
 
 	freeSyncObject();

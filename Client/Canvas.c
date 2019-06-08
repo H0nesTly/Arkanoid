@@ -211,6 +211,7 @@ VOID drawPlayerPaddles(const Paddle* playerBlockObj, HDC memDC)
 		if (_tcscmp(gClientInfo.tcUserName, playerBlockObj->playerOwnerOfBlock.playerInfo.tcUserName) == 0)
 		{
 			hBrush = CreateSolidBrush(COLOR_MYPLAYERPADDLE);
+			drawScore(playerBlockObj->playerOwnerOfBlock.dwScore, memDC);
 		}
 		else
 		{
@@ -253,7 +254,7 @@ VOID drawGame(const Game* gameObj, HDC memDC)
 		drawGameBoard(&gameObj->myGameBoard, memDC);
 
 		drawHealth(gameObj->wLifes, memDC);
-		drawScore(gameObj->dwScore, memDC);
+
 		for (int i = 0; i < gameObj->wNumberOfBlocks; ++i)
 		{
 			drawBlocks(&gameObj->blocks[i], memDC);

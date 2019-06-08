@@ -47,13 +47,16 @@ VOID moveBall(Game* gameObj)
 			}
 		}
 
-		for (size_t i = 0; i < gameObj->wNumberOfPlayerPaddles && bCheckMore; i++)
+		for (WORD i = 0; i < gameObj->wNumberOfPlayerPaddles && bCheckMore; i++)
 		{
 			if (checkColissionBallObject(ballToMove, &gameObj->PlayerPaddles[i].playerBlockPosition, gameObj->PlayerPaddles[i].wWidth, gameObj->PlayerPaddles[i].wHeight))
+			{
 				bCheckMore = !bCheckMore;
+				ballToMove->wIndexOfLastPlayerPaddleTouch = i;
+			}
 		}
 
-		for (size_t i = 0; i < gameObj->wNumberOfBonusDropping && bCheckMore; i++)
+		for (WORD i = 0; i < gameObj->wNumberOfBonusDropping && bCheckMore; i++)
 		{
 			if (checkColissionBallObject(ballToMove, &gameObj->bonusBlock[i].bonusCoords, gameObj->bonusBlock[i].wWidth, gameObj->bonusBlock[i].wHeight))
 			{
@@ -69,6 +72,7 @@ VOID moveBall(Game* gameObj)
 				if (checkColissionBallObject(ballToMove, &gameObj->blocks[i].blockPosition, gameObj->blocks[i].wWidth, gameObj->blocks[i].wHeight))
 				{
 					destroyBlock(i, gameObj);
+					incrementScoreOfPlayer(i, gameObj);
 					bCheckMore = !bCheckMore;
 				}
 			}
@@ -89,8 +93,6 @@ VOID movePaddle(const PTCHAR userName, Game* gameObj, const short nDirectionToMo
 	{
 		myPlayerPaddleTemp = &gameObj->PlayerPaddles[nIndex];
 
-		//TESTAR!!
-		//verificamos se existe algum paddle ao lado
 		for (size_t i = 0; i < gameObj->wNumberOfPlayerPaddles; i++)
 		{
 			if (i != nIndex)
@@ -374,7 +376,7 @@ VOID destroyBlock(WORD wIndex, Game* gameObj)
 			ZeroMemory(&gameObj->blocks[i + 1], sizeof(Block));
 		}
 		gameObj->wNumberOfBlocks--;
-		gameObj->dwScore += 10;
+		//gameObj->dwScore += 10;
 	}
 }
 
@@ -502,6 +504,11 @@ VOID decrementHealth(Game* gameObj)
 		gameObj->wLifes--;
 		createBall((rand() % (DEFAULT_WIDTH_OF_GAMEBOARD)), DEFAULT_HEIGTH_OF_GAMEBOARD / 2, gameObj);
 	}
+}
+
+VOID incrementScoreOfPlayer(WORD wIndex, Game* gameObj)
+{
+	gameObj->PlayerPaddles[wIndex].playerOwnerOfBlock.dwScore += 10;
 }
 
 BOOL checkColissionBallObject(Ball* ballObject, const Coords* coordsObj2, const WORD wWidthObj2, const WORD wHeightObj2)

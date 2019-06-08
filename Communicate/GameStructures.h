@@ -57,6 +57,8 @@ struct ball
 
 	WORD wVelocity;
 	WORD wUnitsToMove;
+
+	WORD wIndexOfLastPlayerPaddleTouch;
 };
 
 struct playerInfo
@@ -72,6 +74,7 @@ struct playerInfo
 struct player
 {
 	PlayerInfo playerInfo;
+	DWORD dwScore;
 };
 
 struct paddle
@@ -107,7 +110,6 @@ struct gameBoard
 	WORD wWidth, wHeight;
 };
 
-
 struct game
 {
 	WORD wNumberOfBonusDropping;
@@ -123,7 +125,6 @@ struct game
 	Ball ball[NUM_OF_OBJ_GAME];
 
 	WORD wLifes;
-	DWORD dwScore;
 	GameBoard myGameBoard;
 };
 

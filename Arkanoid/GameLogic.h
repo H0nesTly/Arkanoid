@@ -47,6 +47,8 @@ VOID incrementHealth(Game*);
 
 VOID decrementHealth(Game*);
 
+VOID incrementScoreOfPlayer(WORD, Game*);
+
 WORD generateWidthOfPlayePaddle(const Game*);
 
 //Retorna 1 caso seja detetada colisao
