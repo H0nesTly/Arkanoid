@@ -243,7 +243,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 		{
 		case IDYES:
 			SendMessageDll(&bKeepRunning, QuitGameMessage);
-			free(gameObj);
+			//free(gameObj);
+			PlaySound(NULL, 0, 0);
 			DestroyWindow(hWnd);
 			break;
 		case IDNO:

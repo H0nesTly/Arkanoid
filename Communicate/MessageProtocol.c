@@ -186,6 +186,11 @@ static VOID sendMessagePipe(const PTCHAR username, TypeOfRequestMessage tRequest
 	MessageProtocolPipe messageToSend;
 	DWORD dwBytesToWrite;
 
+	if (tRequest == QuitGameMessage)
+	{
+		SetEvent(ghNewBroadCastMessage);
+	}
+
 	ZeroMemory(&messageToSend, sizeof(MessageProtocolPipe));
 
 	writeMessageToServerPipeRequest(&messageToSend, tRequest, username, NAME_SERVER);
@@ -259,6 +264,10 @@ VOID __cdecl ReceiveBroadcast(BOOL* bKeepRunning, Game** gameObj)
 
 VOID __cdecl SendMessageDll(BOOL* bKeepRunning, TypeOfRequestMessage tRequest)
 {
+	if (tRequest == QuitGameMessage)
+	{
+		*bKeepRunning = FALSE;
+	}
 	switch (gClientConnection.typeOfConnection)
 	{
 	case clientSharedMemoryConnection:
