@@ -9,6 +9,10 @@
 #include "ServerSyncObj.h"
 
 GameServerConfiguration serverConfig;
+CRITICAL_SECTION  gCriticalSectionGameData;
+//A critical section object provides synchronization similar to that provided by a mutex object, 
+//except that a critical section can be used only by the threads of a single process.
+//Critical section objects cannot be shared across processes.
 
 int _tmain(int argc, LPTSTR argv[])
 {
@@ -29,7 +33,7 @@ int _tmain(int argc, LPTSTR argv[])
 	_setmode(_fileno(stdout), _O_WTEXT);
 	#endif
 
-	srand(time(0)); 
+	srand(time(0));
 
 	if (!intitServerGameMem(&serverInstance.serverHandlers.sharedMemHandlers.hMapObjGame,
 		&serverInstance.serverHandlers.sharedMemHandlers.lpSharedMemGame))
@@ -63,6 +67,13 @@ int _tmain(int argc, LPTSTR argv[])
 			loadGameConfiguration(argv[1], &serverConfig) ? TEXT("Sucesso") : TEXT("Falhou"));
 	}
 
+	if (!InitializeCriticalSectionAndSpinCount(&gCriticalSectionGameData, 0x00080400))
+	{
+		_tprintf(TEXT("\nERRO Criar critical section"));
+		freeSyncObject();
+		freeMappedMemoryServer(&serverInstance.serverHandlers.sharedMemHandlers);
+		exit(EXIT_FAILURE);
+	}
 
 	serverInstance.serverHandlers.threadHandlers.hThreadConsumer = CreateThread(
 		NULL,
@@ -90,14 +101,14 @@ int _tmain(int argc, LPTSTR argv[])
 		CREATE_SUSPENDED,						//flag de criação - SUSPENDIDA
 		&serverInstance.serverHandlers.threadHandlers.dwThreadBonus //idThread
 	);
-	   
+
 	if (serverInstance.serverHandlers.threadHandlers.hThreadConsumer == NULL ||
 		serverInstance.serverHandlers.threadHandlers.hThreadBall == NULL ||
 		serverInstance.serverHandlers.threadHandlers.hThreadBonus == NULL)
 	{
 		exit(EXIT_FAILURE);
 	}
-	
+
 	WaitForSingleObject(serverInstance.serverHandlers.threadHandlers.hThreadBall, INFINITE);
 	WaitForSingleObject(serverInstance.serverHandlers.threadHandlers.hThreadBonus, INFINITE);
 
@@ -113,11 +124,12 @@ int _tmain(int argc, LPTSTR argv[])
 	//enviamos a todos os clientes o top 10 aatualizado
 	//Named Pipess e jogadoress dentro do lobby e jogadores
 	//sendMessageToAll(serverInstance);
-	   
+
 
 
 	freeSyncObject();
 	freeMappedMemoryServer(&serverInstance.serverHandlers.sharedMemHandlers);
+	DeleteCriticalSection(&gCriticalSectionGameData);
 	freeThreads(serverInstance.serverHandlers.threadHandlers);
 
 	_gettchar();

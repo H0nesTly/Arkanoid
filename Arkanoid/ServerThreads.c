@@ -5,6 +5,7 @@
 #include "../Communicate/MessageProtocol.h"
 
 static HANDLE hTimerWaitForPlayersToConnect = NULL;
+extern CRITICAL_SECTION  gCriticalSectionGameData;
 
 inline static VOID readNewMessageSharedMemory(MessageQueue* queue, Server* serverObj)
 {
@@ -351,7 +352,9 @@ DWORD WINAPI BallThread(LPVOID lpArg)
 
 		WaitForSingleObject(hTimerWaitUpdateBall, INFINITE);
 
+		EnterCriticalSection(&gCriticalSectionGameData); //<=> WaitForSigeObject
 		moveBall(game);
+		LeaveCriticalSection(&gCriticalSectionGameData);//<=> Release object/mutex
 
 		broadCastGameData(serverObj->serverHandlers.namedPipeInstances, serverObj);
 
@@ -392,10 +395,12 @@ DWORD WINAPI BonusThread(LPVOID lpArg)
 
 		WaitForSingleObject(hTimerWaitMoveBonus, INFINITE);
 
+		EnterCriticalSection(&gCriticalSectionGameData);
 		for (WORD i = 0; i < gameObj->wNumberOfBonusDropping; i++)
 		{
 			moveBonus(gameObj, i);
 		}
+		LeaveCriticalSection(&gCriticalSectionGameData);
 
 	} while (gameObj->wLifes > 0);
 
