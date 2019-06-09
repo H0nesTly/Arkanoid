@@ -150,6 +150,7 @@
     <ResourceCompile Include="Client.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="ark_n.ico" />
     <Image Include="ball.bmp" />
     <Image Include="bitmap1.bmp" />
     <Image Include="ExtraHealth.bmp" />

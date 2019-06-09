@@ -66,32 +66,16 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	wcApp.style = CS_HREDRAW | CS_VREDRAW;// Estilo da janela: Fazer o redraw se for // modificada horizontal ou verticalmente
 
 	wcApp.hIcon = (HICON)LoadImage( // returns a HANDLE so we have to cast to HICON
-		NULL,             // hInstance must be NULL when loading from a file
-		TEXT("ark_n.ico"),   // the icon file name
+		GetModuleHandle(NULL),             // hInstance must be NULL when loading from a file
+		MAKEINTRESOURCE(IDI_ICONARKANOID),   // the icon file name
 		IMAGE_ICON,       // specifies that the file is an icon
 		0,                // width of the image (we'll specify default later on)
 		0,
-		LR_LOADTRANSPARENT |// height of the image
-		LR_LOADFROMFILE |  // we want to load a file (as opposed to a resource)
-		LR_DEFAULTSIZE |   // default metrics based on the type (IMAGE_ICON, 32x32)
-		LR_SHARED         // let the system release the handle when it's no longer used
+		LR_DEFAULTSIZE    // default metrics based on the type (IMAGE_ICON, 32x32)
 	);
 
 	// "hIcon" = handler do �con normal
-	wcApp.hIconSm = (HICON)LoadImage( // returns a HANDLE so we have to cast to HICON
-		NULL,             // hInstance must be NULL when loading from a file
-		TEXT("ark_icon.ico"),   // the icon file name
-		IMAGE_ICON,       // specifies that the file is an icon
-		16,                // width of the image (we'll specify default later on)
-		16,                // height of the image
-		LR_LOADFROMFILE |  // we want to load a file (as opposed to a resource)
-		LR_LOADTRANSPARENT |   // default metrics based on the type (IMAGE_ICON, 32x32)
-		LR_SHARED         // let the system release the handle when it's no longer used
-	);
-
-
-	// "hIconSm" = handler do �con pequeno
-	wcApp.hIcon = NULL;
+	wcApp.hIconSm = NULL;
 
 	wcApp.hCursor = LoadCursor(NULL, IDC_ARROW); // "hCursor" = handler do cursor (rato)
 	// "NULL" = Forma definida no Windows

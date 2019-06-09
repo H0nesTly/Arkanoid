@@ -66,5 +66,8 @@
     <Image Include="triple.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="ark_n.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
