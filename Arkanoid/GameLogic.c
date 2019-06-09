@@ -400,12 +400,12 @@ VOID destroyBonus(WORD wIndex, Game* gameObj)
 
 VOID destroyPlayerPaddle(const PTCHAR username, Game* gameObj)
 {
-	for (size_t i = 0; i < gameObj->wNumberOfPlayerPaddles; i++)
+	for (WORD i = 0; i < gameObj->wNumberOfPlayerPaddles; i++)
 	{
 		if (_tcscmp(username, gameObj->PlayerPaddles->playerOwnerOfBlock.playerInfo.tcUserName) == 0)
 		{
 			ZeroMemory(&gameObj->PlayerPaddles[i], sizeof(Paddle));
-			for (size_t j = i; j + 1 < gameObj->wNumberOfPlayerPaddles; j++)
+			for (WORD j = i; j + 1 < gameObj->wNumberOfPlayerPaddles; j++)
 			{
 				CopyMemory(&gameObj->PlayerPaddles[j],
 					&gameObj->PlayerPaddles[j + 1],

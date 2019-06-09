@@ -51,8 +51,7 @@ inline static VOID readNewMessageSharedMemory(MessageQueue* queue, Server* serve
 			tryToMovePaddle(queue->circularBufferClientServer.queueOfMessage[queue->circularBufferClientServer.wTailIndex].tcSender, serverObj, 1);
 			break;
 		case QuitGameMessage:
-			//Retirar cliente do lobby/lista de jogadores
-			_tprintf(TEXT("fechar"));
+			removePlayer(serverObj, queue->circularBufferClientServer.queueOfMessage[queue->circularBufferClientServer.wTailIndex].tcSender);
 			break;
 		default:
 			break;
@@ -164,6 +163,7 @@ inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Serv
 			switch (npInstances->message.request)
 			{
 			case LoginMessage:
+				ConnectNamedPipe(npInstances->hNamedPipeWriteToClient, NULL);
 
 				npInstances->message.wTypeOfMessage = TYPE_OF_MESSAGE_RESPONSE;
 
@@ -199,12 +199,12 @@ inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Serv
 				tryToMovePaddle(npInstances->message.messagePD.tcSender, serverObj, 1);
 				break;
 			case QuitGameMessage:
-				//Disconnecta
+				removePlayer(serverObj, npInstances->message.messagePD.tcSender);
+				DisconnectAndReconnect(npInstances);
+				return;
 				break;
 			}
 		}
-
-		ConnectNamedPipe(npInstances->hNamedPipeWriteToClient, NULL);
 
 		bOperationReturn = WriteFile(
 			npInstances->hNamedPipeWriteToClient,		//File handler
@@ -219,7 +219,6 @@ inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Serv
 		{
 			npInstances->fPendigIO = FALSE;
 			npInstances->State = ReadState;
-			_tprintf(TEXT("\n Mensagem escrita com sucesso!!"));
 			return;
 		}
 
@@ -282,10 +281,8 @@ DWORD WINAPI ConsumerMessageThread(LPVOID lpArg)
 		{
 			if (i >= INDEX_OF_HANDLERS_NAMEDPIPE)
 			{
-				//foi semaforo(Memoria Partilhada)
 				readNewMessageSharedMemory(queue, serverObj);
 			}
-			_tprintf(TEXT("\nErro %d, WAIT %d\n"), GetLastError(), dwWaitEvent);
 		}
 	}
 	return 0;
@@ -401,7 +398,7 @@ DWORD WINAPI BonusThread(LPVOID lpArg)
 		}
 
 	} while (gameObj->wLifes > 0);
-	
+
 	return 0;
 }
 

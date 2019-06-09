@@ -255,7 +255,7 @@ VOID drawGame(const Game* gameObj, HDC memDC)
 
 		drawHealth(gameObj->wLifes, memDC);
 
-		for (int i = 0; i < gameObj->wNumberOfBlocks; ++i)
+		for (WORD i = 0; i < gameObj->wNumberOfBlocks; ++i)
 		{
 			drawBlocks(&gameObj->blocks[i], memDC);
 		}
@@ -263,10 +263,10 @@ VOID drawGame(const Game* gameObj, HDC memDC)
 		for (int i = 0; i < gameObj->wNumberOfBalls; ++i)
 			drawBalls(&gameObj->ball[i], memDC);
 
-		for (size_t i = 0; i < gameObj->wNumberOfPlayerPaddles; i++)
+		for (WORD i = 0; i < gameObj->wNumberOfPlayerPaddles; i++)
 			drawPlayerPaddles(&gameObj->PlayerPaddles[i], memDC);
 
-		for (size_t i = 0; i < gameObj->wNumberOfBonusDropping; i++)
+		for (WORD i = 0; i < gameObj->wNumberOfBonusDropping; i++)
 			drawBonus(&gameObj->bonusBlock[i], memDC);
 	}
 	else
