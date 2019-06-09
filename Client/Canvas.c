@@ -13,6 +13,8 @@ HBITMAP hBmpBonusSlowDown = NULL;
 HBITMAP hBmpBonusExtraHealth = NULL;
 HBITMAP hBmpBonusTriple = NULL;
 HBITMAP hBmpLife = NULL;
+HBITMAP hBmpMyPaddle = NULL;
+HBITMAP hBmpEnemyPaddle = NULL;
 HBITMAP hBmpBackGround = NULL;
 
 static VOID initResources()
@@ -61,6 +63,20 @@ static VOID initResources()
 
 	hBmpBackGround = (HBITMAP)LoadImage(GetModuleHandle(NULL),
 		MAKEINTRESOURCE(IDB_BITMAP_BACKGROUND),
+		IMAGE_BITMAP,
+		0, 0,
+		LR_DEFAULTSIZE
+	);
+
+	hBmpMyPaddle = (HBITMAP)LoadImage(GetModuleHandle(NULL),
+		MAKEINTRESOURCE(IDB_BITMAP_MY_PADDLE),
+		IMAGE_BITMAP,
+		0, 0,
+		LR_DEFAULTSIZE
+	);
+
+	hBmpEnemyPaddle = (HBITMAP)LoadImage(GetModuleHandle(NULL),
+		MAKEINTRESOURCE(IDB_BITMAP_ENEMY_PADDLE),
 		IMAGE_BITMAP,
 		0, 0,
 		LR_DEFAULTSIZE
@@ -202,34 +218,39 @@ VOID drawBonus(const BonusBlock* bonusObj, HDC memDC)
 VOID drawPlayerPaddles(const Paddle* playerBlockObj, HDC memDC)
 {
 	RECT rect;
-	HBRUSH hBrush = NULL;
+	HBITMAP hBmp = NULL;
+	BITMAP bmp;
+	HDC tempDC = CreateCompatibleDC(memDC);
+
+	ZeroMemory(&rect, sizeof(RECT));
 
 	rect.left = rectOffsetGameBoard.left + playerBlockObj->playerBlockPosition.x;
 	rect.top = rectOffsetGameBoard.top + playerBlockObj->playerBlockPosition.y;
 
-	rect.right = rect.left + playerBlockObj->wWidth;
-	rect.bottom = rect.top + playerBlockObj->wHeight;
-
 	if (gClientInfo.myMode == WatchingGame)
 	{
-		hBrush = CreateSolidBrush(COLOR_PLAYERPADDLE_WATCHING);
+		hBmp = hBmpEnemyPaddle;
 	}
 	else
 	{
 		if (_tcscmp(gClientInfo.tcUserName, playerBlockObj->playerOwnerOfBlock.playerInfo.tcUserName) == 0)
 		{
-			hBrush = CreateSolidBrush(COLOR_MYPLAYERPADDLE);
+			hBmp = hBmpMyPaddle;
 			drawScore(playerBlockObj->playerOwnerOfBlock.dwScore, memDC);
 		}
 		else
 		{
-			hBrush = CreateSolidBrush(COLOR_PLAYERPADDLE_ENEMY);
+			hBmp = hBmpEnemyPaddle;
 		}
 	}
 
-	FillRect(memDC, &rect, hBrush);
+	GetObject(hBmp, sizeof(bmp), &bmp);
 
-	DeleteObject(hBrush);
+	SelectObject(tempDC, hBmp);
+
+	BitBlt(memDC, rect.left, rect.top, playerBlockObj->wWidth, playerBlockObj->wHeight, tempDC, 0, 0, SRCCOPY);
+
+	DeleteDC(tempDC);
 }
 
 VOID drawGameBoard(const GameBoard* gameBoardObj, HDC memDC)
