@@ -73,7 +73,7 @@ struct playerInfo
 struct player
 {
 	PlayerInfo playerInfo;
-	DWORD dwScore;
+	WORD dwScore;
 };
 
 struct paddle

@@ -7,6 +7,7 @@
 #include "ServerStructures.h"
 #include "ServerThreads.h"
 #include "ServerSyncObj.h"
+#include <stdlib.h>
 
 GameServerConfiguration serverConfig;
 CRITICAL_SECTION  gCriticalSectionGameData;
@@ -21,9 +22,10 @@ int _tmain(int argc, LPTSTR argv[])
 
 	Server serverInstance;
 	ScorePlayer scoreTopTen[10];
+	Game* gameObj;
 
 	ZeroMemory(&serverInstance, sizeof(Server));
-	ZeroMemory(&scoreTopTen, sizeof(scoreTopTen));
+	ZeroMemory(&scoreTopTen, sizeof(ScorePlayer) * 10);
 	ZeroMemory(&serverConfig, sizeof(GameServerConfiguration));
 
 	//UNICODE: Por defeito, a consola Windows não processa caracteres wide.
@@ -119,13 +121,25 @@ int _tmain(int argc, LPTSTR argv[])
 	//vamos buscar os valores do nosso jogo e comparamos com os dentro do regestry
 	getTopTenRegistry(scoreTopTen);
 
-	//setTopTenRegistry(scoreTopTen);
+	gameObj = (Game*)serverInstance.serverHandlers.sharedMemHandlers.lpSharedMemGame;
+	ScorePlayer aux;
+	for (WORD i = 0; i < gameObj->wNumberOfPlayerPaddles; i++)
+	{
+		ZeroMemory(&aux, sizeof(ScorePlayer));
+		_tcscpy_s(aux.jogador,
+			_countof(aux.jogador),
+			gameObj->PlayerPaddles[i].playerOwnerOfBlock.playerInfo.tcUserName);
+
+		aux.pontuacao = gameObj->PlayerPaddles[i].playerOwnerOfBlock.dwScore;
+
+		setScoreTopTen(aux,scoreTopTen);	
+	}
+
+	_tprintf(TEXT("\n Guardado valores no registo com %s") ,setTopTenRegistry(scoreTopTen) ? TEXT("Sucesso"): TEXT("Falhou"));
 
 	//enviamos a todos os clientes o top 10 aatualizado
 	//Named Pipess e jogadoress dentro do lobby e jogadores
 	//sendMessageToAll(serverInstance);
-
-
 
 	freeSyncObject();
 	freeMappedMemoryServer(&serverInstance.serverHandlers.sharedMemHandlers);

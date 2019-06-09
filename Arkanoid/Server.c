@@ -410,8 +410,8 @@ BOOL setTopTenRegistry(ScorePlayer scoreTopTen[]) {
 				RegSetValueEx(chave, TEXT("Pontuacao"), 0, REG_SZ, (LPBYTE)pontuacoes, sizeof(pontuacoes));
 			}
 		}
-		return TRUE;
 		RegCloseKey(chave);
+		return TRUE;
 	}
 	return FALSE;
 }
