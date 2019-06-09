@@ -129,8 +129,8 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	hThreads[0] = CreateThread(
 		NULL,
 		0,
-		readInputThread,
-		NULL,
+		readMessageThread,
+		(LPVOID)&gClientInfo,
 		0,
 		&dwThreadsIds[0]
 	);
@@ -138,19 +138,10 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	hThreads[1] = CreateThread(
 		NULL,
 		0,
-		readMessageThread,
-		(LPVOID)&gClientInfo,
-		0,
-		&dwThreadsIds[1]
-	);
-
-	hThreads[2] = CreateThread(
-		NULL,
-		0,
 		readGameDataThread,
 		NULL,
 		0,
-		&dwThreadsIds[2]
+		&dwThreadsIds[1]
 	);
 	PlaySound(TEXT("background_music.wav"), NULL, SND_ASYNC | SND_NODEFAULT);
 
@@ -252,6 +243,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 		{
 		case IDYES:
 			SendMessageDll(&bKeepRunning, QuitGameMessage);
+			free(gameObj);
 			DestroyWindow(hWnd);
 			break;
 		case IDNO:
@@ -262,7 +254,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_DESTROY: // Destruir a janela e terminar o programa
 	// "PostQuitMessage(Exit Status)"
-		free(gameObj);
 		PostQuitMessage(0);
 		break;
 	default:
@@ -294,9 +285,9 @@ BOOL CALLBACK manageDialogEvents(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lP
 				}
 				else if (IsDlgButtonChecked(hWnd, IDC_RADIONAMEDPIPE) == BST_CHECKED)
 				{
-					gameObj = (Game*) malloc(sizeof(Game));
+					gameObj = (Game*)malloc(sizeof(Game));
 
-					ZeroMemory(gameObj ,sizeof(Game));
+					ZeroMemory(gameObj, sizeof(Game));
 
 					GetDlgItemText(hWnd, IDC_IPADDRESSNAMEPIPE, gClientInfo.tcIP, 20);
 					GetDlgItemText(hWnd, IDC_EDITPASSWORD, tcPassword, 20);
