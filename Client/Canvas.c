@@ -13,6 +13,7 @@ HBITMAP hBmpBonusSlowDown = NULL;
 HBITMAP hBmpBonusExtraHealth = NULL;
 HBITMAP hBmpBonusTriple = NULL;
 HBITMAP hBmpLife = NULL;
+HBITMAP hBmpBackGround = NULL;
 
 static VOID initResources()
 {
@@ -57,6 +58,13 @@ static VOID initResources()
 		0, 0,
 		LR_DEFAULTSIZE
 	);
+
+	hBmpBackGround = (HBITMAP)LoadImage(GetModuleHandle(NULL),
+		MAKEINTRESOURCE(IDB_BITMAP_BACKGROUND),
+		IMAGE_BITMAP,
+		0, 0,
+		LR_DEFAULTSIZE
+	);
 }
 
 VOID drawScore(const DWORD wScore, HDC memDC)
@@ -88,7 +96,7 @@ VOID drawHealth(const WORD wLifesLeft, HDC memDC)
 	rect.top = 15;
 
 	//TransparentBlt
-	
+
 	for (int i = 0; i < wLifesLeft; i++)
 	{
 		BitBlt(memDC, rect.left + bmp.bmWidth * i, rect.top, bmp.bmWidth, bmp.bmWidth, tempDC, 0, 0, SRCCOPY);
@@ -226,24 +234,22 @@ VOID drawPlayerPaddles(const Paddle* playerBlockObj, HDC memDC)
 
 VOID drawGameBoard(const GameBoard* gameBoardObj, HDC memDC)
 {
-	HBRUSH hBrush = NULL;
-	RECT rect;
+	BITMAP bmp;
 	HDC tempDC = CreateCompatibleDC(memDC);
 
 	//alinhar
-	rectOffsetGameBoard.left = rect.left = (rectWindowProp.right - gameBoardObj->wWidth) / 2;
-	rectOffsetGameBoard.top = rect.top = (rectWindowProp.bottom - gameBoardObj->wHeight) / 2;
+	rectOffsetGameBoard.left = (rectWindowProp.right - gameBoardObj->wWidth) / 2;
+	rectOffsetGameBoard.top = (rectWindowProp.bottom - gameBoardObj->wHeight) / 2;
 
-	rectOffsetGameBoard.right = rect.right = gameBoardObj->wWidth + rect.left;
-	rectOffsetGameBoard.bottom = rect.bottom = gameBoardObj->wHeight + rect.top;
+	rectOffsetGameBoard.right = gameBoardObj->wWidth + rectOffsetGameBoard.left;
+	rectOffsetGameBoard.bottom = gameBoardObj->wHeight + rectOffsetGameBoard.top;
 
-	hBrush = CreateSolidBrush(COLOR_GAMEBOARD);
+	GetObject(hBmpBackGround, sizeof(bmp), &bmp);
 
-	//SelectObject(tempDC, hBrush);
+	SelectObject(tempDC, hBmpBackGround);
 
-	FrameRect(memDC, &rect, hBrush);
+	BitBlt(memDC, rectOffsetGameBoard.left, rectOffsetGameBoard.top, rectOffsetGameBoard.right, rectOffsetGameBoard.bottom, tempDC, 0, 0, SRCCOPY);
 
-	DeleteObject(hBrush);
 	DeleteDC(tempDC);
 }
 

@@ -10,8 +10,9 @@
 #define IDB_BITMAPSPEEDUP               106
 #define IDB_BITMAP1                     107
 #define IDB_BITMAPTRIPLE                107
-#define IDI_ICON1                       110
 #define IDI_ICONARKANOID                110
+#define IDB_BITMAP2                     111
+#define IDB_BITMAP_BACKGROUND           111
 #define IDC_USERNAME                    1002
 #define IDC_SENDLOGIN                   1003
 #define IDC_COMMUNICATION               1004
@@ -26,7 +27,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        111
+#define _APS_NEXT_RESOURCE_VALUE        113
 #define _APS_NEXT_COMMAND_VALUE         40001
 #define _APS_NEXT_CONTROL_VALUE         1012
 #define _APS_NEXT_SYMED_VALUE           101

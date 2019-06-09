@@ -151,6 +151,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="ark_n.ico" />
+    <Image Include="background.bmp" />
     <Image Include="ball.bmp" />
     <Image Include="bitmap1.bmp" />
     <Image Include="ExtraHealth.bmp" />

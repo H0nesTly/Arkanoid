@@ -100,8 +100,8 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 		WS_OVERLAPPEDWINDOW, // Estilo da janela (WS_OVERLAPPED= normal)
 		CW_USEDEFAULT, // Posi��o x pixels (default=� direita da �ltima)
 		CW_USEDEFAULT, // Posi��o y pixels (default=abaixo da �ltima)
-		CW_USEDEFAULT, // Largura da janela (em pixels)
-		CW_USEDEFAULT, // Altura da janela (em pixels)
+		550, // Largura da janela (em pixels)
+		750, // Altura da janela (em pixels)
 		(HWND)HWND_DESKTOP, // handle da janela pai (se se criar uma a partir de
 		// outra) ou HWND_DESKTOP se a janela for a primeira,
 		// criada a partir do "desktop"
@@ -204,7 +204,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 
 		gClientInfo.doubleBufferingDC = memDC;
 
-		hBrush = CreateSolidBrush(RGB(170, 15, 70));
+		hBrush = CreateSolidBrush(RGB(51, 0, 102));
 
 		SelectObject(memDC, hBrush);
 
