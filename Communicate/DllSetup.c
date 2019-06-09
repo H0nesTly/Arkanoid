@@ -23,7 +23,7 @@ BOOL initComponetsDLL(ClientConnection* ccArg)
 
 VOID freeComponentsDLL(ClientConnection* ccArg)
 {
-	switch (ccArg->typeOfConnection)
+	switch (ccArg->typeOfConnection) 
 	{
 	case clientSharedMemoryConnection:
 		freeMappedMemoryDLL(

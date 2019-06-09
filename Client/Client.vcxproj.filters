@@ -72,5 +72,11 @@
     <Image Include="background.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="bitmap3.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="bitmap4.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

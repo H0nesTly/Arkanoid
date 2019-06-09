@@ -154,6 +154,8 @@
     <Image Include="background.bmp" />
     <Image Include="ball.bmp" />
     <Image Include="bitmap1.bmp" />
+    <Image Include="bitmap3.bmp" />
+    <Image Include="bitmap4.bmp" />
     <Image Include="ExtraHealth.bmp" />
     <Image Include="life.bmp" />
     <Image Include="SlowDown.bmp" />
