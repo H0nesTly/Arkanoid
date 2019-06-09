@@ -5,7 +5,7 @@
 typedef struct clientConnection ClientConnection;
 typedef struct windowhandlers Windowhandlers;
 typedef struct sharedMemory SharedMemory;
-typedef struct pipeLocal PipeLocal;
+typedef struct pipe Pipe;
 typedef struct pipeRemote PipeRemote;
 
 typedef enum typeOfClientConnection TypeOfClientConnection;
@@ -44,26 +44,22 @@ struct clientConnection
 
 		} SharedMem;
 
-		struct pipeLocal
+		struct pipe
 		{
 			HANDLE hNamedPipeWriteToServer;
 			HANDLE hNamedPipeReadFromServer;
 			Game* gameObj;
+			TCHAR tcIP[16];
 			//Estado?
-		} PipeLocal;
+		} Pipe;
 
-		struct pipeRemote
-		{
-			int y;
-		} PipeRemote;
 	};
 };
 
 enum typeOfClientConnection
 {
 	clientSharedMemoryConnection,
-	clientNamedPipeLocalConnection,
-	clientNamedPipeRemoteConnection
+	clientNamedPipeConnection
 };
 
 
@@ -88,9 +84,9 @@ VOID freeSyncObjectsDLL(HANDLE, HANDLE, HANDLE, HANDLE, HANDLE);
 /*----------  FIM Funçoes de Bootstrapping para memoria partilhada ----------*/
 
 /*---------- Funçoes de Bootstrapping para NamedPipes ----------*/
-BOOL initNamedPipeLocalDLL(PipeLocal*);
+BOOL initNamedPipeDLL(Pipe*);
 
-VOID freeNamedPipeLocalDLL(PipeLocal*);
+VOID freeNamedPipeDLL(Pipe*);
 /*---------- FIM Funçoes de Bootstrapping para NamedPipes ----------*/
 
 VOID initSecurityAtributes(SECURITY_ATTRIBUTES*);

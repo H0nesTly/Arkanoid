@@ -136,7 +136,7 @@ extern "C" {          // we need to export the C interface
 	DLL_API VOID __cdecl setGameObj(Game**);
 
 	/*Enviamos mensagem ao servidor*/
-	DLL_API VOID __cdecl Login(const PTCHAR, HWND, HDC, TypeOfClientConnection);
+	DLL_API VOID __cdecl Login(const PTCHAR, HWND, HDC,const PTCHAR, TypeOfClientConnection);
 
 	DLL_API VOID __cdecl ReceiveBroadcast(BOOL*, Game**);
 

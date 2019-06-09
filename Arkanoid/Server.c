@@ -81,7 +81,7 @@ BOOL intitServerMessageMem(HANDLE* hMapObj, LPVOID* lpSharedMem)
 	return TRUE;
 }
 
-BOOL initServerPipeLocal(NamedPipeInstance npInstances[], WORD wInstances)
+BOOL initServerPipe(NamedPipeInstance npInstances[], WORD wInstances)
 {
 	WORD i;
 	SECURITY_ATTRIBUTES sa_attributes;

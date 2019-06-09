@@ -57,7 +57,7 @@ int _tmain(int argc, LPTSTR argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	if (!initServerPipeLocal(serverInstance.serverHandlers.namedPipeInstances, MAX_PLAYER_INSTANCES))
+	if (!initServerPipe(serverInstance.serverHandlers.namedPipeInstances, MAX_PLAYER_INSTANCES))
 	{
 		_tprintf(TEXT("ERRO Criar Pipes"));
 		exit(EXIT_FAILURE);

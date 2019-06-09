@@ -25,7 +25,7 @@ BOOL intitServerGameMem(HANDLE*, LPVOID*);
 /*Mapea a Memoria que ira armazenar o array de mensagens*/
 BOOL intitServerMessageMem(HANDLE*, LPVOID*);
 
-BOOL initServerPipeLocal(NamedPipeInstance[], WORD);
+BOOL initServerPipe(NamedPipeInstance[], WORD);
 
 void freeMappedMemoryServer(ServerSharedMemoryHandlers*);
 

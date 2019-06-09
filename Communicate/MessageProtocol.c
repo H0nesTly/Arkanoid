@@ -36,7 +36,7 @@ static VOID loginSharedMemory(const PTCHAR username)
 
 static VOID loginLocalPIPE(const PTCHAR username)
 {
-	HANDLE hPipe = gClientConnection.PipeLocal.hNamedPipeWriteToServer;
+	HANDLE hPipe = gClientConnection.Pipe.hNamedPipeWriteToServer;
 	MessageProtocolPipe messageToSend;
 	DWORD dwBytesToWrite;
 
@@ -67,10 +67,10 @@ static Game*  receiveBroadcastPipe()
 {
 	WaitForSingleObject(ghNewBroadCastMessage, INFINITE);
 
-	Game *gameObj = gClientConnection.PipeLocal.gameObj;
+	Game *gameObj = gClientConnection.Pipe.gameObj;
 
 	return gameObj;
-	//CopyMemory(gameObj, &gClientConnection.PipeLocal.gameObj, sizeof(Game));
+	//CopyMemory(gameObj, &gClientConnection.Pipe.gameObj, sizeof(Game));
 }
 
 static VOID receiveMessageSharedMemory(const PTCHAR UserName, BOOL* bKeepRunning)
@@ -114,7 +114,7 @@ static VOID receiveMessageSharedMemory(const PTCHAR UserName, BOOL* bKeepRunning
 
 static VOID	receiveMessageLocalPipe(const PTCHAR UserName, BOOL* bKeepRunning)
 {
-	HANDLE hPipe = gClientConnection.PipeLocal.hNamedPipeReadFromServer;
+	HANDLE hPipe = gClientConnection.Pipe.hNamedPipeReadFromServer;
 	MessageProtocolPipe messageToReceive;
 
 	DWORD dwBytesToRead;
@@ -149,7 +149,7 @@ static VOID	receiveMessageLocalPipe(const PTCHAR UserName, BOOL* bKeepRunning)
 				//TODO: COMO MOSTRAR NA INTERFACE GRÁFICA
 				break;
 			case ResponseGameData:
-				CopyMemory(gClientConnection.PipeLocal.gameObj,
+				CopyMemory(gClientConnection.Pipe.gameObj,
 					&messageToReceive.messagePD.gameData,
 					sizeof(Game));
 
@@ -187,7 +187,7 @@ static VOID sendMessageSharedMemory(const PTCHAR username, TypeOfRequestMessage 
 
 static VOID sendMessagePipe(const PTCHAR username, TypeOfRequestMessage tRequest)
 {
-	HANDLE hPipe = gClientConnection.PipeLocal.hNamedPipeWriteToServer;
+	HANDLE hPipe = gClientConnection.Pipe.hNamedPipeWriteToServer;
 	MessageProtocolPipe messageToSend;
 	DWORD dwBytesToWrite;
 
@@ -210,21 +210,28 @@ static VOID sendMessagePipe(const PTCHAR username, TypeOfRequestMessage tRequest
 
 VOID __cdecl setGameObj(Game** gameObj)
 {
-	gClientConnection.PipeLocal.gameObj = *gameObj;
+	gClientConnection.Pipe.gameObj = *gameObj;
 }
 
-VOID __cdecl Login(const PTCHAR username, HWND hWndArg, HDC memDC, TypeOfClientConnection arg)
+VOID __cdecl Login(const PTCHAR username, HWND hWndArg, HDC memDC, const PTCHAR IP, TypeOfClientConnection arg)
 {
 	gClientConnection.typeOfConnection = arg;
 
 	/*Inicializamos shared memory / evento / NP
 	 * Dependendo como o utilizador se pretende connectar
 	 */
+	if (arg == clientNamedPipeConnection)
+		_tcscpy_s(gClientConnection.Pipe.tcIP,
+			_countof(gClientConnection.Pipe.tcIP),
+			IP);
+
 	initComponetsDLL(&gClientConnection);
 
 	_tcscpy_s(gClientConnection.tcUserName,
 		_countof(gClientConnection.tcUserName),
 		username);
+
+
 
 	gClientConnection.wndHandlers.hWndMain = hWndArg;
 	gClientConnection.wndHandlers.memDC = memDC;
@@ -234,7 +241,7 @@ VOID __cdecl Login(const PTCHAR username, HWND hWndArg, HDC memDC, TypeOfClientC
 	case clientSharedMemoryConnection:
 		loginSharedMemory(gClientConnection.tcUserName);
 		break;
-	case clientNamedPipeLocalConnection:
+	case clientNamedPipeConnection:
 		loginLocalPIPE(gClientConnection.tcUserName);
 
 		ghNewBroadCastMessage = CreateEvent(
@@ -242,8 +249,6 @@ VOID __cdecl Login(const PTCHAR username, HWND hWndArg, HDC memDC, TypeOfClientC
 			FALSE,		//modo automático
 			FALSE,		//nao sinalizado
 			NULL);
-		break;
-	case clientNamedPipeRemoteConnection:
 		break;
 	default:
 		break;
@@ -257,10 +262,8 @@ VOID __cdecl ReceiveBroadcast(BOOL* bKeepRunning, Game** gameObj)
 	case clientSharedMemoryConnection:
 		*gameObj = receiveBroadcastSharedMemory();
 		break;
-	case clientNamedPipeLocalConnection:
+	case clientNamedPipeConnection:
 		*gameObj = receiveBroadcastPipe();
-		break;
-	case clientNamedPipeRemoteConnection:
 		break;
 	default:
 		break;
@@ -278,10 +281,8 @@ VOID __cdecl SendMessageDll(BOOL* bKeepRunning, TypeOfRequestMessage tRequest)
 	case clientSharedMemoryConnection:
 		sendMessageSharedMemory(gClientConnection.tcUserName, tRequest);
 		break;
-	case clientNamedPipeLocalConnection:
+	case clientNamedPipeConnection:
 		sendMessagePipe(gClientConnection.tcUserName, tRequest);
-		break;
-	case clientNamedPipeRemoteConnection:
 		break;
 	default:
 		break;
@@ -295,10 +296,8 @@ VOID __cdecl ReceiveMessage(const PTCHAR UserName, BOOL* bKeepRunning)
 	case clientSharedMemoryConnection:
 		receiveMessageSharedMemory(gClientConnection.tcUserName, bKeepRunning);
 		break;
-	case clientNamedPipeLocalConnection:
+	case clientNamedPipeConnection:
 		receiveMessageLocalPipe(gClientConnection.tcUserName, bKeepRunning);
-		break;
-	case clientNamedPipeRemoteConnection:
 		break;
 	default:
 		break;

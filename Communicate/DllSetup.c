@@ -12,10 +12,8 @@ BOOL initComponetsDLL(ClientConnection* ccArg)
 	case clientSharedMemoryConnection:
 		return initSharedMemoryDLL(&ccArg->SharedMem);
 		break;
-	case clientNamedPipeLocalConnection:
-		return initNamedPipeLocalDLL(&ccArg->PipeLocal);
-		break;
-	case clientNamedPipeRemoteConnection:
+	case clientNamedPipeConnection:
+		return initNamedPipeDLL(&ccArg->Pipe);
 		break;
 	default:
 		break;
@@ -42,10 +40,8 @@ VOID freeComponentsDLL(ClientConnection* ccArg)
 			ccArg->SharedMem.hEventReadNewMessage);
 
 		break;
-	case clientNamedPipeLocalConnection:
-		freeNamedPipeLocalDLL(&ccArg->PipeLocal);
-		break;
-	case clientNamedPipeRemoteConnection:
+	case clientNamedPipeConnection:
+		freeNamedPipeDLL(&ccArg->Pipe);
 		break;
 	default:
 		break;
@@ -193,19 +189,21 @@ VOID freeSyncObjectsDLL(HANDLE hWObj, HANDLE hSObj, HANDLE hRObj, HANDLE hMutex,
 	CloseHandle(hGameData);
 }
 
-BOOL initNamedPipeLocalDLL(PipeLocal* plArg)
+BOOL initNamedPipeDLL(Pipe* plArg)
 {
 	BOOL fReturn;
 	DWORD dwPipeMode;
-
+	TCHAR tcNamedPipe1[60],tcNamedPipe2[60];
 	SECURITY_ATTRIBUTES sa;
 
 	initSecurityAtributes(&sa);
 
+	_stprintf_s(tcNamedPipe1,60, TEXT("\\\\%s\\pipe\\namedPipeWrite"), plArg->tcIP);
+	_stprintf_s(tcNamedPipe2,60, TEXT("\\\\%s\\pipe\\namedPipeRead"), plArg->tcIP);
+
 	plArg->hNamedPipeWriteToServer = CreateFile(
-		NAME_NAMED_PIPE_WRITE_TO_SERVER,
-		//TEXT("\\\\192.168.56.102\\pipe\\namedPipeWrite"),	//Nome do Pipe		
-		GENERIC_WRITE,
+		tcNamedPipe1,		//nome do pipe
+		GENERIC_WRITE,		//apenas escrita
 		0,					//modo de partilha
 		&sa,				//securty atributes
 		OPEN_EXISTING,		//abrir o pipe
@@ -213,9 +211,8 @@ BOOL initNamedPipeLocalDLL(PipeLocal* plArg)
 		NULL);				//template file
 
 	plArg->hNamedPipeReadFromServer = CreateFile(
-		NAME_NAMED_PIPE_READ_FROM_SERVER,
-		//TEXT("\\\\192.168.56.102\\pipe\\namedPipeRead"),	//Nome do Pipe		
-		GENERIC_READ,
+		tcNamedPipe2,		//Nome do pipe
+		GENERIC_READ,		//apenas leitura
 		0,					//modo de partilha
 		&sa,				//securty atributes
 		OPEN_EXISTING,		//abrir o pipe
@@ -249,7 +246,7 @@ BOOL initNamedPipeLocalDLL(PipeLocal* plArg)
 	return fReturn ? TRUE : FALSE;
 }
 
-VOID freeNamedPipeLocalDLL(PipeLocal* plArg)
+VOID freeNamedPipeDLL(Pipe* plArg)
 {
 	CloseHandle(plArg->hNamedPipeReadFromServer);
 	CloseHandle(plArg->hNamedPipeWriteToServer);
