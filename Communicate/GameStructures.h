@@ -48,7 +48,6 @@ struct coords
 struct ball
 {
 	Coords ballPosition;
-	TCHAR tcFigure;
 
 	WORD wWitdh;
 	WORD wHeight;

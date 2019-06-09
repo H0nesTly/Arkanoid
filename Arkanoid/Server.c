@@ -380,7 +380,7 @@ BOOL setTopTenRegistry(ScorePlayer scoreTopTen[]) {
 		_tcscat_s(jogadores, _countof(jogadores), scoreTopTen[i].jogador);
 
 
-		_stprintf_s(pontuacao, _countof(pontuacao), TEXT("%.2f"), scoreTopTen[i].pontuacao);
+		_stprintf_s(pontuacao, _countof(pontuacao), TEXT("%d"), scoreTopTen[i].pontuacao);
 		_tcscat_s(pontuacoes, _countof(pontuacoes), pontuacao);
 
 		if (i < 9)
@@ -473,9 +473,6 @@ BOOL getTopTenRegistry(ScorePlayer scoreTopTen[]) {
 
 			jogador = _tcstok_s(jogadores, TEXT(";"), &tcNextToken);
 
-			//jogador = _tcstok_s(jogadores, TEXT(","), &tcNextToken);
-
-
 			for (i = 0; i < 10; i++)
 			{
 				if (jogador == NULL)
@@ -500,7 +497,7 @@ BOOL getTopTenRegistry(ScorePlayer scoreTopTen[]) {
 				if (score == NULL)
 					break;
 				else
-					scoreTopTen[i].pontuacao = _tstof(score);
+					scoreTopTen[i].pontuacao = _tstoi(score);
 
 				// Get next token:
 				score = _tcstok_s(NULL, TEXT(";"), &tcNextToken); // C4996
@@ -734,8 +731,6 @@ BOOL removePlayerFromLobby(Lobby* lobbyPtr, const PTCHAR userNameToRemove)
 
 BOOL removePlayerFromGame(UsersPlaying* userInGamePtr, Game* gameObj, const PTCHAR userNameToRemove)
 {
-	destroyPlayerPaddle(userNameToRemove, gameObj);
-
 	for (WORD i = 0; i < userInGamePtr->wPlayersPlaying; i++)
 	{
 		if (_tcscmp(userNameToRemove, userInGamePtr->playersPlaying[i].tcUserName) == 0)
@@ -749,6 +744,7 @@ BOOL removePlayerFromGame(UsersPlaying* userInGamePtr, Game* gameObj, const PTCH
 
 				ZeroMemory(&userInGamePtr->playersPlaying[j + 1], sizeof(PlayerInfo));
 			}
+			destroyPlayerPaddle(userNameToRemove, gameObj);
 			userInGamePtr->wPlayersPlaying--;
 			return  TRUE;
 		}

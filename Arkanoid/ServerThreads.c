@@ -46,10 +46,18 @@ inline static VOID readNewMessageSharedMemory(MessageQueue* queue, Server* serve
 
 			break;
 		case KeyPressedLeftMessage:
+			EnterCriticalSection(&gCriticalSectionGameData); //<=> WaitForSigeObject
+
 			tryToMovePaddle(queue->circularBufferClientServer.queueOfMessage[queue->circularBufferClientServer.wTailIndex].tcSender, serverObj, -1);
+
+			LeaveCriticalSection(&gCriticalSectionGameData);//<=> Release object/mutex
 			break;
 		case KeyPressedRigthMessage:
+			EnterCriticalSection(&gCriticalSectionGameData); //<=> WaitForSigeObject
+
 			tryToMovePaddle(queue->circularBufferClientServer.queueOfMessage[queue->circularBufferClientServer.wTailIndex].tcSender, serverObj, 1);
+
+			LeaveCriticalSection(&gCriticalSectionGameData);//<=> Release object/mutex
 			break;
 		case QuitGameMessage:
 			_tprintf(TEXT("\nJogador : %s desconectou-se do jogo!!"), queue->circularBufferClientServer.queueOfMessage[queue->circularBufferClientServer.wTailIndex].tcSender);
@@ -195,10 +203,18 @@ inline static VOID readNewMessageNamedPipes(NamedPipeInstance* npInstances, Serv
 			case TopPlayersMessage:
 				break;
 			case KeyPressedLeftMessage:
+				EnterCriticalSection(&gCriticalSectionGameData); //<=> WaitForSigeObject
+
 				tryToMovePaddle(npInstances->message.messagePD.tcSender, serverObj, -1);
+
+				LeaveCriticalSection(&gCriticalSectionGameData);//<=> Release object/mutex
 				break;
 			case KeyPressedRigthMessage:
+				EnterCriticalSection(&gCriticalSectionGameData); //<=> WaitForSigeObject
+
 				tryToMovePaddle(npInstances->message.messagePD.tcSender, serverObj, 1);
+
+				LeaveCriticalSection(&gCriticalSectionGameData);//<=> Release object/mutex
 				break;
 			case QuitGameMessage:
 				_tprintf(TEXT("\nJogador : %s desconectou-se do jogo!!"), npInstances->message.messagePD.tcSender);

@@ -12,7 +12,6 @@ DWORD WINAPI readMessageThread(LPVOID lpArg)
 {
 	ClientStructure* clientInfo = (ClientStructure*)lpArg;
 
-	//Bug Aqui for�ar o fecho 
 	do
 	{
 		ReceiveMessage(clientInfo->tcUserName, &bKeepRunning);

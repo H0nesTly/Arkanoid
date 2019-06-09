@@ -26,9 +26,6 @@
 
 typedef struct scorePlayer ScorePlayer;
 typedef struct messageProtocolDatagram MessageProtocolDatagram;
-typedef struct messageProtocolDatagramResponse MessageProtocolDatagramResponse;
-typedef struct messageProtocolDatagramRequest MessageProtocolDatagramRequest;
-typedef struct messageProtocolDatagram MessageProtocolDatagram;
 typedef struct messageProtocolPipe MessageProtocolPipe;
 typedef struct messageQueue MessageQueue;
 typedef struct circularBuffer CircularBuffer;
@@ -41,7 +38,7 @@ typedef struct game Game;
 struct scorePlayer
 {
 	TCHAR jogador[MAX_LENGTH_NAME];
-	double pontuacao;
+	WORD pontuacao;
 };
 
 //Estrutura da memoria partilhada "Zona de Mensagens"
@@ -66,18 +63,6 @@ struct messageProtocolDatagram
 	};
 };
 
-struct messageProtocolDatagramResponse
-{
-	TypeOfResponseMessage response;
-	MessageProtocolDatagram messagePD;
-};
-
-struct messageProtocolDatagramRequest
-{
-	TypeOfRequestMessage request;
-	MessageProtocolDatagram messagePD;
-};
-
 struct messageProtocolPipe
 {
 	WORD wTypeOfMessage;//TYPE_OF_MESSAGE_RESPONSE | TYPE_OF_MESSAGE_REQUEST 
@@ -87,7 +72,6 @@ struct messageProtocolPipe
 		TypeOfResponseMessage response;
 	};
 	MessageProtocolDatagram messagePD;
-	//Game copyOfGame;
 };
 
 struct circularBuffer
