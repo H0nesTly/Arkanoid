@@ -244,7 +244,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 		case IDYES:
 			SendMessageDll(&bKeepRunning, QuitGameMessage);
 			//free(gameObj);
-			PlaySound(NULL, 0, 0);
+
 			DestroyWindow(hWnd);
 			break;
 		case IDNO:
@@ -254,7 +254,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	case WM_DESTROY: // Destruir a janela e terminar o programa
-	// "PostQuitMessage(Exit Status)"
+		PlaySound(NULL, 0, 0);
 		PostQuitMessage(0);
 		break;
 	default:
@@ -299,6 +299,7 @@ BOOL CALLBACK manageDialogEvents(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lP
 					//	&hUserToken);
 
 					//bLog = ImpersonateLoggedOnUser(hUserToken);
+
 
 					Login(gClientInfo.tcUserName, gClientInfo.hWndWindow, gClientInfo.doubleBufferingDC, clientNamedPipeLocalConnection);
 

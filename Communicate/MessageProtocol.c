@@ -80,23 +80,27 @@ static VOID receiveMessageSharedMemory(const PTCHAR UserName, BOOL* bKeepRunning
 
 	dwWait = WaitForSingleObject(gClientConnection.SharedMem.hSemaphoreReadMessageFromServer, INFINITE);
 	//Critical section
-	_tprintf(TEXT("\nLi mensagem %d|%d"), WAIT_OBJECT_0, dwWait);
+
 	if (_tcscmp(UserName, queue->circularBufferServerClient.queueOfMessage[queue->circularBufferServerClient.wTailIndex].tcDestination) == 0 /*||
 		queue->queueOfMessageServerClient[queue->wTailIndex].messagePD.tcDestination[0] == '*'*/)
 	{
 		switch (queue->circularBufferServerClient.queueOfMessage[queue->circularBufferServerClient.wTailIndex].request)
 		{
 		case ResponseLoginSuccess:
-			_tprintf(TEXT("Login Bem Sucedido\n"));
+
 			gClientConnection.SharedMem.bAlreadyAuthenticate = TRUE;
 			advanceTail(&queue->circularBufferServerClient);
 			break;
 		case ResponseLoginFail:
 			if (!gClientConnection.SharedMem.bAlreadyAuthenticate)
 			{
-				_tprintf(TEXT("Login MAL Sucedido\n"));
 				advanceTail(&queue->circularBufferServerClient);
 				*bKeepRunning = FALSE;
+				MessageBox(gClientConnection.wndHandlers.hWndMain,
+					TEXT("Login Falhou!"),
+					TEXT("Login"),
+					MB_OK | MB_ICONERROR);
+				DestroyWindow(gClientConnection.wndHandlers.hWndMain);
 			}
 			break;
 		case TopPlayersMessage:
@@ -132,11 +136,14 @@ static VOID	receiveMessageLocalPipe(const PTCHAR UserName, BOOL* bKeepRunning)
 			switch (messageToReceive.response)
 			{
 			case ResponseLoginFail:
-				_tprintf(TEXT("\n%s"), messageToReceive.messagePD.tcData);
 				*bKeepRunning = FALSE;
+				MessageBox(gClientConnection.wndHandlers.hWndMain,
+					TEXT("Login Falhou!"),
+					TEXT("Login"),
+					MB_OK | MB_ICONERROR);
+				DestroyWindow(gClientConnection.wndHandlers.hWndMain);
 				break;
 			case ResponseLoginSuccess:
-				_tprintf(TEXT("\n%s"), messageToReceive.messagePD.tcData);
 				break;
 			case ResponseTop10:
 				//TODO: COMO MOSTRAR NA INTERFACE GRÁFICA
@@ -150,8 +157,6 @@ static VOID	receiveMessageLocalPipe(const PTCHAR UserName, BOOL* bKeepRunning)
 				break;
 			}
 		}
-
-		_tprintf(TEXT("\nMensaagem recebida com sucesso tamanho %d |Erro %d\n"), dwBytesToRead, GetLastError());
 
 		if (GetLastError() != ERROR_MORE_DATA && !bSucess)
 		{
