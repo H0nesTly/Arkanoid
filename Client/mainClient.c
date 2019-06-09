@@ -242,9 +242,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 			MB_YESNO | MB_ICONINFORMATION))
 		{
 		case IDYES:
-			SendMessageDll(&bKeepRunning, QuitGameMessage);
-			//free(gameObj);
-
 			DestroyWindow(hWnd);
 			break;
 		case IDNO:
@@ -254,6 +251,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	case WM_DESTROY: // Destruir a janela e terminar o programa
+		SendMessageDll(&bKeepRunning, QuitGameMessage);
 		PlaySound(NULL, 0, 0);
 		PostQuitMessage(0);
 		break;
